@@ -1,0 +1,12 @@
+# Кэш
+Prompt Engineering + Fine-Tuning/models/cache/
+models/*.bin
+models/*.pt
+
+# Env
+.env
+
+# Python
+__pycache__/
+*.pyc
+.venv/
