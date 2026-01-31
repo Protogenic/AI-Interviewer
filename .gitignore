@@ -1,5 +1,5 @@
 # Кэш
-models/cache/
+Prompt Engineering + Fine-Tuning/models/cache/
 models/*.bin
 models/*.pt
 
