@@ -1,0 +1,30 @@
+# Core ML
+torch>=2.1.0
+torchvision>=0.15.0
+torchaudio>=2.0.0
+
+# Transformers
+transformers>=4.51.0
+accelerate>=0.25.0
+
+# Quantization (для 8bit)
+bitsandbytes>=0.43.0
+
+# Windows CUDA fix (если нужно)
+# bitsandbytes-windows>=0.43.0
+
+peft>=0.12.0  # для LoRA
+
+# Utilities
+numpy>=1.24.0
+pandas>=2.0.0
+datasets>=2.14.0
+requests>=2.31.0
+tqdm>=4.66.0
+
+# Config
+python-dotenv>=1.0.0
+pydantic>=2.0.0
+
+# Ollama (опционально)
+ollama>=0.0.15
