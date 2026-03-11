@@ -1,5 +1,5 @@
 from ai_service.pydantic_schemas.generation import GenerationRequest
-from ai_service.services.llm_service import DummyLLMClient
+
 
 class BuildPromptService:
 
