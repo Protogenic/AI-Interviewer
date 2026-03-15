@@ -27,3 +27,14 @@ pip-wheel-metadata/
 
 *.local
 local_settings.py
+
+# Node.js
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+frontend/.env.local
+frontend/.cache/
+frontend/coverage/
+
+*.log
+npm-debug.log*
