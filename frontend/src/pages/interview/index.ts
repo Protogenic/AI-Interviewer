@@ -1,0 +1,1 @@
+export { InterviewPage as default } from './ui/InterviewPage';
