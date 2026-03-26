@@ -26,9 +26,6 @@ JINGLE_LINE_RE = re.compile(r"(джингл|музыка|заставка|инт
 
 
 def normalize_spaces(s: str) -> str:
-    """
-    Removes unnecessary spaces and invisible characters so that nothing interferes with further processing.
-    """
     s = s.replace("\u00A0", " ")
     s = re.sub(r"[ \t]+", " ", s)
     s = re.sub(r"\s+\n", "\n", s)
@@ -36,9 +33,6 @@ def normalize_spaces(s: str) -> str:
 
 
 def clearing_lines(line: str) -> bool:
-    """
-    Removes ads, square brackets, and music. The set of markers is based on the transcripts of the interview.
-    """
     if not line.strip():
         return True
     if SQUARE_BRACKET_LINE_RE.match(line) or PAREN_LINE_RE.match(line):
@@ -51,9 +45,6 @@ def clearing_lines(line: str) -> bool:
 
 
 def unicode_check(path: Path) -> str:
-    """
-    Handles the error with Unicode
-    """
     for enc in ("utf-8-sig", "utf-8", "cp1251"):
         try:
             return path.read_text(encoding=enc)
@@ -63,9 +54,6 @@ def unicode_check(path: Path) -> str:
 
 
 def role_from_label(label: str) -> Optional[str]:
-    """
-    Extracting roles logically based on a transcript.
-    """
     low = label.lower()
     if "интервьюер" in low or "ведущ" in low:
         return "interviewer"
@@ -87,9 +75,6 @@ class LinePhrase:
 
 
 class InterviewCleaner:
-    """
-    Clearing the interview of garbage and making it look like an interviewer and guest
-    """
 
     def __init__(self) -> None:
         self._label_to_role: Dict[str, Optional[str]] = {}
@@ -228,6 +213,12 @@ def speaker_block_generator(interview_id: str, source_file: str, text: str) -> I
         buf_current_speaker = []
 
 
+def sort_only_interviewer(speaker_blocks: Iterable[LinePhrase]) -> Iterator[LinePhrase]:
+    for phrase in speaker_blocks:
+        if phrase.speaker == "interviewer":
+            yield phrase
+
+
 def write_jsonl(path: Path, speaker_blocks: Iterable[LinePhrase]) -> int:
     path.parent.mkdir(parents=True, exist_ok=True)
     number_speaker_blocks = 0
@@ -257,11 +248,15 @@ def main() -> None:
     parser.add_argument("out_dir", type=Path)
     args = parser.parse_args()
 
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s | %(message)s")
     logger = logging.getLogger(__name__)
 
     in_dir = args.input_dir
     out_dir = args.out_dir
     out_dir.mkdir(parents=True, exist_ok=True)
+
+    only_interviewer_dir = out_dir / "only_interviewer"
+    only_interviewer_dir.mkdir(parents=True, exist_ok=True)
 
     txt_files = sorted([path_to_file for path_to_file in in_dir.rglob("*.txt") if path_to_file.is_file()])
     if not txt_files:
@@ -271,6 +266,8 @@ def main() -> None:
     logger.info("Found %d txt files in %s", len(txt_files), in_dir)
 
     total_speaker_blocks = 0
+    total_interviewer_blocks = 0
+
     for fp in txt_files:
         interview_id = fp.stem
         raw = unicode_check(fp)
@@ -283,7 +280,13 @@ def main() -> None:
         number_speaker_blocks = write_jsonl(out_path, speaker_blocks)
         total_speaker_blocks += number_speaker_blocks
 
+        interviewer_blocks = list(sort_only_interviewer(speaker_blocks))
+        only_interviewer_path = only_interviewer_dir / f"{interview_id}.jsonl"
+        number_speaker_blocks = write_jsonl(only_interviewer_path, interviewer_blocks)
+        total_interviewer_blocks += number_speaker_blocks
+
     logger.info("Done. Total speaker blocks written: %d", total_speaker_blocks)
+    logger.info("Total only interviewer blocks written: %d", total_interviewer_blocks)
 
 
 if __name__ == "__main__":
