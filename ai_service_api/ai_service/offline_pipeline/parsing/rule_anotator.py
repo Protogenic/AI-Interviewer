@@ -1,7 +1,10 @@
 import re
+import logging
 
-from categories import DialogueAct, Technique, AnswerType
-from markers import InterviewerTechniqueMarkers, InterviewerDialogueActMarkers, GuestAnswerTypeMarkers
+from ai_service_api.ai_service.offline_pipeline.categories import DialogueAct, Technique, AnswerType
+from ai_service_api.ai_service.offline_pipeline.parsing.markers import InterviewerTechniqueMarkers, InterviewerDialogueActMarkers, GuestAnswerTypeMarkers
+
+logger = logging.getLogger(__name__)
 
 
 def word_count(text: str) -> int:
@@ -11,15 +14,16 @@ def word_count(text: str) -> int:
 
 
 class RuleAnnotator:
-
     def annotate_dialogue_act(self, text: str) -> DialogueAct:
         markers = InterviewerDialogueActMarkers()
         lower_text = text.lower().strip()
 
-        if any(marker in lower_text for marker in markers.BACKCHANNEL):
+        if (any(marker in lower_text for marker in markers.BACKCHANNEL)) and word_count(lower_text) <= 2:
+            #logger.info("BACKCHANNEL: %s", lower_text)
             return DialogueAct.BACKCHANNEL
 
         elif any(marker in lower_text for marker in markers.ACKNOWLEDGMENT):
+            #logger.info("ACKNOWLEDGMENT: %s", lower_text)
             return DialogueAct.ACKNOWLEDGMENT
 
         elif any(marker in lower_text for marker in markers.TRANSITION_MARKERS):

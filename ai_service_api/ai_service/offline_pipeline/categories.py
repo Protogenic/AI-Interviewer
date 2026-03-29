@@ -50,6 +50,6 @@ class ComponentType(str, Enum):
     BRIDGE = "bridge"
     PARAPHRASE = "paraphrase"
     EMPATHY = "empathy"
-    PREAMBLE = "preamble"
     QUESTION = "question"
     REQUEST = "request"
+    TEXT = "text"

@@ -1,4 +1,4 @@
-from ai_service.pydantic_schemas.generation import GenerationRequest, GenerationResponse
+from ai_service.models.generation import GenerationRequest, GenerationResponse
 from ai_service.services.llm_service import DummyLLMClient
 from ai_service.services.build_prompt_service import BuildPromptService
 from ai_service.exeptions.generation_error import CharacterNotFound

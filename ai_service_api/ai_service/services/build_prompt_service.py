@@ -1,4 +1,4 @@
-from ai_service.pydantic_schemas.generation import GenerationRequest
+from ai_service.models.generation import GenerationRequest
 
 
 class BuildPromptService:

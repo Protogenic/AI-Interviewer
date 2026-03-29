@@ -1,7 +1,7 @@
 class InterviewerDialogueActMarkers:
 
     BACKCHANNEL = [
-        "ага", "угу", "о", "ой", "о-о-о", "да"
+        "ага", "угу", " ой", "о-о-о", " о."
     ]
 
     ACKNOWLEDGMENT = [
@@ -34,7 +34,7 @@ class InterviewerDialogueActMarkers:
     ]
 
     EMPATHY_MARKERS = [
-        "понимаю", "неприятно", "тяжело"
+        "понимаю", "неприятно", "тяжело", "непросто", "сложно"
     ]
 
     TOPIC_RETURN = [
@@ -47,7 +47,7 @@ class InterviewerDialogueActMarkers:
 
     SUMMARY = [
         "то есть", "в общем", "получается",
-        "я понял", "то, что", "вы говорите, что"
+        "я понял", "то, что", "вы говорите, что", "оказывается"
     ]
 
 
@@ -144,4 +144,5 @@ class GuestAnswerTypeMarkers:
     VAGUE = [
         "как бы", "что-то", "такое", "ну вот", "как сказать", "как бы", "в общем-то", "это это", "ээ", "э-э"
     ]
+
 
