@@ -1,6 +1,5 @@
 from pydantic import BaseModel
 
-
 class InterviewPart(BaseModel):
     role: str
     text: str
