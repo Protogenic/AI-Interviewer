@@ -48,7 +48,7 @@ class Template(BaseModel):
     examples: List[str]
 
 
-class InterviewProfile(BaseModel):
+class InterviewerProfile(BaseModel):
     interviewer_id: str
     linguistic_profile: LinguisticProfile
     reactivity_matrix: Dict[str, Dict[str, int]]

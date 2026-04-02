@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import List
 
 class InterviewPart(BaseModel):
     role: str
@@ -11,9 +12,15 @@ class GenerationRequest(BaseModel):
     user_name: str
     user_info: str
     last_answer: str
-    full_interview_history: list[InterviewPart]
+    full_interview_history: List[InterviewPart]
 
 
 class GenerationResponse(BaseModel):
     question: str
     used_profile: str
+
+
+class BuildPromptResult(BaseModel):
+    prompt: str
+    style_instruction: List[str]
+    example_used: int
