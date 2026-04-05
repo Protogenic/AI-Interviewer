@@ -1,10 +1,11 @@
-import { createEvent, sample } from 'effector';
-import { addMessage } from '~/entities/session';
+import { createEvent, createEffect, sample } from 'effector';
+import { addMessage, $currentSession } from '~/entities/session';
+import { socketManager } from '~/shared/api/socket';
 import { Message } from '~/shared/types';
 
 export const answerSent = createEvent<string>();
 
-// Заглушка: добавляем ответ пользователя и эмулируем ответ ассистента
+/** Добавляем сообщение пользователя в стор сразу (optimistic) */
 sample({
   clock: answerSent,
   fn: (answer): Message => ({
@@ -16,15 +17,18 @@ sample({
   target: addMessage,
 });
 
-// Эмуляция ответа ассистента (через 1 секунду)
-answerSent.watch(() => {
-  setTimeout(() => {
-    const assistantMessage: Message = {
-      id: (Date.now() + 1).toString(),
-      role: 'assistant',
-      content: 'Интересно, расскажите подробнее...',
-      timestamp: new Date(),
-    };
-    addMessage(assistantMessage);
-  }, 1000);
+/** Отправляем ответ на сервер через WebSocket */
+const emitAnswerFx = createEffect(
+  ({ sessionId, answer }: { sessionId: string; answer: string }) => {
+    socketManager.emit('interview:answer', { sessionId, answer });
+  }
+);
+
+sample({
+  clock: answerSent,
+  source: $currentSession,
+  filter: (session): session is NonNullable<typeof session> =>
+    session !== null && session.id.length > 0,
+  fn: (session, answer) => ({ sessionId: session!.id, answer }),
+  target: emitAnswerFx,
 });

@@ -2,8 +2,15 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useUnit } from 'effector-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
-import { $messages, $currentSession, fetchHistoryFx } from '~/entities/session';
+import {
+  $messages,
+  $currentSession,
+  addMessage,
+  setCurrentSession,
+  clearSession,
+} from '~/entities/session';
 import { answerSent } from '~/features/send-answer/model';
+import { socketManager } from '~/shared/api/socket';
 import { ChatBubble } from '~/shared/ui/ChatBubble/ChatBubble';
 import { Button } from '~/shared/ui/Button/Button';
 import { Input } from '~/shared/ui/Input/Input';
@@ -64,14 +71,16 @@ const HeaderTitle = styled.h1`
   letter-spacing: -0.02em;
 `;
 
-const SessionBadge = styled.span`
+const SessionBadge = styled.span<{ $isError?: boolean }>`
   padding: 4px 10px;
-  background: rgba(99, 102, 241, 0.2);
-  border: 1px solid rgba(99, 102, 241, 0.3);
+  background: ${({ $isError }) =>
+    $isError ? 'rgba(239, 68, 68, 0.2)' : 'rgba(99, 102, 241, 0.2)'};
+  border: 1px solid ${({ $isError }) =>
+    $isError ? 'rgba(239, 68, 68, 0.4)' : 'rgba(99, 102, 241, 0.3)'};
   border-radius: 100px;
   font-size: 11px;
   font-weight: 600;
-  color: #a5b4fc;
+  color: ${({ $isError }) => ($isError ? '#fca5a5' : '#a5b4fc')};
   letter-spacing: 0.06em;
   text-transform: uppercase;
 `;
@@ -123,7 +132,23 @@ const EmptyChat = styled.div`
   }
 
   span:last-child {
+    font-family: 'Inter', ui-sans-serif, sans-serif;
     font-size: 15px;
+  }
+`;
+
+const ConnectingDot = styled.span`
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #6366f1;
+  margin-right: 8px;
+  animation: pulse 1.4s ease-in-out infinite;
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 1; }
   }
 `;
 
@@ -152,20 +177,65 @@ const ButtonRow = styled.div`
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
+type ConnectionStatus = 'connecting' | 'live' | 'error';
+
 export const InterviewPage: React.FC = () => {
-  const { sessionId } = useParams<{ sessionId: string }>();
+  // Параметр URL изначально содержит journalistId (до получения реального sessionId)
+  const { sessionId: journalistId } = useParams<{ sessionId: string }>();
   const messages = useUnit($messages);
-  const session = useUnit($currentSession);
+  const currentSession = useUnit($currentSession);
   const navigate = useNavigate();
   const [answer, setAnswer] = useState('');
+  const [status, setStatus] = useState<ConnectionStatus>('connecting');
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (sessionId) {
-      fetchHistoryFx(sessionId);
-    }
-  }, [sessionId]);
+    if (!journalistId) return;
 
+    socketManager.connect();
+    socketManager.emit('interview:start', { journalistId });
+
+    const handleQuestion = ({ question, sessionId }: { question: string; sessionId: string }) => {
+      setStatus('live');
+      // Сохраняем реальный sessionId в стор при первом вопросе
+      if (!currentSession || currentSession.id !== sessionId) {
+        setCurrentSession({
+          id: sessionId,
+          journalistId: journalistId!,
+          userName: 'Гость',
+          userInfo: '',
+          status: 'active',
+          createdAt: new Date().toISOString(),
+        });
+      }
+      addMessage({
+        id: `${Date.now()}-${Math.random()}`,
+        role: 'assistant',
+        content: question,
+        timestamp: new Date(),
+      });
+    };
+
+    const handleError = ({ message }: { message: string }) => {
+      setStatus('error');
+      addMessage({
+        id: `${Date.now()}-err`,
+        role: 'assistant',
+        content: `⚠️ ${message}`,
+        timestamp: new Date(),
+      });
+    };
+
+    socketManager.on('interview:question', handleQuestion);
+    socketManager.on('interview:error', handleError);
+
+    return () => {
+      socketManager.off('interview:question', handleQuestion);
+      socketManager.off('interview:error', handleError);
+    };
+  }, [journalistId]);
+
+  // Скролл к последнему сообщению
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
@@ -183,23 +253,44 @@ export const InterviewPage: React.FC = () => {
     }
   };
 
+  const handleComplete = () => {
+    if (currentSession?.id) {
+      socketManager.emit('interview:complete', { sessionId: currentSession.id });
+    }
+    clearSession();
+    navigate('/');
+  };
+
+  const statusLabel: Record<ConnectionStatus, string> = {
+    connecting: 'Подключение...',
+    live: 'Live',
+    error: 'Ошибка',
+  };
+
   return (
     <PageWrapper>
       <Header>
         <HeaderLeft>
-          <BackButton onClick={() => navigate('/')} title="Назад">
+          <BackButton onClick={handleComplete} title="Завершить и выйти">
             ←
           </BackButton>
           <HeaderTitle>Интервью</HeaderTitle>
         </HeaderLeft>
-        <SessionBadge>Live</SessionBadge>
+        <SessionBadge $isError={status === 'error'}>
+          {status === 'connecting' && <ConnectingDot />}
+          {statusLabel[status]}
+        </SessionBadge>
       </Header>
 
       <ChatArea>
         {messages.length === 0 ? (
           <EmptyChat>
             <span>🎙</span>
-            <span>Интервью начнётся с первого вопроса журналиста</span>
+            <span>
+              {status === 'connecting'
+                ? 'Подключаемся к журналисту...'
+                : 'Интервью начнётся с первого вопроса'}
+            </span>
           </EmptyChat>
         ) : (
           messages.map((msg) => <ChatBubble key={msg.id} message={msg} />)
@@ -214,12 +305,16 @@ export const InterviewPage: React.FC = () => {
             onChange={(e) => setAnswer(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Ваш ответ... (Enter для отправки)"
+            disabled={status === 'connecting'}
           />
           <ButtonRow>
-            <Button variant="secondary" onClick={() => navigate('/')}>
+            <Button variant="secondary" onClick={handleComplete}>
               Завершить интервью
             </Button>
-            <Button onClick={handleSend} disabled={!answer.trim()}>
+            <Button
+              onClick={handleSend}
+              disabled={!answer.trim() || status === 'connecting'}
+            >
               Отправить →
             </Button>
           </ButtonRow>

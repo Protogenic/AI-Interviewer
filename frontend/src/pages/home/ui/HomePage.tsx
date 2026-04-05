@@ -2,7 +2,12 @@ import React, { useEffect } from 'react';
 import { useUnit } from 'effector-react';
 import { useNavigate } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
-import { $journalists, loadJournalists } from '~/entities/journalist';
+import {
+  $journalists,
+  $journalistsLoading,
+  $journalistsError,
+  loadJournalists,
+} from '~/entities/journalist';
 import { formSubmitted } from '~/features/create-session/model';
 import { Button } from '~/shared/ui/Button/Button';
 
@@ -173,16 +178,50 @@ const CardFooter = styled.div`
   margin-top: 4px;
 `;
 
-// ─── Empty state ──────────────────────────────────────────────────────────────
+// ─── Status states ────────────────────────────────────────────────────────────
 
-const EmptyState = styled.div`
+const spin = keyframes`
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+`;
+
+const StatusBox = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
   padding: 48px;
-  color: #475569;
+  font-family: 'Inter', ui-sans-serif, sans-serif;
   font-size: 15px;
+`;
+
+const Spinner = styled.div`
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 3px solid rgba(99, 102, 241, 0.2);
+  border-top-color: #6366f1;
+  animation: ${spin} 0.8s linear infinite;
+`;
+
+const ErrorBox = styled(StatusBox)`
+  background: rgba(239, 68, 68, 0.06);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 16px;
+  color: #fca5a5;
+  max-width: 420px;
+  text-align: center;
+
+  span:first-child {
+    font-size: 32px;
+  }
+`;
+
+const ErrorHint = styled.p`
+  font-size: 13px;
+  color: #64748b;
+  line-height: 1.6;
+  font-family: 'Inter', ui-sans-serif, sans-serif;
 `;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -209,6 +248,8 @@ function getInitials(name: string): string {
 
 export const HomePage: React.FC = () => {
   const journalists = useUnit($journalists);
+  const isLoading = useUnit($journalistsLoading);
+  const error = useUnit($journalistsError);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -217,7 +258,71 @@ export const HomePage: React.FC = () => {
 
   const handleSelect = (journalistId: string) => {
     formSubmitted({ journalistId });
-    navigate(`/interview/${journalistId}-temp`);
+    navigate(`/interview/${journalistId}`);
+  };
+
+  const renderContent = () => {
+    if (isLoading) {
+      return (
+        <StatusBox>
+          <Spinner />
+          <span style={{ color: '#64748b' }}>Загрузка журналистов...</span>
+        </StatusBox>
+      );
+    }
+
+    if (error) {
+      return (
+        <ErrorBox>
+          <span>⚠️</span>
+          <span>Не удалось загрузить список журналистов</span>
+          <ErrorHint>
+            Убедитесь, что сервер backend-api запущен на{' '}
+            <code style={{ color: '#a5b4fc' }}>localhost:3001</code>.<br />
+            Затем обновите страницу.
+          </ErrorHint>
+          <Button size="sm" onClick={() => loadJournalists()}>
+            Попробовать снова
+          </Button>
+        </ErrorBox>
+      );
+    }
+
+    if (journalists.length === 0) {
+      return (
+        <StatusBox style={{ color: '#475569' }}>
+          <span style={{ fontSize: '32px' }}>📭</span>
+          <span>Список журналистов пуст</span>
+        </StatusBox>
+      );
+    }
+
+    return (
+      <Grid>
+        {journalists.map((journalist, index) => (
+          <Card key={journalist.id} onClick={() => handleSelect(journalist.id)}>
+            <CardTop>
+              <AvatarCircle $color={AVATAR_COLORS[index % AVATAR_COLORS.length]}>
+                {getInitials(journalist.name)}
+              </AvatarCircle>
+              <CardName>{journalist.name}</CardName>
+            </CardTop>
+            <CardDescription>{journalist.description}</CardDescription>
+            <CardFooter>
+              <Button
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleSelect(journalist.id);
+                }}
+              >
+                Начать интервью →
+              </Button>
+            </CardFooter>
+          </Card>
+        ))}
+      </Grid>
+    );
   };
 
   return (
@@ -242,31 +347,7 @@ export const HomePage: React.FC = () => {
 
         <SectionTitle>Выберите журналиста</SectionTitle>
 
-        {journalists.length === 0 ? (
-          <EmptyState>
-            <span>⏳</span>
-            <span>Загрузка журналистов...</span>
-          </EmptyState>
-        ) : (
-          <Grid>
-            {journalists.map((journalist, index) => (
-              <Card key={journalist.id} onClick={() => handleSelect(journalist.id)}>
-                <CardTop>
-                  <AvatarCircle $color={AVATAR_COLORS[index % AVATAR_COLORS.length]}>
-                    {getInitials(journalist.name)}
-                  </AvatarCircle>
-                  <CardName>{journalist.name}</CardName>
-                </CardTop>
-                <CardDescription>{journalist.description}</CardDescription>
-                <CardFooter>
-                  <Button size="sm" onClick={(e) => { e.stopPropagation(); handleSelect(journalist.id); }}>
-                    Начать интервью →
-                  </Button>
-                </CardFooter>
-              </Card>
-            ))}
-          </Grid>
-        )}
+        {renderContent()}
       </Main>
     </PageWrapper>
   );

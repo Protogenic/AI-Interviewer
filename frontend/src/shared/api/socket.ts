@@ -1,14 +1,27 @@
 import { io, Socket } from 'socket.io-client';
 import { ClientToServerEvents, ServerToClientEvents } from '~/shared/types';
 
+const WS_URL = import.meta.env.VITE_WS_URL || 'http://localhost:3002';
+
 class SocketManager {
   private socket: Socket<ServerToClientEvents, ClientToServerEvents> | null = null;
 
   connect() {
     if (this.socket) return;
-    // Заглушка: пока не подключаемся к реальному серверу
-    // this.socket = io(import.meta.env.VITE_WS_URL || 'http://localhost:3002');
-    console.log('WebSocket connection stub');
+    this.socket = io(WS_URL, {
+      transports: ['websocket'],
+      reconnectionAttempts: 5,
+    });
+
+    this.socket.on('connect', () => {
+      console.log('[WS] Connected:', this.socket?.id);
+    });
+    this.socket.on('disconnect', (reason) => {
+      console.log('[WS] Disconnected:', reason);
+    });
+    this.socket.on('connect_error', (err) => {
+      console.error('[WS] Connection error:', err.message);
+    });
   }
 
   disconnect() {
@@ -25,7 +38,7 @@ class SocketManager {
     if (this.socket) {
       this.socket.emit(event, ...args);
     } else {
-      console.warn(`Socket not connected, cannot emit ${event}`);
+      console.warn(`[WS] Socket not connected, cannot emit "${event}"`);
     }
   }
 
@@ -36,7 +49,7 @@ class SocketManager {
     if (this.socket) {
       this.socket.on(event, handler as any);
     } else {
-      console.warn(`Socket not connected, cannot listen to ${event}`);
+      console.warn(`[WS] Socket not connected, cannot subscribe to "${event}"`);
     }
   }
 

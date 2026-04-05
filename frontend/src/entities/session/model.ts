@@ -1,36 +1,24 @@
 import { createStore, createEvent, createEffect, sample } from 'effector';
 import { apiClient } from '~/shared/api/client';
 import { ENDPOINTS } from '~/shared/api/endpoints';
-import { Session, Message } from '~/shared/types';
+import { Session, Message, ConversationTurn } from '~/shared/types';
 
-// Создание сессии
-export const createSessionFx = createEffect(
-  async (journalistId: string): Promise<Session> => {
-    // Заглушка
-    return {
-      id: Math.random().toString(36).substring(7),
-      journalistId,
-      status: 'active',
-      createdAt: new Date().toISOString(),
-    };
-  }
-);
-
-// Загрузка истории сообщений
+/** Загрузка истории реплик из БД (для восстановления после перезагрузки) */
 export const fetchHistoryFx = createEffect(async (sessionId: string): Promise<Message[]> => {
-  // Заглушка
-  return [
-    {
-      id: '1',
-      role: 'assistant',
-      content: 'Здравствуйте! Расскажите о себе.',
-      timestamp: new Date(),
-    },
-  ];
+  const response = await apiClient.get<ConversationTurn[]>(
+    ENDPOINTS.INTERVIEW_HISTORY(sessionId)
+  );
+  return response.data.map((turn): Message => ({
+    id: turn.id,
+    role: turn.role as 'assistant' | 'user',
+    content: turn.content,
+    timestamp: new Date(turn.createdAt),
+  }));
 });
 
-export const $currentSession = createStore<Session | null>(null)
-  .on(createSessionFx.doneData, (_, session) => session);
+export const $currentSession = createStore<Session | null>(null);
+export const setCurrentSession = createEvent<Session>();
+$currentSession.on(setCurrentSession, (_, session) => session);
 
 export const $messages = createStore<Message[]>([])
   .on(fetchHistoryFx.doneData, (_, messages) => messages);
@@ -41,9 +29,3 @@ $messages.on(addMessage, (state, message) => [...state, message]);
 export const clearSession = createEvent();
 $currentSession.reset(clearSession);
 $messages.reset(clearSession);
-
-export const createSession = createEvent<string>();
-sample({
-  clock: createSession,
-  target: createSessionFx,
-});

@@ -7,10 +7,23 @@ export interface Journalist {
 export interface Session {
   id: string;
   journalistId: string;
+  userName: string;
+  userInfo: string;
   status: 'active' | 'completed';
+  createdAt: string;
+  journalist?: Journalist;
+}
+
+/** Реплика из БД (GET /api/interviews/:id/history) */
+export interface ConversationTurn {
+  id: string;
+  sessionId: string;
+  role: 'assistant' | 'user';
+  content: string;
   createdAt: string;
 }
 
+/** Сообщение для отображения в UI */
 export interface Message {
   id: string;
   role: 'assistant' | 'user';
@@ -18,14 +31,21 @@ export interface Message {
   timestamp: Date;
 }
 
-// WebSocket (заглушка)
+// ─── WebSocket events ──────────────────────────────────────────────────────────
+
+/** События, которые сервер отправляет клиенту */
 export interface ServerToClientEvents {
-  'interview:question': (data: { question: string }) => void;
+  'interview:question': (data: { question: string; sessionId: string }) => void;
   'interview:error': (data: { message: string }) => void;
 }
 
+/** События, которые клиент отправляет серверу */
 export interface ClientToServerEvents {
-  'interview:start': (data: { journalistId: string; userInfo?: any }) => void;
+  'interview:start': (data: {
+    journalistId: string;
+    userName?: string;
+    userInfo?: string;
+  }) => void;
   'interview:answer': (data: { sessionId: string; answer: string }) => void;
   'interview:complete': (data: { sessionId: string }) => void;
 }

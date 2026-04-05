@@ -1,10 +1,7 @@
-import { createEvent, sample } from 'effector';
-import { createSession } from '~/entities/session';
+import { createEvent } from 'effector';
 
+/**
+ * Триггер выбора журналиста на главной странице.
+ * Навигация и WS-старт интервью управляются в UI-слое (HomePage / InterviewPage).
+ */
 export const formSubmitted = createEvent<{ journalistId: string }>();
-
-sample({
-  clock: formSubmitted,
-  fn: ({ journalistId }) => journalistId,
-  target: createSession,
-});
