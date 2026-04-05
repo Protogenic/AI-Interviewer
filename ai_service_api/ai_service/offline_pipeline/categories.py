@@ -1,19 +1,30 @@
 from enum import Enum
 
 
-class DialogueAct(str, Enum):
+class Action(str, Enum):
     BACKCHANNEL = "backchannel"
     ACKNOWLEDGMENT = "acknowledgment"
     CLARIFICATION = "clarification"
+    TRANSITION = "transition"
+    TOPIC_RETURN = "topic_return"
+    SUMMARY = "summary"
+    QUESTION = "question"
+    UNCERTAIN = "uncertain"
+
+
+class QuestionOpenness(str, Enum):
     OPEN_QUESTION = "open_question"
     CLOSED_QUESTION = "closed_question"
-    TRANSITION = "transition"
+    NOT_A_QUESTION = "not_a_question"
+    UNCERTAIN_QUESTION = "uncertain_question"
+
+
+class Emotion(str, Enum):
+    NEUTRAL = "neutral"
     CHALLENGE = "challenge"
     EMPATHY = "empathy"
-    TOPIC_RETURN = "topic_return"
     COMMENTARY = "commentary"
-    SUMMARY = "summary"
-    UNCERTAIN = "uncertain"
+    NO_EMOTION = "no_emotion"
 
 
 class AnswerType(str, Enum):
@@ -42,7 +53,6 @@ class Technique(str, Enum):
     CONFIRMATION = "confirmation"
     FOLLOWUP = "follow_up"
     GENERAL = "general"
-    NOT_A_QUESTION = "not_a_question"
 
 
 class ComponentType(str, Enum):

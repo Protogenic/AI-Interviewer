@@ -1,4 +1,8 @@
 from fastapi import FastAPI
+from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv(Path(__file__).resolve().parent / ".env")
 
 from ai_service.api import generation_router, health_router
 from ai_service.core import config

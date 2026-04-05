@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from typing import Any, Dict, List
 
-from ai_service_api.ai_service.offline_pipeline.categories import DialogueAct, AnswerType, Technique, ComponentType
+from ai_service.offline_pipeline.categories import Action, QuestionOpenness, Emotion, AnswerType, Technique, ComponentType
 
 class LinguisticProfile(BaseModel):
     empathy_density: float = 0.0
@@ -24,7 +24,9 @@ class Phrase(BaseModel):
 
 
 class AnnotatedPhrase(Phrase):
-    dialogue_act: DialogueAct = None
+    action: Action = None
+    question_openness: QuestionOpenness = None
+    emotion: Emotion = None
     technique: Technique = None
     answer_type: AnswerType = None
 
@@ -41,7 +43,9 @@ class Component(BaseModel):
 class Template(BaseModel):
     structure: str
     frequency: int
-    dialogue_act: str
+    action: str
+    question_openness: str
+    emotion: str
     technique: str
     avg_position: float
     reactivity: List[str]

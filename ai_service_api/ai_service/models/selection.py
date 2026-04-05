@@ -1,12 +1,12 @@
 from pydantic import BaseModel
 from typing import Dict
 
-from ai_service_api.ai_service.offline_pipeline.categories import DialogueAct
-from ai_service_api.ai_service.models.build_profile import Template
+from ai_service.offline_pipeline.categories import Action
+from ai_service.models.build_profile import Template
 
 
 class ActionSelection(BaseModel):
-    action: DialogueAct
+    action: Action
     reason: str
     distribution: Dict[str, float]
 

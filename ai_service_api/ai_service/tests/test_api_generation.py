@@ -1,5 +1,9 @@
 import pytest
 from httpx import ASGITransport, AsyncClient
+from dotenv import load_dotenv
+from pathlib import Path
+
+load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
 from ai_service.main import app
 
@@ -14,11 +18,15 @@ async def test_generate_question_success() -> None:
                 "session_id": "session_001",
                 "character_id": "dud",
                 "user_name": "Иван",
-                "user_info": "работаю программистом",
+                "user_info": "работаю тестироващиком",
                 "last_answer": "я программист",
-                "full_interview_history": []
+                "full_interview_history": [],
+                "max_number_questions": 20
             }
         )
+
+    print(response.status_code)
+    print(response.json())
 
     assert response.status_code == 200
     data = response.json()
@@ -35,13 +43,17 @@ async def test_generate_question_404() -> None:
             "/api/generation/generate_question",
             json={
                 "session_id": "session_001",
-                "character_id": "pozner",
+                "character_id": "sobchaki",
                 "user_name": "Иван",
                 "user_info": "работаю программистом",
                 "last_answer": "я программист",
-                "full_interview_history": []
+                "full_interview_history": [],
+                "max_number_questions": 20
             }
         )
+
+    print(response.status_code)
+    print(response.json())
 
     assert response.status_code == 404
 
@@ -59,8 +71,12 @@ async def test_generate_question_422() -> None:
                 "user_name": "Иван",
                 "user_info": None,
                 "last_answer": "я программист",
-                "full_interview_history": []
+                "full_interview_history": [],
+                "max_number_questions": 20
             }
         )
+
+    print(response.status_code)
+    print(response.json())
 
     assert response.status_code == 422

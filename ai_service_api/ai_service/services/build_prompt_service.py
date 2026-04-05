@@ -1,7 +1,7 @@
 from typing import List
 
-from ai_service_api.ai_service.models.generation import GenerationRequest, BuildPromptResult, InterviewPart
-from ai_service_api.ai_service.models.build_profile import InterviewerProfile, Template
+from ai_service.models.generation import GenerationRequest, BuildPromptResult, InterviewPart
+from ai_service.models.build_profile import InterviewerProfile, Template
 
 
 class BuildPromptService:
@@ -142,20 +142,21 @@ class BuildPromptService:
     @staticmethod
     def _build_structure_block(template: Template) -> str:
         structure = getattr(template, "structure")
-        dialogue_act = getattr(template, "dialogue_act")
+        action = getattr(template, "action")
         technique = getattr(template, "technique")
         examples = getattr(template, "examples")
 
         lines_block = [
             "СТРУКТУРА:",
             f"- Следуй этой структуре: {structure}"
+            f"Каждый элемент - предложение."
         ]
 
         if technique is not None:
-            lines_block.append(f"- Используй технику вопроса: {technique.value}")
+            lines_block.append(f"- Используй технику вопроса: {technique}")
 
-        if dialogue_act is not None:
-            lines_block.append(f"- Используй действие для диалога: {dialogue_act.value}")
+        if action is not None:
+            lines_block.append(f"- Используй действие для диалога: {action}")
 
         if examples:
             lines_block.append("Примеры вопросов этого интервьюера: ")

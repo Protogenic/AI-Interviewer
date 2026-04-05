@@ -1,10 +1,10 @@
 import random
 from typing import List, Optional
 
-from ai_service_api.ai_service.selection.compability import ACTION_TECHNIQUE_COMPATIBILITY
-from ai_service_api.ai_service.offline_pipeline.categories import DialogueAct, Technique
-from ai_service_api.ai_service.models.selection import TemplateSelection
-from ai_service_api.ai_service.models.build_profile import Template
+from ai_service.selection.compability import ACTION_TECHNIQUE_COMPATIBILITY
+from ai_service.offline_pipeline.categories import Action, Technique
+from ai_service.models.selection import TemplateSelection
+from ai_service.models.build_profile import Template
 
 class TemplateSelector:
     def __init__(self,
@@ -18,7 +18,7 @@ class TemplateSelector:
 
 
     def select_template(self,
-                        action: DialogueAct,
+                        action: Action,
                         interview_position: float,
                         previous_template_id: Optional[str] = None
                         ) -> TemplateSelection:
@@ -55,7 +55,7 @@ class TemplateSelector:
         )
 
 
-    def _get_compatible_techniques(self, action: DialogueAct) -> List[Technique]:
+    def _get_compatible_techniques(self, action: Action) -> List[Technique]:
         profile_compatibility = ACTION_TECHNIQUE_COMPATIBILITY.get(action.value, [])
         compatible_techniques = []
 

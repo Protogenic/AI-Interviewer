@@ -2,8 +2,8 @@ import re
 from statistics import mean
 from typing import List
 
-from ai_service_api.ai_service.offline_pipeline.profiling.markers import LinguisticProfileMarker
-from ai_service_api.ai_service.models.build_profile import LinguisticProfile
+from ai_service.offline_pipeline.profiling.markers import LinguisticProfileMarker
+from ai_service.models.build_profile import LinguisticProfile
 
 class LinguisticProfiler:
     def build_profile(self, interviewer_texts: List[str]) -> LinguisticProfile:

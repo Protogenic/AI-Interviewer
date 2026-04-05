@@ -1,9 +1,9 @@
 import re
 from typing import List, Tuple
 
-from ai_service_api.ai_service.offline_pipeline.categories import ComponentType
-from ai_service_api.ai_service.offline_pipeline.templates.markers import ComponentMarkers
-from ai_service_api.ai_service.models.build_profile import Component
+from ai_service.offline_pipeline.categories import ComponentType
+from ai_service.offline_pipeline.templates.markers import ComponentMarkers
+from ai_service.models.build_profile import Component
 
 class ComponentSeparator:
     def split_into_components(self, text: str) -> Tuple[List[Component], str]:

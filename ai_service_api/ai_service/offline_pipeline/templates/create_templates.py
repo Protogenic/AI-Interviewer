@@ -1,9 +1,9 @@
 from collections import Counter, defaultdict
 from typing import List
 
-from ai_service_api.ai_service.models.build_profile import AnnotatedPhrase, Template
-from ai_service_api.ai_service.offline_pipeline.templates.split_components import ComponentSeparator
-from ai_service_api.ai_service.offline_pipeline.categories import Technique, DialogueAct
+from ai_service.models.build_profile import AnnotatedPhrase, Template
+from ai_service.offline_pipeline.templates.split_components import ComponentSeparator
+from ai_service.offline_pipeline.categories import Technique, Action, QuestionOpenness, Emotion
 
 
 class TemplateCreator:
@@ -35,13 +35,29 @@ class TemplateCreator:
             else:
                 main_technique = Technique.GENERAL.value
 
-            dialogue_act_counter = Counter(
-                item[0].dialogue_act.value for item in items
+            action_counter = Counter(
+                item[0].action.value for item in items
             )
-            if dialogue_act_counter:
-                main_dialogue_act = dialogue_act_counter.most_common(1)[0][0]
+            if action_counter:
+                main_action = action_counter.most_common(1)[0][0]
             else:
-                main_dialogue_act = DialogueAct.UNCERTAIN.value
+                main_action = Action.UNCERTAIN.value
+
+            question_openness_counter = Counter(
+                item[0].question_openness.value for item in items
+            )
+            if question_openness_counter:
+                main_question_openness = question_openness_counter.most_common(1)[0][0]
+            else:
+                main_question_openness = QuestionOpenness.UNCERTAIN_QUESTION.value
+
+            emotion_counter = Counter(
+                item[0].emotion.value for item in items
+            )
+            if emotion_counter:
+                main_emotion = emotion_counter.most_common(1)[0][0]
+            else:
+                main_emotion = Emotion.NO_EMOTION.value
 
             examples = [item[0].text for item in items[:5]]
             positions = [item[0].replica_id for item in items]
@@ -54,7 +70,9 @@ class TemplateCreator:
                 structure=template,
                 frequency=len(items),
                 technique=main_technique,
-                dialogue_act=main_dialogue_act,
+                action=main_action,
+                question_openness=main_question_openness,
+                emotion=main_emotion,
                 avg_position=avg_position,
                 reactivity=[],
                 examples=examples,

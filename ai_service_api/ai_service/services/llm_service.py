@@ -1,5 +1,6 @@
 from openai import AsyncOpenAI, BadRequestError
 from typing import Protocol
+import httpx
 
 from ai_service.exeptions.generation_error import GenerationError
 
@@ -7,11 +8,6 @@ from ai_service.exeptions.generation_error import GenerationError
 class BaseLLMClient(Protocol):
     async def generate_question(self, prompt: str) -> str:
         ...
-
-
-class DummyLLMClient:
-    async def generate_question(self, prompt: str) -> str:
-        return "Как давно ты занимаешься программированием?"
 
 
 class OpenAILLMClient:
@@ -64,49 +60,52 @@ class OpenAILLMClient:
 
 class OllamaLLMClient:
     def __init__(self,
-                 api_key: str = "ollama",
                  model: str = "qwen2.5:7b-instruct",
                  base_url: str = "http://localhost:11434/v1",
                  temperature: float = 0.7,
                  max_tokens: int = 150,
                  ) -> None:
-        self.__client = AsyncOpenAI(
-            base_url=base_url,
-            api_key=api_key,
-        )
         self.__model = model
+        self.__base_url = base_url.rstrip("/")
         self.__temperature = temperature
         self.__max_tokens = max_tokens
 
-
     async def generate_question(self, prompt: str) -> str:
-        messages = [
-            {
-                "role": "system",
-                "content": (
-                    "Ты - интервьюер Юрий Дудь."
-                    "Сгенерируй ровно одно естественное высказывание (или вопрос) "
-                    "в стиле Юрия Дудя для интервью с пользователем."
-                ),
+        url = f"{self.__base_url}/api/chat"
+
+        payload = {
+            "model": self.__model,
+            "messages": [
+                {
+                    "role": "system",
+                    "content": (
+                        "Ты - интервьюер Юрий Дудь."
+                        "Сгенерируй ровно одно естественное высказывание (или вопрос) "
+                        "в стиле Юрия Дудя для интервью с пользователем."
+                    ),
+                },
+                {"role": "user", "content": prompt},
+            ],
+            "stream": False,
+            "options": {
+                "temperature": self.__temperature,
+                "num_predict": self.__max_tokens,
             },
-            {
-                "role": "user",
-                "content": prompt,
-            },
-        ]
+        }
 
         try:
-            response = await self.__client.responses.create(
-                model=self.__model,
-                input=messages,
-                temperature=self.__temperature,
-                max_output_tokens=self.__max_tokens,
-            )
-            return response.output_text.strip()
+            async with httpx.AsyncClient(timeout=120.0) as client:
+                response = await client.post(url, json=payload)
+                response.raise_for_status()
+                data = response.json()
 
-        except BadRequestError as e:
-            raise GenerationError(f"OpenAI bad request: {e}") from e
+            return data["message"]["content"].strip()
+
+        except httpx.HTTPStatusError as e:
+            raise GenerationError(
+                f"Ollama HTTP error: {e.response.status_code} {e.response.text}"
+            ) from e
         except Exception as e:
-            raise GenerationError(f"OpenAI generation failed: {e}") from e
+            raise GenerationError(f"Ollama generation failed: {e}") from e
 
 

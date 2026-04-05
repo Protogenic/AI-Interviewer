@@ -4,11 +4,11 @@ import logging
 from pathlib import Path
 from typing import List, Dict, Any
 
-from ai_service_api.ai_service.models.build_profile import Phrase, AnnotatedPhrase, InterviewProfile
-from ai_service_api.ai_service.offline_pipeline.parsing.rule_anotator import RuleAnnotator
-from ai_service_api.ai_service.offline_pipeline.profiling.linguistic_profiler import LinguisticProfiler
-from ai_service_api.ai_service.offline_pipeline.profiling.reactivity_analyzer import ReactivityAnalyzer
-from ai_service_api.ai_service.offline_pipeline.templates.create_templates import TemplateCreator
+from ai_service.models.build_profile import Phrase, AnnotatedPhrase, InterviewerProfile
+from ai_service.offline_pipeline.parsing.rule_anotator import RuleAnnotator
+from ai_service.offline_pipeline.profiling.linguistic_profiler import LinguisticProfiler
+from ai_service.offline_pipeline.profiling.reactivity_analyzer import ReactivityAnalyzer
+from ai_service.offline_pipeline.templates.create_templates import TemplateCreator
 
 
 logger = logging.getLogger(__name__)
@@ -53,7 +53,9 @@ def phrase_to_csv_row(interviewer_id: str, interview_id: str, phrase: AnnotatedP
         "replica_id": phrase.replica_id,
         "role": phrase.role,
         "text": phrase.text,
-        "dialogue_act": phrase.dialogue_act.value if phrase.dialogue_act else None,
+        "action": phrase.action.value if phrase.action else None,
+        "question_openness": phrase.question_openness.value if phrase.question_openness else None,
+        "emotion": phrase.emotion.value if phrase.emotion else None,
         "technique": phrase.technique.value if phrase.technique else None,
         "answer_type": phrase.answer_type.value if phrase.answer_type else None,
     }
@@ -71,10 +73,14 @@ def annotate_phrases(phrases: List[Phrase], annotator: RuleAnnotator) -> List[An
         )
 
         if phrase.role == "interviewer":
-            dialogue_act = annotator.annotate_dialogue_act(phrase.text)
+            action = annotator.annotate_action(phrase.text)
+            question_openness = annotator.annotate_question_openness(phrase.text)
+            emotion = annotator.annotate_emotion(phrase.text)
             technique = annotator.annotate_techniques(phrase.text)
 
-            ap.dialogue_act = dialogue_act
+            ap.action = action
+            ap.question_openness = question_openness
+            ap.emotion = emotion
             ap.technique = technique
 
         elif phrase.role == "guest":
@@ -116,7 +122,9 @@ def run_pipeline_for_interviewer(
                 "replica_id",
                 "role",
                 "text",
-                "dialogue_act",
+                "action",
+                "question_openness",
+                "emotion",
                 "technique",
                 "answer_type",
             ],
@@ -157,7 +165,7 @@ def run_pipeline_for_interviewer(
     for template in templates[:10]:
         characteristic_phrases.extend(template.examples[:2])
 
-    profile = InterviewProfile(
+    profile = InterviewerProfile(
         interviewer_id=interviewer_id,
         linguistic_profile=linguistic_profile,
         reactivity_matrix=reactivity_matrix,
@@ -182,9 +190,9 @@ if __name__ == "__main__":
     interviewer_id = "dud"
     run_pipeline_for_interviewer(
         interviewer_id=interviewer_id,
-        dir_clean_text=Path(f"ai_service_api/ai_service/data/cleaned/{interviewer_id}"),
-        annotated_csv_path=Path(f"ai_service_api/ai_service/data/annotated/dud/auto_annotations.csv"),
-        profile_path = Path(f"ai_service_api/ai_service/data/profiles/{interviewer_id}_profile.json"),
+        dir_clean_text=Path(f"ai_service/data/cleaned/{interviewer_id}"),
+        annotated_csv_path=Path(f"ai_service/data/annotated/dud/auto_annotations.csv"),
+        profile_path = Path(f"ai_service/data/profiles/{interviewer_id}_profile.json"),
     )
 
 

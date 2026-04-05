@@ -2,8 +2,8 @@ import random
 from collections import Counter
 from typing import Dict, Optional
 
-from ai_service_api.ai_service.offline_pipeline.categories import AnswerType, DialogueAct
-from ai_service_api.ai_service.models.selection import ActionSelection
+from ai_service.offline_pipeline.categories import AnswerType, Action, Emotion, QuestionOpenness
+from ai_service.models.selection import ActionSelection
 
 
 class ActionSelector:
@@ -25,14 +25,14 @@ class ActionSelector:
 
         if interview_position <= 0.1:
             return ActionSelection(
-                action=DialogueAct.OPEN_QUESTION,
+                action=Action.TRANSITION,
                 reason="forced_start_of_interview",
                 distribution={"open_question": 1.0},
             )
 
         if consecutive_followups >= self.max_followups_in_row:
             return ActionSelection(
-                action=DialogueAct.TRANSITION,
+                action=Action.TRANSITION,
                 reason="forced_transition_after_followup_limit",
                 distribution={"transition": 1.0},
             )
@@ -49,42 +49,43 @@ class ActionSelector:
         )
 
 
-    def _get_distribution(self, answer_type: AnswerType) -> Dict[DialogueAct, float]:
+    def _get_distribution(self, answer_type: AnswerType) -> Dict[Action, float]:
         row = self.reactivity_matrix.get(answer_type.value, {})
 
         counter = Counter()
         for reaction_type, count in row.items():
-            counter[DialogueAct(reaction_type)] = count
+            counter[Action(reaction_type)] = count
 
         total = sum(counter.values())
         if total == 0:
-            return {DialogueAct.OPEN_QUESTION: 1.0}
+            return {Action.TRANSITION: 1.0}
 
         return {act: count / total for act, count in counter.items()}
 
 
     def _determine_position(self,
-                            distribution: Dict[DialogueAct, float],
+                            distribution: Dict[Action, float],
                             interview_position: float,
-                            ) -> Dict[DialogueAct, float]:
+                            ) -> Dict[Action, float]:
 
         probability = distribution.copy()
         if interview_position < 0.3:
-            probability[DialogueAct.OPEN_QUESTION] = probability.get(DialogueAct.OPEN_QUESTION, 0) + 0.15
-            probability[DialogueAct.TRANSITION] = probability.get(DialogueAct.TRANSITION, 0) + 0.05
+            #probability[DialogueAct.OPEN_QUESTION] = probability.get(DialogueAct.OPEN_QUESTION, 0) + 0.15
+            probability[Action.TRANSITION] = probability.get(Action.TRANSITION, 0) + 0.05
 
         if interview_position > 0.8:
-            probability[DialogueAct.TRANSITION] = probability.get(DialogueAct.TRANSITION, 0) + 0.15
-            probability[DialogueAct.SUMMARY] = probability.get(DialogueAct.SUMMARY, 0) + 0.10
+            probability[Action.TRANSITION] = probability.get(Action.TRANSITION, 0) + 0.15
+            probability[Action.SUMMARY] = probability.get(Action.SUMMARY, 0) + 0.10
 
         total = sum(probability.values())
         if total == 0:
-            return {DialogueAct.OPEN_QUESTION: 1.0}
+            #return {Action.OPEN_QUESTION: 1.0}
+            return {Action.TRANSITION: 1.0}
 
         return {k: v / total for k, v in probability.items()}
 
 
-    def _weighted_sample(self, distribution: Dict[DialogueAct, float]) -> DialogueAct:
+    def _weighted_sample(self, distribution: Dict[Action, float]) -> Action:
         acts = list(distribution.keys())
         weights = list(distribution.values())
         return self.random.choices(acts, weights=weights, k=1)[0]

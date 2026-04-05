@@ -1,12 +1,39 @@
 # Подготовка и запуск api
 
-## 1. Сборка dockerfile из корня репозитория:
+## 1. Создайте файл .env
+Нужно создать файл:
+ai_service_api/ai_service/.env
+с такими переменными:
+LLM_PROVIDER=
+OPENAI_API_KEY=ваш_токен
+OPENAI_MODEL=gpt-4o-mini
+OLLAMA_BASE_URL=http://host.docker.internal:11434/v1
+OLLAMA_MODEL=qwen2.5:7b-instruct
+LLM_TEMPERATURE=0.7
+LLM_MAX_TOKENS=150
+
+## 2. Подключение LLM: GPT или Ollama
+### GPT:
+- В файле .env укажите:
+LLM_PROVIDER=openai
+OPENAI_API_KEY=ваш_токен
+OPENAI_MODEL=gpt-4o-mini
+### Ollama:
+- Установите Ollama на компьютер
+- Запустите Ollama
+- Скачайте модель: ollama pull qwen2.5:7b-instruct
+- В файле .env укажите:
+LLM_PROVIDER=ollama
+OLLAMA_BASE_URL=http://host.docker.internal:11434/v1
+OLLAMA_MODEL=qwen2.5:7b-instruct
+
+## 3. Сборка dockerfile из корня репозитория:
 docker build -t ai-service -f ai_service_api/Dockerfile .
 
-## 2. Запуск dockerfile:
+## 4. Запуск dockerfile:
 docker run -d --name ai-service-container -p 8000:8000 ai-service
 
-## 3. После этого сервис будет доступен на http://localhost:8000
+## 5. После этого сервис будет доступен на http://localhost:8000
 
 ## Если требуются зависисмости, установить зависимости из папки ai_service с помощью:
 py -m pip install -e .

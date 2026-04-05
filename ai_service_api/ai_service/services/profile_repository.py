@@ -1,12 +1,13 @@
 import json
 from typing import Dict, List
 from pathlib import Path
+from ai_service.exeptions.generation_error import CharacterNotFound
 
 from ai_service.models.build_profile import InterviewerProfile, Template, LinguisticProfile
 
 
 class GetProfileInfo:
-    def __init__(self, profile_dir: str = "data/profiles") -> None:
+    def __init__(self, profile_dir: str = "ai_service/data/profiles") -> None:
         self.__profiles_dir = Path(profile_dir)
         self.__profiles: dict[str, InterviewerProfile] = {}
 
@@ -15,6 +16,9 @@ class GetProfileInfo:
             return self.__profiles[character_id]
 
         profile_path = self.__profiles_dir / f"{character_id}_profile.json"
+
+        if not profile_path.exists():
+            raise CharacterNotFound(character_id=character_id)
 
         with profile_path.open("r", encoding="utf-8") as f:
             raw_profile = json.load(f)
@@ -53,11 +57,13 @@ class GetProfileInfo:
         )
 
         templates: List[Template] = []
-        for idx, template_raw in templates_raw:
+        for idx, template_raw in  enumerate(templates_raw):
             template = Template(
                 structure=template_raw.get("structure", ""),
                 frequency=template_raw.get("frequency", 0),
-                dialogue_act=template_raw.get("dialogue_act", ""),
+                action=template_raw.get("action", ""),
+                question_openness=template_raw.get("question_openness", ""),
+                emotion= template_raw.get("emotion", ""),
                 technique=template_raw.get("technique", ""),
                 avg_position=template_raw.get("avg_position", 0.0),
                 reactivity=template_raw.get("reactivity", []),

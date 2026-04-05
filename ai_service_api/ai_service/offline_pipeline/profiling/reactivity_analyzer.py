@@ -1,7 +1,7 @@
 from collections import Counter, defaultdict
 from typing import List, Dict
 
-from ai_service_api.ai_service.models.build_profile import AnnotatedPhrase
+from ai_service.models.build_profile import AnnotatedPhrase
 
 class ReactivityAnalyzer:
     def build_matrix(self, phrases: List[AnnotatedPhrase]) -> Dict[str, Dict[str, int]]:
@@ -12,8 +12,8 @@ class ReactivityAnalyzer:
             next_phrase = phrases[i+1]
 
             if current_phrase.role == "guest" and next_phrase.role == "interviewer":
-                if current_phrase.answer_type and next_phrase.dialogue_act:
-                    matrix[current_phrase.answer_type.value][next_phrase.dialogue_act.value] += 1
+                if current_phrase.answer_type and next_phrase.action:
+                    matrix[current_phrase.answer_type.value][next_phrase.action.value] += 1
 
         return {answer_type: dict(counter) for answer_type, counter in matrix.items()}
 
