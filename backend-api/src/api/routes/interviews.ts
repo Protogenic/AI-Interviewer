@@ -8,6 +8,7 @@ const CreateSessionSchema = z.object({
   journalistId: z.string().min(1),
   userName: z.string().optional(),
   userInfo: z.string().optional(),
+  maxNumberQuestions: z.number().int().positive().optional(),
 });
 
 // POST /api/interviews
@@ -18,6 +19,7 @@ interviewsRouter.post('/', async (req: Request, res: Response, next: NextFunctio
       body.journalistId,
       body.userName ?? 'Гость',
       body.userInfo  ?? '',
+      body.maxNumberQuestions,
     );
     res.status(201).json(session);
   } catch (err) {

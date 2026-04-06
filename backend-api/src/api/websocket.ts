@@ -16,6 +16,7 @@ export function setupWebSocket(io: Server): void {
           data.journalistId,
           data.userName ?? 'Гость',
           data.userInfo  ?? '',
+          data.maxNumberQuestions,
         );
 
         const question = await interviewService.generateFirstQuestion(session.id);

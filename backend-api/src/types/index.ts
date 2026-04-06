@@ -34,6 +34,7 @@ export interface InterviewStartPayload {
   journalistId: string;
   userName?: string;
   userInfo?: string;
+  maxNumberQuestions?: number;
 }
 
 export interface InterviewAnswerPayload {
@@ -68,9 +69,14 @@ export interface GenerateQuestionRequest {
   user_info: string;
   last_answer: string;
   full_interview_history: InterviewPart[];
+  question_id: number;
+  previous_template_id: string | null;
+  consecutive_followups: number;
+  max_number_questions: number | null;
 }
 
 export interface GenerateQuestionResponse {
   question: string;
-  used_profile: string;
+  used_template_id: string;
+  consecutive_followups: number;
 }

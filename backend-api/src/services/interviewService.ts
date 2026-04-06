@@ -6,9 +6,10 @@ export async function createSession(
   journalistId: string,
   userName: string,
   userInfo: string,
+  maxNumberQuestions?: number,
 ) {
   return prisma.interviewSession.create({
-    data: { journalistId, userName, userInfo },
+    data: { journalistId, userName, userInfo, maxNumberQuestions: maxNumberQuestions ?? null },
     include: { journalist: true },
   });
 }
@@ -45,40 +46,66 @@ export async function processAnswer(sessionId: string, answer: string): Promise<
     data: { sessionId, role: 'user', content: answer },
   });
 
-  const question = await generateQuestion({
+  const result = await generateQuestion({
     session_id: sessionId,
     character_id: session.journalistId,
     user_name: session.userName,
     user_info: session.userInfo,
     last_answer: answer,
     full_interview_history: session.turns.map((t) => ({ role: t.role, text: t.content })),
+    question_id: session.questionId,
+    previous_template_id: session.previousTemplateId,
+    consecutive_followups: session.consecutiveFollowups,
+    max_number_questions: session.maxNumberQuestions,
   });
 
   await prisma.conversationTurn.create({
-    data: { sessionId, role: 'assistant', content: question },
+    data: { sessionId, role: 'assistant', content: result.question },
   });
 
-  return question;
+  await prisma.interviewSession.update({
+    where: { id: sessionId },
+    data: {
+      questionId: session.questionId + 1,
+      previousTemplateId: result.used_template_id,
+      consecutiveFollowups: result.consecutive_followups,
+    },
+  });
+
+  return result.question;
 }
 
 export async function generateFirstQuestion(sessionId: string): Promise<string> {
   // история пустая, просто нужны параметры сессии
-  const { journalistId, userName, userInfo } = await prisma.interviewSession.findUniqueOrThrow({
+  const session = await prisma.interviewSession.findUniqueOrThrow({
     where: { id: sessionId },
   });
 
-  const question = await generateQuestion({
+  const result = await generateQuestion({
     session_id: sessionId,
-    character_id: journalistId,
-    user_name: userName,
-    user_info: userInfo,
+    character_id: session.journalistId,
+    user_name: session.userName,
+    user_info: session.userInfo,
     last_answer: '',
     full_interview_history: [],
+    question_id: session.questionId,
+    previous_template_id: session.previousTemplateId,
+    consecutive_followups: session.consecutiveFollowups,
+    max_number_questions: session.maxNumberQuestions,
   });
 
   await prisma.conversationTurn.create({
-    data: { sessionId, role: 'assistant', content: question },
+    data: { sessionId, role: 'assistant', content: result.question },
   });
 
-  return question;
+  await prisma.interviewSession.update({
+    where: { id: sessionId },
+    data: {
+      questionId: session.questionId + 1,
+      previousTemplateId: result.used_template_id,
+      consecutiveFollowups: result.consecutive_followups,
+    },
+  });
+
+  return result.question;
 }
