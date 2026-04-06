@@ -39,4 +39,6 @@ frontend/coverage/
 *.log
 npm-debug.log*
 
-ai_service_api/ai_service/data/
+ai_service_api/ai_service/data/*
+!ai_service_api/ai_service/data/profiles/
+!ai_service_api/ai_service/data/profiles/*.json

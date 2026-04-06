@@ -10,6 +10,7 @@ logger = logging.getLogger(__name__)
 def normalize_text(text: str) -> str:
     text = text.lower().strip()
     text = text.replace("ё", "е")
+    text = re.sub(r'[\u200b\u200c\u200d\ufeff]', '', text)
     text = re.sub(r"\s+", " ", text)
     return text
 
@@ -98,10 +99,6 @@ class RuleAnnotator:
         if is_question:
             add_score(scores, Action.CLARIFICATION, 1)
 
-        matched_topic_return = count_matching_markers(text, markers.TOPIC_RETURN)
-        if matched_topic_return:
-            add_score(scores, Action.TOPIC_RETURN, 2 * matched_topic_return)
-
         matched_transition = count_matching_markers(text, markers.TRANSITION_MARKERS)
         if matched_transition:
             add_score(scores, Action.TRANSITION, 2 * matched_transition)
@@ -116,7 +113,7 @@ class RuleAnnotator:
             add_score(scores, Action.QUESTION, 2)
 
         action = choose_best(scores, threshold=1) or Action.UNCERTAIN
-        logger.info("ACTION: %s - %s", action, lower_text)
+        #logger.info("ACTION: %s - %s", action, lower_text)
         return action
 
 
@@ -124,20 +121,37 @@ class RuleAnnotator:
         markers = InterviewerQuestionOpennessMarkers
         lower_text = normalize_text(text)
         is_question = "?" in lower_text
+        scores: dict[str, int] = {}
+        word_number = word_count(lower_text)
 
         if not is_question:
+            #logger.info("QUESTION: %s - %s", QuestionOpenness.NOT_A_QUESTION, lower_text)
             return QuestionOpenness.NOT_A_QUESTION
 
-        if contains_any_marker(lower_text, markers.OPEN_QUESTION):
-            #logger.info("OPEN_QUESTION: %s", lower_text)
-            return QuestionOpenness.OPEN_QUESTION
-
-        if (lower_text.startswith(tuple(m.lower() for m in markers.CLOSED_START)) or
-                lower_text.endswith(tuple(m.lower() for m in markers.CLOSED_END))):
-            #logger.info("CLOSED_QUESTION: %s", lower_text)
+        if starts_with_any(lower_text, tuple(m.lower() for m in markers.CLOSED_START)):
             return QuestionOpenness.CLOSED_QUESTION
 
-        return QuestionOpenness.UNCERTAIN_QUESTION
+        if ends_with_any(lower_text, tuple(m.lower() for m in markers.CLOSED_END)):
+            return QuestionOpenness.CLOSED_QUESTION
+
+        matched_open = count_matching_markers(text, markers.OPEN_QUESTION)
+        if matched_open:
+            add_score(scores, QuestionOpenness.OPEN_QUESTION, 2 * matched_open)
+
+        matched_blitz = count_matching_markers(text, markers.BLITZ)
+        if matched_blitz:
+            add_score(scores, QuestionOpenness.BLITZ, 2 * matched_blitz)
+
+        if word_number < 6:
+            add_score(scores, QuestionOpenness.CLOSED_QUESTION, 1)
+
+        question = choose_best(scores, threshold=1) or QuestionOpenness.UNCERTAIN_QUESTION
+        #if question == QuestionOpenness.UNCERTAIN_QUESTION:
+            #print(repr(text))
+            #print(repr(normalize_text(text)))
+            #logger.info("QUESTION: %s - %s", question, lower_text)
+
+        return question
 
 
     def annotate_emotion(self, text: str) -> Emotion:
@@ -146,7 +160,7 @@ class RuleAnnotator:
         is_question = "?" in lower_text
 
         if contains_any_marker(lower_text, markers.CHALLENGE_MARKERS):
-            #logger.info("CHALLENGE_MARKERS: %s", lower_text)
+            # logger.info("CHALLENGE_MARKERS: %s", lower_text)
             return Emotion.CHALLENGE
 
         elif contains_any_marker(lower_text, markers.EMPATHY_MARKERS):
@@ -159,6 +173,7 @@ class RuleAnnotator:
                 #logger.info("COMMENTARY: %s", lower_text)
                 return Emotion.COMMENTARY
 
+        #logger.info("NO_EMOTION: %s", lower_text)
         return Emotion.NO_EMOTION
 
 

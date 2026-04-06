@@ -2,20 +2,20 @@ from enum import Enum
 
 
 class Action(str, Enum):
-    BACKCHANNEL = "backchannel"
-    ACKNOWLEDGMENT = "acknowledgment"
-    CLARIFICATION = "clarification"
-    TRANSITION = "transition"
-    TOPIC_RETURN = "topic_return"
-    SUMMARY = "summary"
-    QUESTION = "question"
-    UNCERTAIN = "uncertain"
+    BACKCHANNEL = "backchannel" #"дать сигнал обратной связи"
+    ACKNOWLEDGMENT = "acknowledgment" #"выразить согласие или понимание"
+    CLARIFICATION = "clarification" #"уточнить детали или спросить что-то по той же теме"
+    TRANSITION = "transition" #"перейти к новой теме или вернуться к какой-то"
+    SUMMARY = "summary" #"подытожить или перефразировать для подтверждения"
+    QUESTION = "question" #"задать вопрос"
+    UNCERTAIN = "uncertain" #неопределено
 
 
 class QuestionOpenness(str, Enum):
     OPEN_QUESTION = "open_question"
     CLOSED_QUESTION = "closed_question"
     NOT_A_QUESTION = "not_a_question"
+    BLITZ = "blitz"
     UNCERTAIN_QUESTION = "uncertain_question"
 
 

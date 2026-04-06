@@ -66,6 +66,9 @@ def annotate_phrases(phrases: List[Phrase], annotator: RuleAnnotator) -> List[An
     annotated_phrases: List[AnnotatedPhrase] = []
 
     for phrase in phrases:
+        if len(phrase.text.split()) > 50:
+            continue
+
         ap = AnnotatedPhrase(
             role=phrase.role,
             text=phrase.text,
