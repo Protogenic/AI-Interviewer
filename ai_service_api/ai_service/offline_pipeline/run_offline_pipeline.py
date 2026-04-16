@@ -5,10 +5,12 @@ from pathlib import Path
 from typing import List, Dict, Any
 
 from ai_service.models.build_profile import Phrase, AnnotatedPhrase, InterviewerProfile
+from ai_service.models.rag import RagIndexConfig
 from ai_service.offline_pipeline.parsing.rule_anotator import RuleAnnotator
 from ai_service.offline_pipeline.profiling.linguistic_profiler import LinguisticProfiler
 from ai_service.offline_pipeline.profiling.reactivity_analyzer import ReactivityAnalyzer
 from ai_service.offline_pipeline.templates.create_templates import TemplateCreator
+from ai_service.offline_pipeline.indexing.index_builder import OfflineRagIndexBuilder
 
 
 logger = logging.getLogger(__name__)
@@ -56,13 +58,13 @@ def phrase_to_csv_row(interviewer_id: str, interview_id: str, phrase: AnnotatedP
         "action": phrase.action.value if phrase.action else None,
         "question_openness": phrase.question_openness.value if phrase.question_openness else None,
         "emotion": phrase.emotion.value if phrase.emotion else None,
-        "technique": phrase.technique.value if phrase.technique else None,
+        "techniques": [t.value for t in phrase.techniques] if phrase.techniques else None,
         "answer_type": phrase.answer_type.value if phrase.answer_type else None,
     }
     return csv_row
 
 
-def annotate_phrases(phrases: List[Phrase], annotator: RuleAnnotator) -> List[AnnotatedPhrase]:
+def annotate_phrases(phrases: List[Phrase], annotator: RuleAnnotator, interview_id: str) -> List[AnnotatedPhrase]:
     annotated_phrases: List[AnnotatedPhrase] = []
 
     for phrase in phrases:
@@ -70,6 +72,7 @@ def annotate_phrases(phrases: List[Phrase], annotator: RuleAnnotator) -> List[An
             continue
 
         ap = AnnotatedPhrase(
+            interview_id=interview_id,
             role=phrase.role,
             text=phrase.text,
             replica_id=phrase.replica_id,
@@ -79,12 +82,12 @@ def annotate_phrases(phrases: List[Phrase], annotator: RuleAnnotator) -> List[An
             action = annotator.annotate_action(phrase.text)
             question_openness = annotator.annotate_question_openness(phrase.text)
             emotion = annotator.annotate_emotion(phrase.text)
-            technique = annotator.annotate_techniques(phrase.text)
+            techniques = annotator.annotate_techniques(phrase.text)
 
             ap.action = action
             ap.question_openness = question_openness
             ap.emotion = emotion
-            ap.technique = technique
+            ap.techniques = techniques
 
         elif phrase.role == "guest":
             answer_type = annotator.annotate_answer_type(phrase.text)
@@ -98,6 +101,8 @@ def run_pipeline_for_interviewer(
         dir_clean_text: Path,
         annotated_csv_path: Path,
         profile_path: Path,
+        index_path: Path,
+        batch_size: int
 ) -> None:
     annotator = RuleAnnotator()
     profiler = LinguisticProfiler()
@@ -128,7 +133,7 @@ def run_pipeline_for_interviewer(
                 "action",
                 "question_openness",
                 "emotion",
-                "technique",
+                "techniques",
                 "answer_type",
             ],
         )
@@ -142,7 +147,7 @@ def run_pipeline_for_interviewer(
                 logger.warning("No valid phrases loaded from %s", jsonl_file)
                 continue
 
-            annotated_phrases = annotate_phrases(phrases, annotator)
+            annotated_phrases = annotate_phrases(phrases, annotator, interview_id)
             all_annotated_phrases.extend(annotated_phrases)
 
             for ap in annotated_phrases:
@@ -179,6 +184,20 @@ def run_pipeline_for_interviewer(
     with open(profile_path, "w", encoding="utf-8") as f:
         json.dump(profile.to_dict(), f, ensure_ascii=False, indent=2)
 
+    config = RagIndexConfig.for_character(
+        character_id=interviewer_id,
+        cleaned_root="ai_service/data/cleaned/",
+        indexes_root=str(index_path),
+        model_name="intfloat/multilingual-e5-small",
+    )
+
+    builder = OfflineRagIndexBuilder(config=config, batch_size=batch_size)
+    builder.build()
+
+    print("OK. Index built.")
+    print(f"manifest: {config.manifest_path}")
+    print(f"persist:  {config.persist_dir}")
+
     logger.info("[DONE] Offline pipeline completed for %s", interviewer_id)
     logger.info("Profile saved to: %s", profile_path)
     logger.info("Annotations saved to: %s", annotated_csv_path)
@@ -196,6 +215,8 @@ if __name__ == "__main__":
         dir_clean_text=Path(f"ai_service/data/cleaned/{interviewer_id}"),
         annotated_csv_path=Path(f"ai_service/data/annotated/dud/auto_annotations.csv"),
         profile_path = Path(f"ai_service/data/profiles/{interviewer_id}_profile.json"),
+        index_path = Path(f"ai_service/data/index/"),
+        batch_size=512,
     )
 
 

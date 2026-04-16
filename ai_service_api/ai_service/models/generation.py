@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from typing import List
 
+
 class InterviewPart(BaseModel):
     role: str
     text: str

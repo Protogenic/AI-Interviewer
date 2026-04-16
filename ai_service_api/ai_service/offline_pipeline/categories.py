@@ -2,7 +2,7 @@ from enum import Enum
 
 
 class Action(str, Enum):
-    BACKCHANNEL = "backchannel" #"дать сигнал обратной связи"
+    BACK_CHANNEL = "back_channel" #"дать сигнал обратной связи"
     ACKNOWLEDGMENT = "acknowledgment" #"выразить согласие или понимание"
     CLARIFICATION = "clarification" #"уточнить детали или спросить что-то по той же теме"
     TRANSITION = "transition" #"перейти к новой теме или вернуться к какой-то"
@@ -28,10 +28,17 @@ class Emotion(str, Enum):
 
 
 class AnswerType(str, Enum):
-    STRONG_WITH_EXAMPLE = "strong_with_example"
-    DETAILED_NO_EXAMPLE = "detailed_no_example"
+    BACK_CHANNEL = "back_channel"
+    AGREEMENT = "agreement"
+    REFUSAL = "refusal"
+    DONT_KNOW = "dont_know"
+    COUNTER_QUESTION = "counter_question"
+    SHORT_FACT = "short_fact"
+    SHORT_OPINION = "short_opinion"
+    EXPLANATION = "explanation"
+    STORY_WITH_EXAMPLE = "story_with_example"
     VAGUE = "vague"
-    BRIEF = "brief"
+    STRONG_VAGUE = "strong_vague"
     UNCERTAIN = "uncertain"
 
 

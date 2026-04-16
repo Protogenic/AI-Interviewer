@@ -17,5 +17,8 @@ dependencies = [
     "pytest>=8.3",
     "pytest-asyncio",
     "openai",
-    "httpx>=0.27.0",
+    "chromadb",
+    "sentence-transformers",
+    "huggingface-hub",
+    "numpy",
 ]

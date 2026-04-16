@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Any, Dict, List
 
 from ai_service.offline_pipeline.categories import Action, QuestionOpenness, Emotion, AnswerType, Technique, ComponentType
@@ -24,10 +24,11 @@ class Phrase(BaseModel):
 
 
 class AnnotatedPhrase(Phrase):
+    interview_id: str
     action: Action = None
     question_openness: QuestionOpenness = None
     emotion: Emotion = None
-    technique: Technique = None
+    techniques: list[Technique] = Field(default_factory=list)
     answer_type: AnswerType = None
 
     def to_dict(self) -> Dict[str, Any]:
@@ -46,7 +47,7 @@ class Template(BaseModel):
     action: str
     question_openness: str
     emotion: str
-    technique: str
+    techniques: List[Technique]
     avg_position: float
     reactivity: List[str]
     examples: List[str]

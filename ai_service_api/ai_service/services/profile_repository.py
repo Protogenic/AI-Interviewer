@@ -64,7 +64,7 @@ class GetProfileInfo:
                 action=template_raw.get("action", ""),
                 question_openness=template_raw.get("question_openness", ""),
                 emotion= template_raw.get("emotion", ""),
-                technique=template_raw.get("technique", ""),
+                techniques=template_raw.get("techniques", []),
                 avg_position=template_raw.get("avg_position", 0.0),
                 reactivity=template_raw.get("reactivity", []),
                 examples=template_raw.get("examples", []),

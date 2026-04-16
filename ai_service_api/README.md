@@ -64,3 +64,24 @@ python clean_interviews.py "path\to\input_dir" "path\to\out_dir"
 
 - Имя: <interview_id>.jsonl, где interview_id = имя_файла
 - На каждой строке: interview_id - ID из имени файла, source_file - имя файла, replica_id - номер реплики, speaker - нормализованная роль (interviewer или guest), speaker_raw - оригинальная метка спикера (для отладки ошибок), text - очищенный и склеенный текст реплики.
+
+## 2. run_offline_pipeline.py
+
+Скрипт `run_offline_pipeline.py` читает очищенные json файлы интервью и на их основе составляет профиль интервьюера.
+
+### 1) Подготовка входных данных
+
+- Запустить clean_interviews.py
+- Очищенные файлы должны храниться в `ai_service_api/ai_service/data/cleaned`
+
+### 2) Запуск
+
+Из ai_service_api:
+python -m ai_service.offline_pipeline.run_offline_pipeline
+
+### 3) Выходные файлы
+
+Для каждого входного .txt создаётся отдельный файл, где:
+
+- Имя: <interview_id>.jsonl, где interview_id = имя_файла
+- На каждой строке: interview_id - ID из имени файла, source_file - имя файла, replica_id - номер реплики, speaker - нормализованная роль (interviewer или guest), speaker_raw - оригинальная метка спикера (для отладки ошибок), text - очищенный и склеенный текст реплики.
