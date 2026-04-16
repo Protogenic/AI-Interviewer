@@ -1,0 +1,11 @@
+model,n,missing_generated,avg_bertscore_f1,avg_emb_cosine,avg_char_ratio,avg_style_cosine
+gpt_chroma_cases_templates_temp_0_7,12,0,0.670514,0.368603,0.273129,0.396409
+gpt_chroma_io_temp_0_3,12,0,0.681227,0.356481,0.266637,0.471313
+gpt_chroma_io_temp_0_7,12,0,0.679843,0.365896,0.239226,0.469477
+gpt_chroma_qa_temp_0_3,12,0,0.680394,0.334329,0.260871,0.487179
+gpt_chroma_qa_temp_0_7,12,0,0.690529,0.320563,0.302116,0.485653
+gpt_faiss_qa_temp_0_3,12,0,0.683468,0.339130,0.274020,0.445176
+gpt_faiss_qa_temp_0_7,12,0,0.682999,0.375938,0.258063,0.481728
+gpt_only_temp_0_7,12,0,0.683570,0.400712,0.261638,0.485436
+qwen_chroma_cases_templates_temp_0_7,12,0,0.675834,0.419240,0.269538,0.422743
+qwen_only_cases,12,0,0.658068,0.352705,0.236400,0.469764

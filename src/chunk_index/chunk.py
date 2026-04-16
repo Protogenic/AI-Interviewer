@@ -1,56 +1,3 @@
-"""
-Chunk cleaned transcript JSONL into RAG-ready datasets.
-
-This script reads cleaned interview transcripts in JSONL format and converts them into chunked datasets.
-It generates multiple dataset variants with different maximum chunk sizes and supports two chunking strategies.
-
-1) Reads and normalizes cleaned jsonl transcript files recursively from the input directory.
-2) Chunking using one of two modes:
-- interviewer_only: keeps only interviewer turns.
-- qa_pair.
-
-Input
------
-A directory containing cleaned transcript files in `.jsonl` format.
-
-Expected per-line fields:
-- interview_id: interview identifier
-- source_file: original file path
-- replica_id: integer ordering within interview
-- speaker: "interviewer" or "guest"
-- text: original text
-
-Output
-------
-Writes chunked datasets as `.jsonl` files, names:
-out_dir/<mode>/<max_tokens>/<dataset_name>.jsonl
-
-Each output line with fields:
-- chunk_id: UUID4 string
-- dataset: dataset name
-- mode: "qa_pair" or "interviewer_only"
-- interview_id: copied from input
-- source_file: copied from input
-- replica_id_start: first included replica_id
-- replica_id_end: last included replica_id
-- text: chunk text
-- num_pieces: number of replica included
-- token_len: approximate token count of `text`
-- char_len: character count of `text`
-
-Command-line interface
-----------------------
-Positional arguments:
-
-in_dir : str
-    Root directory containing cleaned `.jsonl` transcripts.
-out_dir : str
-    Output directory where chunked datasets will be written.
-mode : {"qa_pair", "interviewer_only"}
-    - "qa_pair" builds Q/A chunks around interviewer turns.
-    - "interviewer_only" chunks only interviewer turns.
-"""
-
 from __future__ import annotations
 
 import argparse
@@ -72,9 +19,6 @@ TOKEN_RE = re.compile(r"\w+|[^\w\s]", re.UNICODE)
 
 
 def normalize_spaces(s: str) -> str:
-    """
-        Removes unnecessary spaces and invisible characters so that nothing interferes with further processing.
-    """
     s = s.replace("\u00A0", " ")
     s = re.sub(r"[ \t]+", " ", s)
     return s.strip()

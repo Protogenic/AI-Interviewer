@@ -1,6 +1,3 @@
-"""
-Downloading audio from YouTube videos using yt-dlp
-"""
 from __future__ import annotations
 
 import argparse
@@ -12,9 +9,6 @@ logger = logging.getLogger("yt_dlp_download")
 
 
 def configure_console_logging() -> None:
-    """
-    Configure console logging for.
-    """
     level = logging.INFO
     logging.basicConfig(
         level=level,
@@ -23,19 +17,6 @@ def configure_console_logging() -> None:
 
 
 def read_urls(urls_path: Path) -> list[str]:
-    """
-    Reads links from the urls file (1 link per line).
-    Ignores empty lines and lines starting with "#".
-    Parameters
-    ----------
-    urls_path: Path
-        urls file path
-
-    Returns
-    -------
-    list[str]
-        List of url links
-    """
     text = urls_path.read_text(encoding="utf-8", errors="replace")
     urls: list[str] = []
     for line in text.splitlines():
@@ -47,23 +28,6 @@ def read_urls(urls_path: Path) -> list[str]:
 
 
 def run_yt_dlp(yt_dlp_exe: Path, url: str, out_dir: Path) -> int:
-    """
-    Launches yt-dlp for a single link.
-
-    Parameters
-    ----------
-    yt_dlp_exe: Path
-        yt-dlp.exe path
-    url: str
-        url from list
-    out_dir: Path
-        out directory path
-
-    Returns
-    -------
-    int
-        process code
-    """
     out_template = str(out_dir / "%(id)s_%(title)s.%(ext)s")
     cmd = [
         str(yt_dlp_exe),
@@ -80,7 +44,6 @@ def run_yt_dlp(yt_dlp_exe: Path, url: str, out_dir: Path) -> int:
 
 
 def main() -> int:
-    # Sets the parameters of the desired format for yt-dlp
     parser = argparse.ArgumentParser(
         description="Download MP3 audio from YouTube links using yt-dlp."
     )
@@ -107,14 +70,12 @@ def main() -> int:
 
     configure_console_logging()
 
-    # Check if the yt-dlp URL exists
     if not yt_dlp_exe.exists():
         raise FileNotFoundError(f"yt-dlp.exe не найден по пути: {yt_dlp_exe}")
     if not urls_file.exists():
         raise FileNotFoundError(f"Файл urls.txt не найден: {urls_file}")
 
     out_dir.mkdir(parents=True, exist_ok=True)
-    # Checks if yt-dlp is working
     result = subprocess.run(
         [str(yt_dlp_exe), "--version"],
         capture_output=True,
@@ -139,7 +100,6 @@ def main() -> int:
     failed = 0
     total = len(urls)
 
-    # Run yt-dlp for each link in the desired format
     for i, url in enumerate(urls, start=1):
         logger.info("[%d/%d] %s", i, total, url)
         code = run_yt_dlp(yt_dlp_exe, url, out_dir)

@@ -1,65 +1,9 @@
-"""
-Build cases from cleaned transcript JSONL.
-
-This script converts JSONL into training cases where the input is a dialogue state
-made of the (Q, A) pairs and the label is the next interviewer question Q[i+1].
-
-1) Reads cleaned .jsonl files from in_dir.
-2) Builds (Q_i, A_i) pairs and for each pair index j creates a case:
-- state_text: concatenation of the last `window_pairs` Q/A pairs up to j
-- next_question: the question block from pair j+1
-3) Writes all cases into one JSONL file in `out_dir/cases/`.
-
-Input
------
-A directory containing cleaned transcript files in `.jsonl` format.
-
-Expected per-line fields:
-- interview_id: interview identifier
-- source_file: original file path
-- turn_id: integer ordering within interview
-- speaker: "interviewer" or "guest"
-- text: original text
-
-Output
-------
-Writes a JSONL file:
-out_dir/cases/cases_w{window_pairs}.jsonl
-
-Each output row is a training case with fields:
-- case_id: UUID4 string
-- interview_id: interview identifier
-- source_file: source file path
-- replica_id_start: first included replica_id in the state window
-- replica_id_end: last included replica_id in the state window
-- state_text: formatted dialogue state built from the last window_pairs
-- next_question: the next interviewer question
-- state_token_len: approximate token count of state_text
-- next_q_token_len: approximate token count of next_question
-- question_yesno: whether the next question looks like a yes/no question
-- question_why: leading wh-word if present, else ""
-- question_open_word: leading opener particle if present, else ""
-- has_named_entity: names signal, bool
-
-Command-line interface
-----------------------
-Positional arguments:
-
-in_dir : str
-    Root directory containing cleaned `.jsonl` transcripts (searched recursively).
-out_dir : str
-    Output directory where `cases/` will be created and the cases JSONL written.
-window_pairs : {1, 2}
-    Number of recent (Q, A) pairs included in `state_text`:
-    - 1 -> (Q_i + A_i) -> Q_{i+1}
-    - 2 -> (Q_{i-1}+A_{i-1}+Q_i+A_i) -> Q_{i+1}
-"""
 from __future__ import annotations
 
 import argparse, json, logging, re, uuid
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, Iterator, List, Optional, Tuple
+from typing import Dict, Iterator, List, Tuple
 
 LOG = logging.getLogger("chunk_cases")
 TOKEN_RE = re.compile(r"\w+|[^\w\s]", re.UNICODE)
@@ -68,7 +12,7 @@ WHY_WORDS = ("почему", "зачем", "кто", "что", "когда", "г
 YESNO_WORDS = ("ты", "вы", "он", "она", "они", "это", "правда", "разве", "неужели", "бывало", "было")
 OPENERS_WORDS = ("о", "ага", "слушай", "подожди", "то есть", "окей", "ну", "и что", "и ты", "смотри")
 
-CYR_CAPITAL = re.compile(r"\b[А-ЯЁ][а-яё]+\b")  # грубо для NE
+CYR_CAPITAL = re.compile(r"\b[А-ЯЁ][а-яё]+\b")
 
 
 def normalize_spaces(s: str) -> str:

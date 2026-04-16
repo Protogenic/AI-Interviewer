@@ -1,3 +1,7 @@
+# Результат исследования:
+
+![Результаты работы разных моделей](https://github.com/Protogenic/AI-Interviewer/tree/rag_research/src/results_script_and_table/table.PNG)
+
 # Общая схема пайплайна
 
 1. Скачать аудио с YouTube (опционально): `download_audio.py`.
@@ -9,7 +13,6 @@
 5. Индексация:
    - chunks для ChromaDB: `index_chroma.py`;  или для FAISS: `index_faiss.py`.
    - cases для ChromaDB: `index_chroma_cases.py`; или для FAISS: `index_faiss_cases.py`.
-   - 
 
 ---
 
@@ -34,10 +37,9 @@
 - Создать файл urls.txt 
   - Формат: одна ссылка на строку; пустые строки игнорируются; строки, начинающиеся с #, игнорируются. 
     - Пример urls.txt:
-      # 1 ссылка на строку
-      https://www.youtube.com/watch?v=VIDEO_ID_1
-      https://www.youtube.com/watch?v=VIDEO_ID_2
-      https://youtu.be/VIDEO_ID_3
+      https://www.youtube.com/watchlink
+      https://www.youtube.com/watchlink2
+      https://youtu.be/watchlink3
 
 ### 3) Запуск
 Нужно перейти в папку, где лежит download_audio.py, и запустить:
