@@ -24,6 +24,18 @@ class SocketManager {
     });
   }
 
+  /** Вызвать callback, когда сокет подключён (сразу или после connect). */
+  whenConnected(callback: () => void): void {
+    this.connect();
+    const socket = this.socket;
+    if (!socket) return;
+    if (socket.connected) {
+      callback();
+    } else {
+      socket.once('connect', callback);
+    }
+  }
+
   disconnect() {
     if (this.socket) {
       this.socket.disconnect();
@@ -35,31 +47,32 @@ class SocketManager {
     event: Event,
     ...args: Parameters<ClientToServerEvents[Event]>
   ) {
-    if (this.socket) {
-      this.socket.emit(event, ...args);
-    } else {
-      console.warn(`[WS] Socket not connected, cannot emit "${event}"`);
-    }
+    this.connect();
+    this.socket?.emit(event, ...args);
   }
 
   on<Event extends keyof ServerToClientEvents>(
     event: Event,
     handler: ServerToClientEvents[Event]
   ) {
-    if (this.socket) {
-      this.socket.on(event, handler as any);
-    } else {
-      console.warn(`[WS] Socket not connected, cannot subscribe to "${event}"`);
-    }
+    this.connect();
+    this.socket?.on(event, handler as any);
   }
 
   off<Event extends keyof ServerToClientEvents>(
     event: Event,
     handler?: ServerToClientEvents[Event]
   ) {
-    if (this.socket) {
-      this.socket.off(event, handler as any);
-    }
+    this.socket?.off(event, handler as any);
+  }
+
+  onConnectError(handler: (err: Error) => void): void {
+    this.connect();
+    this.socket?.on('connect_error', handler);
+  }
+
+  offConnectError(handler: (err: Error) => void): void {
+    this.socket?.off('connect_error', handler);
   }
 }
 

@@ -14,6 +14,14 @@ export interface Session {
   journalist?: Journalist;
 }
 
+/** Тело POST /api/interviews — совпадает с полями WebSocket interview:start */
+export interface CreateSessionBody {
+  journalistId: string;
+  userName?: string;
+  userInfo?: string;
+  maxNumberQuestions?: number;
+}
+
 /** Реплика из БД (GET /api/interviews/:id/history) */
 export interface ConversationTurn {
   id: string;
@@ -45,6 +53,8 @@ export interface ClientToServerEvents {
     journalistId: string;
     userName?: string;
     userInfo?: string;
+    /** Если не передано — без ограничения (как на бэкенде: null). */
+    maxNumberQuestions?: number;
   }) => void;
   'interview:answer': (data: { sessionId: string; answer: string }) => void;
   'interview:complete': (data: { sessionId: string }) => void;
