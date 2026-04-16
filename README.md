@@ -1,6 +1,6 @@
 # Результат исследования:
 
-![Результаты работы разных моделей](https://github.com/Protogenic/AI-Interviewer/tree/rag_research/src/results_script_and_table/table.PNG)
+![Результаты работы разных моделей](https://github.com/Protogenic/AI-Interviewer/tree/rag_research/src/results_script_and_table/table.png)
 
 # Общая схема пайплайна
 
