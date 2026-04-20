@@ -5,6 +5,34 @@ from ai_service.offline_pipeline.categories import ComponentType
 from ai_service.offline_pipeline.templates.markers import ComponentMarkers
 from ai_service.models.build_profile import Component
 
+
+def normalize_text(text: str) -> str:
+    text = text.lower().strip()
+    text = text.replace("ё", "е")
+    text = re.sub(r'[\u200b\u200c\u200d\ufeff]', '', text)
+    text = re.sub(r"\s+", " ", text)
+    return text
+
+
+def tokenize(text: str) -> list[str]:
+    return re.findall(r"[а-яёa-z0-9-]+", normalize_text(text))
+
+
+def contains_marker(text: str, marker: str) -> bool:
+    text_norm = normalize_text(text)
+    marker_norm = normalize_text(marker)
+
+    if " " not in marker_norm:
+        return marker_norm in tokenize(text_norm)
+
+    pattern = rf"(?<!\w){re.escape(marker_norm)}(?!\w)"
+    return re.search(pattern, text_norm) is not None
+
+
+def contains_any_marker(text: str, markers) -> bool:
+    return any(contains_marker(text, marker) for marker in markers)
+
+
 class ComponentSeparator:
     def split_into_components(self, text: str) -> Tuple[List[Component], str]:
         phrases = [s.strip() for s in re.split(r"(?<=[.?!])\s+", text.strip()) if s.strip()]
@@ -18,22 +46,22 @@ class ComponentSeparator:
         return components, pattern
 
     def _classify_component(self, phrase: str) -> ComponentType:
-        low_phrase = phrase.lower().strip()
+        low_phrase = normalize_text(phrase)
         markers = ComponentMarkers()
 
-        if any(marker in low_phrase for marker in markers.ACK_MARKERS):
+        if contains_any_marker(low_phrase, markers.ACK_MARKERS):
             return ComponentType.ACKNOWLEDGMENT
 
-        if any(marker in low_phrase for marker in markers.EMPATHY_MARKERS):
+        if contains_any_marker(low_phrase, markers.EMPATHY_MARKERS):
             return ComponentType.EMPATHY
 
-        if any(marker in low_phrase for marker in markers.BRIDGE_MARKERS):
+        if contains_any_marker(low_phrase, markers.BRIDGE_MARKERS):
             return ComponentType.BRIDGE
 
-        if any(marker in low_phrase for marker in markers.REQUEST_MARKERS):
+        if contains_any_marker(low_phrase, markers.REQUEST_MARKERS):
             return ComponentType.REQUEST
 
-        if any(marker in low_phrase for marker in markers.PARAPHRASE_MARKERS):
+        if contains_any_marker(low_phrase, markers.PARAPHRASE_MARKERS):
             return ComponentType.PARAPHRASE
 
         if "?" in low_phrase:

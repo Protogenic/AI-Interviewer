@@ -1,5 +1,6 @@
 import re
 import logging
+from typing import List
 
 from ai_service.offline_pipeline.categories import Action, QuestionOpenness, Emotion, Technique, AnswerType
 from ai_service.offline_pipeline.parsing.markers import InterviewerTechniqueMarkers, InterviewerActionMarkers, InterviewerEmotionMarkers, InterviewerQuestionOpennessMarkers, GuestAnswerTypeMarkers
@@ -79,11 +80,11 @@ class RuleAnnotator:
         is_question = "?" in lower_text
 
         if contains_any_marker(lower_text, markers.BACKCHANNEL) and word_count(lower_text) <= 2:
-            add_score(scores, Action.BACKCHANNEL, 2)
+            add_score(scores, Action.BACK_CHANNEL, 2)
         if word_number <= 2:
-            add_score(scores, Action.BACKCHANNEL, 1)
+            add_score(scores, Action.BACK_CHANNEL, 1)
         if is_question:
-            scores[Action.BACKCHANNEL] = 0
+            scores[Action.BACK_CHANNEL] = 0
 
         matched_ack = count_matching_markers(text, markers.ACKNOWLEDGMENT)
         if matched_ack:
@@ -177,78 +178,112 @@ class RuleAnnotator:
         return Emotion.NO_EMOTION
 
 
-    def annotate_techniques(self, text: str) -> Technique:
-        lower_text = text.lower().strip()
+    def annotate_techniques(self, text: str) -> List[Technique]:
+        lower_text = normalize_text(text)
         markers = InterviewerTechniqueMarkers()
+        techniques: List[Technique] = []
 
         if contains_any_marker(lower_text, markers.HYPOTHETICAL_MARKERS):
-            return Technique.HYPOTHETICAL
+            techniques.append(Technique.HYPOTHETICAL)
 
-        elif contains_any_marker(lower_text, markers.BEHAVIOUR):
-            return Technique.BEHAVIORAL
+        if contains_any_marker(lower_text, markers.BEHAVIOUR):
+            techniques.append(Technique.BEHAVIORAL)
 
-        elif contains_any_marker(lower_text, markers.WHY_QUESTION):
-            return Technique.WHY_QUESTION
+        if contains_any_marker(lower_text, markers.WHY_QUESTION):
+            techniques.append(Technique.WHY_QUESTION)
 
-        elif contains_any_marker(lower_text, markers.HOW_QUESTION):
-            return Technique.HOW_QUESTION
+        if contains_any_marker(lower_text, markers.HOW_QUESTION):
+            techniques.append(Technique.HOW_QUESTION)
 
-        elif contains_any_marker(lower_text, markers.VALUES):
-            return Technique.VALUES_EXPLORATION
+        if contains_any_marker(lower_text, markers.VALUES):
+            techniques.append(Technique.VALUES_EXPLORATION)
 
-        elif contains_any_marker(lower_text, markers.FACT_CHECK):
-            return Technique.FACT_CHECK
+        if contains_any_marker(lower_text, markers.FACT_CHECK):
+            techniques.append(Technique.FACT_CHECK)
 
-        elif re.search(r"\bэто .+\?$", lower_text) or re.search(r"\bвы .+\?$", lower_text):
+        if re.search(r"\bэто .+\?$", lower_text) or re.search(r"\bвы .+\?$", lower_text):
             if any(x in lower_text for x in ["смотрели", "говорили", "правда", "действительно"]):
-                return Technique.FACT_CHECK
+                if Technique.FACT_CHECK not in techniques:
+                    techniques.append(Technique.FACT_CHECK)
 
-        elif contains_any_marker(lower_text, markers.REACTION):
-            return Technique.REACTION
+        if contains_any_marker(lower_text, markers.REACTION):
+            techniques.append(Technique.REACTION)
 
-        elif contains_any_marker(lower_text, markers.QUANTITY):
-            return Technique.QUANTITY
+        if contains_any_marker(lower_text, markers.QUANTITY):
+            techniques.append(Technique.QUANTITY)
 
-        elif contains_any_marker(lower_text, markers.DEFINITION):
-            return Technique.DEFINITION
+        if contains_any_marker(lower_text, markers.DEFINITION):
+            techniques.append(Technique.DEFINITION)
 
-        elif contains_any_marker(lower_text, markers.RELATIONSHIP):
-            return Technique.RELATIONSHIP
+        if contains_any_marker(lower_text, markers.RELATIONSHIP):
+            techniques.append(Technique.RELATIONSHIP)
 
-        elif contains_any_marker(lower_text, markers.TIME):
-            return Technique.TIME
+        if contains_any_marker(lower_text, markers.TIME):
+            techniques.append(Technique.TIME)
 
-        elif contains_any_marker(lower_text, markers.BACKGROUND):
-            return Technique.BACKGROUND
+        if contains_any_marker(lower_text, markers.BACKGROUND):
+            techniques.append(Technique.BACKGROUND)
 
-        elif contains_any_marker(lower_text, markers.OPINION):
-            return Technique.OPINION
+        if contains_any_marker(lower_text, markers.OPINION):
+            techniques.append(Technique.OPINION)
 
-        elif contains_any_marker(lower_text, markers.CONFIRMATION):
-            return Technique.CONFIRMATION
+        if contains_any_marker(lower_text, markers.CONFIRMATION):
+            techniques.append(Technique.CONFIRMATION)
 
-        elif contains_any_marker(lower_text, markers.EXAMPLE):
-            return Technique.EXAMPLE
+        if contains_any_marker(lower_text, markers.EXAMPLE):
+            techniques.append(Technique.EXAMPLE)
 
-        return Technique.GENERAL
+        if techniques:
+            return techniques
+
+        return [Technique.GENERAL]
 
 
 
     def annotate_answer_type(self, text: str) -> AnswerType:
-        lower_text = text.lower().strip()
+        lower_text = normalize_text(text)
         markers = GuestAnswerTypeMarkers()
+        word_c = word_count(lower_text)
 
-        if word_count(lower_text) <= 8 and not contains_any_marker(lower_text, markers.STORY_MARKERS):
-            return AnswerType.BRIEF
+        if contains_any_marker(lower_text, markers.REFUSAL):
+            return AnswerType.REFUSAL
 
-        if word_count(lower_text) >= 40 and contains_any_marker(lower_text, markers.STORY_MARKERS):
-            return AnswerType.STRONG_WITH_EXAMPLE
+        if word_c < 5 and contains_any_marker(lower_text, markers.AGREEMENT):
+            return AnswerType.BACK_CHANNEL
 
-        if 8 < word_count(lower_text) < 35 and contains_any_marker(lower_text, markers.VAGUE):
-            if not  any(marker in lower_text for marker in markers.STORY_MARKERS):
-                return AnswerType.VAGUE
+        if contains_any_marker(lower_text, markers.AGREEMENT):
+            return AnswerType.AGREEMENT
 
-        if word_count(lower_text) >= 25:
-            return AnswerType.DETAILED_NO_EXAMPLE
+        if "?" in lower_text and word_c <= 12:
+            return AnswerType.COUNTER_QUESTION
+
+        has_story_markers = contains_any_marker(lower_text, markers.STORY)
+        has_direct_speech = ('"' in lower_text) or ("«" in lower_text) or ("»" in lower_text) or (":" in lower_text and word_c > 10)
+
+        has_time_fact = bool(re.search(r"\b\d+\s*(год|года|лет)\s*назад\b", lower_text)) or \
+                            bool(re.search(r"\b(в прошлом году|позавчера|вчера|зимой|летом|осенью|весной)\b", lower_text))
+
+        if word_c >= 20 and (has_story_markers or has_direct_speech or has_time_fact):
+            return AnswerType.STORY_WITH_EXAMPLE
+
+        filler_hits = sum(1 for x in markers.VAGUE if x in lower_text)
+        correction_hits = sum(1 for x in markers.SELF_CORRECTION if x in lower_text)
+        filler_density = filler_hits / max(word_c, 1)
+
+        if word_c >= 5 and (filler_density >= 0.03):
+            return AnswerType.VAGUE
+
+        if word_c >= 5 and (filler_density >= 0.08 or correction_hits >= 1):
+            return AnswerType.STRONG_VAGUE
+
+        has_reasoning = contains_any_marker(lower_text, markers.REASONING)
+        if word_c >= 20 and has_reasoning:
+            return AnswerType.EXPLANATION
+
+        if word_c <= 15 and contains_any_marker(lower_text, markers.OPINION):
+            return AnswerType.SHORT_OPINION
+
+        if word_c <= 12 and (has_time_fact or re.search(r"\b(в|на)\s+[а-яa-z\-]+\b", lower_text) or re.search(r"\b\d+\b", lower_text)):
+            return AnswerType.SHORT_FACT
 
         return AnswerType.UNCERTAIN

@@ -7,6 +7,8 @@ from ai_service.selection.action_selector import ActionSelector
 from ai_service.selection.template_selector import TemplateSelector
 from ai_service.offline_pipeline.parsing.rule_anotator import RuleAnnotator
 from ai_service.offline_pipeline.categories import Action
+from ai_service.services.rag_service import OnlineRagSearchService
+from ai_service.models.generation import InterviewPart
 
 
 class GenerateQuestionService:
@@ -16,7 +18,8 @@ class GenerateQuestionService:
                  profile_repository,
                  action_selector: ActionSelector,
                  template_selector: TemplateSelector,
-                 max_number_question: int) -> None:
+                 max_number_question: int,
+                 rag_service: OnlineRagSearchService) -> None:
         self.__llm_client = llm_client
         self.__interview_characters = interview_characters
         self.__prompt_builder = BuildPromptService()
@@ -24,6 +27,7 @@ class GenerateQuestionService:
         self.__action_selector = action_selector
         self.__template_selector = template_selector
         self.__max_number_question = max_number_question
+        self.__rag_service = rag_service
 
 
     async def generate_question(self, input_data: GenerationRequest) -> GenerationResponse:
@@ -43,13 +47,16 @@ class GenerateQuestionService:
         selected_action = self.__action_selector.select(answer_type, interview_position, consecutive_followups)
         selected_template = self.__template_selector.select_template(selected_action.action, interview_position, previous_template_id)
 
-        built_prompt = self.__prompt_builder.build_prompt(input_data, profile, selected_template.template)
+        last_question = self.__extract_last_question(input_data.full_interview_history)
+        rag_examples = self.__rag_service.search(last_question, input_data.last_answer, 3)
+
+        built_prompt = self.__prompt_builder.build_prompt(input_data, profile, selected_template.template, rag_examples)
 
         generated_question = await self.__llm_client.generate_question(prompt=built_prompt.prompt)
 
         updates_consecutive_followups = self.__update_consecutive_followups(
             previous_count=input_data.consecutive_followups,
-            selected_action=selected_action.action.value
+            selected_action=selected_action.action
         )
         used_template_id = getattr(selected_template.template, "structure")
 
@@ -79,3 +86,19 @@ class GenerateQuestionService:
         if selected_action not in {Action.TRANSITION}:
             return previous_count + 1
         return 0
+
+    @staticmethod
+    def __extract_last_question(history: list[InterviewPart]) -> str | None:
+        seen_guest = False
+        for part in reversed(history):
+            if not seen_guest and part.role == "guest":
+                if (part.text or "").strip():
+                    seen_guest = True
+                continue
+
+            if seen_guest and part.role == "interviewer":
+                text = (part.text or "").strip()
+                if text:
+                    return text
+
+        return None

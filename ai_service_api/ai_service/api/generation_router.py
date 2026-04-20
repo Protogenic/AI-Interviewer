@@ -7,6 +7,7 @@ from ai_service.services.llm_factory import create_llm_client
 from ai_service.selection.template_selector import TemplateSelector
 from ai_service.selection.action_selector import ActionSelector
 from ai_service.exeptions.generation_error import CharacterNotFound
+from ai_service.services.rag_service import OnlineRagSearchService, RagIndexConfig
 
 
 router = APIRouter(
@@ -24,6 +25,8 @@ async def get_generate_question(input_data: GenerationRequest) -> GenerationResp
     max_number_q = input_data.max_number_questions
 
     try:
+        rag_config = RagIndexConfig.for_character(character_id=input_data.character_id)
+        rag_service = OnlineRagSearchService(config=rag_config)
         action_selector = ActionSelector(profile_repository.get_reactivity_matrix(ch_id), 3, 42)
         template_selector = TemplateSelector(profile_repository.get_templates(ch_id), 3, 42)
 
@@ -33,7 +36,8 @@ async def get_generate_question(input_data: GenerationRequest) -> GenerationResp
             profile_repository=profile_repository,
             action_selector=action_selector,
             template_selector=template_selector,
-            max_number_question=max_number_q
+            max_number_question=max_number_q,
+            rag_service=rag_service
         )
 
         generated_question = await generation_service.generate_question(input_data)

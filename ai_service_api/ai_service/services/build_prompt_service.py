@@ -2,6 +2,7 @@ from typing import List
 
 from ai_service.models.generation import GenerationRequest, BuildPromptResult, InterviewPart
 from ai_service.models.build_profile import InterviewerProfile, Template
+from ai_service.models.rag import RagExample
 
 
 class BuildPromptService:
@@ -31,37 +32,36 @@ class BuildPromptService:
 
         if empathy_density == 0.0:
             instructions.append("Эмпатичные маркеры: отсутствуют. Не используй эмпатичные маркеры.")
-        elif empathy_density > 0.003:
-            instructions.append(
-                "Эмпатичные маркеры: низкая плотность. Используй эмпатичные маркеры редко, не более 1 в предложении, если в истории диалога они отсутсвуют.")
         elif empathy_density > 0.01:
             instructions.append(
                 "Эмпатичные маркеры: высокая плотность. Используй эмпатичные маркеры когда уместно.")
+        elif empathy_density > 0.003:
+            instructions.append(
+                "Эмпатичные маркеры: низкая плотность. Используй эмпатичные маркеры редко, не более 1 в предложении, если в истории диалога они отсутсвуют.")
 
         instructions.append("Типичные эмпатичные маркеры: понимаю, понятно, сложно, спасибо, жесть, ой, ничего себе, ну да."
                             "Используйте их только тогда, когда они естественны в контексте.")
 
-
         if hedging_density == 0.0:
             instructions.append("Маркеры хеджирования: отсутствуют. Не используй маркеры хеджирования.")
-        elif hedging_density > 0.003:
-            instructions.append(
-                "Маркеры хеджирования: низкая плотность. Используй маркеры хеджирования редко, не более 1 в предложении, если в истории диалога они отсутсвуют.")
         elif hedging_density > 0.01:
             instructions.append(
                 "Маркеры хеджирования: высокая плотность. Используй маркеры хеджирования когда уместно.")
+        elif hedging_density > 0.003:
+            instructions.append(
+                "Маркеры хеджирования: низкая плотность. Используй маркеры хеджирования редко, не более 1 в предложении, если в истории диалога они отсутсвуют.")
 
         instructions.append("Типичные маркеры хеджирования: как бы, мне кажется,по-моему, наверное, вроде, может быть, допустим."
                             "Используйте их только тогда, когда они естественны в контексте.")
 
         if pressure_density == 0.0:
             instructions.append("Маркеры давления: отсутствуют. Не используй маркеры давления.")
-        elif pressure_density > 0.003:
-            instructions.append(
-                "Маркеры давления: низкая плотность. Используй маркеры давления редко, не более 1 в предложении, если в истории диалога они отсутсвуют.")
         elif pressure_density > 0.01:
             instructions.append(
                 "Маркеры давления: высокая плотность. Используй маркеры давления когда уместно.")
+        elif pressure_density > 0.003:
+            instructions.append(
+                "Маркеры давления: низкая плотность. Используй маркеры давления редко, не более 1 в предложении, если в истории диалога они отсутсвуют.")
 
         instructions.append(
             "Типичные маркеры давления: вы же, подождите, почему же, вы уверены, как вы это объясните, серьёзно, разве."
@@ -69,12 +69,12 @@ class BuildPromptService:
 
         if filler_density == 0.0:
             instructions.append("Маркеры наполнения: отсутствуют. Не используй маркеры наполнения.")
-        elif filler_density > 0.003:
-            instructions.append(
-                "Маркеры наполнения: низкая плотность. Используй маркеры наполнения редко, не более 1 в предложении, если в истории диалога они отсутсвуют.")
         elif filler_density > 0.01:
             instructions.append(
                 "Маркеры наполнения: высокая плотность. Используй маркеры наполнения когда уместно.")
+        elif filler_density > 0.003:
+            instructions.append(
+                "Маркеры наполнения: низкая плотность. Используй маркеры наполнения редко, не более 1 в предложении, если в истории диалога они отсутсвуют.")
 
         instructions.append(
             "Типичные маркеры наполнения: ну, э, угу, так, ага, вот, то есть, слушай, смотрите, о, ну да."
@@ -82,12 +82,12 @@ class BuildPromptService:
 
         if formal_density == 0.0:
             instructions.append("Формальные маркеры: отсутствуют. Не используй формальные маркеры.")
-        elif formal_density > 0.003:
-            instructions.append(
-                "Формальные маркеры: низкая плотность. Используй формальные маркеры редко, не более 1 в предложении, если в истории диалога они отсутсвуют.")
         elif formal_density > 0.01:
             instructions.append(
                 "Формальные маркеры: высокая плотность. Используй формальные маркеры когда уместно.")
+        elif formal_density > 0.003:
+            instructions.append(
+                "Формальные маркеры: низкая плотность. Используй формальные маркеры редко, не более 1 в предложении, если в истории диалога они отсутсвуют.")
 
         instructions.append(
             "Типичные формальные маркеры: расскажите, объясните, уточните, как вы относитесь, что значит, "
@@ -96,12 +96,12 @@ class BuildPromptService:
 
         if provocation_density == 0.0:
             instructions.append("Провокационные маркеры: отсутствуют. Не используй провокационные маркеры.")
-        elif provocation_density > 0.003:
-            instructions.append(
-                "Провокационные маркеры: низкая плотность. Используй провокационные маркеры редко, не более 1 в предложении, если в истории диалога они отсутсвуют.")
         elif provocation_density > 0.01:
             instructions.append(
                 "Провокационные маркеры: высокая плотность. Используй провокационные маркеры когда уместно.")
+        elif provocation_density > 0.003:
+            instructions.append(
+                "Провокационные маркеры: низкая плотность. Используй провокационные маркеры редко, не более 1 в предложении, если в истории диалога они отсутсвуют.")
 
         instructions.append(
             "Типичные провокационные маркеры: расскажите, объясните, уточните, как вы относитесь, что значит, "
@@ -116,19 +116,24 @@ class BuildPromptService:
         return instructions
 
 
-    def build_prompt(self, input_data: GenerationRequest, profile: InterviewerProfile, template: Template) -> BuildPromptResult:
+    def build_prompt(self, input_data: GenerationRequest,
+                     profile: InterviewerProfile,
+                     template: Template,
+                     rag_examples: list[RagExample]) -> BuildPromptResult:
         style_instructions = self.profile_to_instruction(profile)
 
         structure_block = self._build_structure_block(template)
         style_block = self._build_style_block(style_instructions)
         context_block = self._build_context_block(input_data.full_interview_history, input_data.last_answer)
         constraints_block = self._build_output_constraints()
+        examples_block = self._build_examples_block(rag_examples)
 
         prompt = "\n\n".join([
             "Ты генерируешь следующее высказывание интервьюера для диалога с пользователем в стиле конкретного интервьюера.",
             structure_block,
             style_block,
             context_block,
+            examples_block,
             constraints_block,
         ])
 
@@ -143,7 +148,9 @@ class BuildPromptService:
     def _build_structure_block(template: Template) -> str:
         structure = getattr(template, "structure")
         action = getattr(template, "action")
-        technique = getattr(template, "technique")
+        question_openness = getattr(template, "question_openness")
+        emotion = getattr(template, "emotion")
+        techniques = getattr(template, "techniques")
         examples = getattr(template, "examples")
 
         lines_block = [
@@ -152,14 +159,20 @@ class BuildPromptService:
             f"Каждый элемент - предложение."
         ]
 
-        if technique is not None:
-            lines_block.append(f"- Используй технику вопроса: {technique}")
-
         if action is not None:
             lines_block.append(f"- Используй действие для диалога: {action}")
 
+        if question_openness is not None:
+            lines_block.append(f"- Используй способ задать вопрос : {question_openness}")
+
+        if emotion is not None:
+            lines_block.append(f"- Используй эмоционадбную окраску: {emotion}")
+
+        if techniques is not None:
+            lines_block.append(f"- Используй техники для вопроса: {', '.join(techniques)}")
+
         if examples:
-            lines_block.append("Примеры вопросов этого интервьюера: ")
+            lines_block.append("Примеры вопросов с этой структурой: ")
             for example in examples:
                 lines_block.append(f" - {example}")
 
@@ -189,6 +202,17 @@ class BuildPromptService:
         context_block = "\n".join(lines_block)
         return context_block
 
+
+    def _build_examples_block(self, rag_examples: List[RagExample]) -> str:
+        lines_block = ["ПРИМЕРЫ ВОПРОСОВ ИНТЕРВЬЮЕРА В ПОХОЖЕМ КОНТЕКСТЕ: "]
+
+        for ex in rag_examples:
+            text= ex.question_text
+            lines_block.append(f"{text}")
+
+        context_block = "\n".join(lines_block)
+        return context_block
+
     @staticmethod
     def _build_output_constraints() -> str:
         return "\n".join([
@@ -198,4 +222,5 @@ class BuildPromptService:
             "- Не объясняй свои рассуждения.",
             "- Не добавляй ярлыки или маркеры.",
             "- Сохрани заданную структуру и стиль.",
+            "- Подражай интервьюеру из примеров."
         ])
