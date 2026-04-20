@@ -26,10 +26,10 @@ services:
     environment:
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/ai_interviewer
       AI_SERVICE_URL: http://ai-service:8000
-      PORT_REST: 3001
+      PORT_REST: 3003
       PORT_WS: 3002
     ports:
-      - '3001:3001'
+      - '3003:3003'
       - '3002:3002'
     command: >
       sh -c "apk add --no-cache openssl && npx prisma migrate deploy && node dist/server.js"

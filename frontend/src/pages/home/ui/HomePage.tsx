@@ -277,8 +277,12 @@ export const HomePage: React.FC = () => {
           <span>⚠️</span>
           <span>Не удалось загрузить список журналистов</span>
           <ErrorHint>
-            Убедитесь, что сервер backend-api запущен на{' '}
-            <code style={{ color: '#a5b4fc' }}>localhost:3001</code>.<br />
+            Убедитесь, что сервер backend-api запущен (REST:{' '}
+            <code style={{ color: '#a5b4fc' }}>
+              {(import.meta.env.VITE_API_BASE_URL as string | undefined)?.replace(/\/api\/?$/, '') ||
+                'http://localhost:3101'}
+            </code>
+            ).<br />
             Затем обновите страницу.
           </ErrorHint>
           <Button size="sm" onClick={() => loadJournalists()}>
