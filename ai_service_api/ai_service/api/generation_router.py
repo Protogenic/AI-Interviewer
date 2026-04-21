@@ -7,7 +7,8 @@ from ai_service.services.llm_factory import create_llm_client
 from ai_service.selection.template_selector import TemplateSelector
 from ai_service.selection.action_selector import ActionSelector
 from ai_service.exeptions.generation_error import CharacterNotFound
-from ai_service.services.rag_service import OnlineRagSearchService, RagIndexConfig
+from ai_service.services.rag_service import OnlineRagSearchService
+from ai_service.models.rag import RagIndexConfig
 
 
 router = APIRouter(

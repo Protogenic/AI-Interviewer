@@ -1,6 +1,6 @@
 from ai_service.models.generation import GenerationRequest, GenerationResponse
 from ai_service.services.llm_service import BaseLLMClient
-from ai_service.services.build_prompt_service import BuildPromptService
+from ai_service.services.build_prompt_service import BuildPromptService, BuildUserPromptService, BuildSystemPromptService
 from ai_service.exeptions.generation_error import CharacterNotFound
 from ai_service.models.build_profile import InterviewerProfile
 from ai_service.selection.action_selector import ActionSelector
@@ -22,7 +22,9 @@ class GenerateQuestionService:
                  rag_service: OnlineRagSearchService) -> None:
         self.__llm_client = llm_client
         self.__interview_characters = interview_characters
-        self.__prompt_builder = BuildPromptService()
+        #self.__prompt_builder = BuildPromptService()
+        self.__user_prompt_builder = BuildUserPromptService()
+        self.__system_prompt_builder = BuildSystemPromptService()
         self.__profile_repository = profile_repository
         self.__action_selector = action_selector
         self.__template_selector = template_selector
@@ -50,9 +52,11 @@ class GenerateQuestionService:
         last_question = self.__extract_last_question(input_data.full_interview_history)
         rag_examples = self.__rag_service.search(last_question, input_data.last_answer, 3)
 
-        built_prompt = self.__prompt_builder.build_prompt(input_data, profile, selected_template.template, rag_examples)
-
-        generated_question = await self.__llm_client.generate_question(prompt=built_prompt.prompt)
+        #built_prompt = self.__prompt_builder.build_prompt(input_data, profile, selected_template.template, rag_examples)
+        system_prompt = self.__system_prompt_builder.build_prompt(profile, selected_template.template)
+        user_prompt = self.__user_prompt_builder.build_prompt(input_data, selected_template.template, rag_examples)
+        #generated_question = await self.__llm_client.generate_question(prompt=built_prompt.prompt)
+        generated_question = await self.__llm_client.generate_question(system_prompt=system_prompt.prompt, user_prompt= user_prompt.prompt)
 
         updates_consecutive_followups = self.__update_consecutive_followups(
             previous_count=input_data.consecutive_followups,

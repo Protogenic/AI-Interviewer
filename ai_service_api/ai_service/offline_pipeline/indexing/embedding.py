@@ -3,10 +3,11 @@ import os
 import numpy as np
 from sentence_transformers import SentenceTransformer
 
-EMBEDDING_MODEL_PATH = os.getenv(
-    "EMBEDDING_MODEL_PATH",
-    "/app/models/multilingual-e5-small",  # путь внутри docker
-)
+#EMBEDDING_MODEL_PATH = os.getenv(
+#    "EMBEDDING_MODEL_PATH",
+#    "/app/models/multilingual-e5-small",
+#)
+EMBEDDING_MODEL_PATH = "intfloat/multilingual-e5-small"
 
 
 class Embedder(ABC):

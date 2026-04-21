@@ -23,11 +23,18 @@ class ActionSelector:
                consecutive_followups: int,
                ) -> ActionSelection:
 
+        if answer_type == AnswerType.NOT_ANSWER:
+            return ActionSelection(
+                action=Action.QUESTION ,
+                reason="forced_start_of_interview",
+                distribution={"question": 1.0},
+            )
+
         if interview_position <= 0.001:
             return ActionSelection(
-                action=Action.TRANSITION,
+                action=Action.QUESTION ,
                 reason="forced_start_of_interview",
-                distribution={"transition": 1.0},
+                distribution={"question": 1.0},
             )
 
         if consecutive_followups >= self.max_followups_in_row:

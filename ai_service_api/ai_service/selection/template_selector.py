@@ -28,7 +28,8 @@ class TemplateSelector:
 
         for template in self.templates:
             tpl_techs = getattr(template, "techniques", []) or []
-            if set(tpl_techs) & set(compatible_techniques):
+            tpl_action = getattr(template, "action")
+            if (set(tpl_techs) & set(compatible_techniques)) and tpl_action == action:
                 filtered.append(template)
 
         scored = []

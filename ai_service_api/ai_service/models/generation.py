@@ -12,7 +12,7 @@ class GenerationRequest(BaseModel):
     character_id: str
     user_name: str
     user_info: str
-    last_answer: str
+    last_answer: str = ""
     full_interview_history: List[InterviewPart]
     max_number_questions: int
     phrase_id: int = 1
@@ -30,5 +30,4 @@ class GenerationResponse(BaseModel):
 class BuildPromptResult(BaseModel):
     prompt: str
     style_instruction: List[str]
-    example_used: int
 

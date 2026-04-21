@@ -245,6 +245,9 @@ class RuleAnnotator:
         markers = GuestAnswerTypeMarkers()
         word_c = word_count(lower_text)
 
+        if text == "":
+            return AnswerType.NOT_ANSWER
+
         if contains_any_marker(lower_text, markers.REFUSAL):
             return AnswerType.REFUSAL
 

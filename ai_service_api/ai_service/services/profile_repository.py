@@ -18,6 +18,7 @@ class GetProfileInfo:
         profile_path = self.__profiles_dir / f"{character_id}_profile.json"
 
         if not profile_path.exists():
+            print("ERROR: profile_path")
             raise CharacterNotFound(character_id=character_id)
 
         with profile_path.open("r", encoding="utf-8") as f:

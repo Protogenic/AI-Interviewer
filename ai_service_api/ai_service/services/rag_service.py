@@ -12,8 +12,10 @@ class OnlineRagSearchService:
         self.embedder = E5SentenceTransformerEmbedder(model_name=config.model_name)
 
         if not self.config.manifest_path.exists():
+            print("ERROR: RAG manifest ", config.manifest_path)
             raise CharacterNotFound("Неизвестный персонаж")
         if not self.config.persist_dir.exists():
+            print("ERROR: RAG persist", config.persist_dir)
             raise CharacterNotFound("Неизвестный персонаж")
 
         self._manifest = json.loads(self.config.manifest_path.read_text(encoding="utf-8"))

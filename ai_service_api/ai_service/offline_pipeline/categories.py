@@ -40,6 +40,7 @@ class AnswerType(str, Enum):
     VAGUE = "vague"
     STRONG_VAGUE = "strong_vague"
     UNCERTAIN = "uncertain"
+    NOT_ANSWER = "not_answer"
 
 
 class Technique(str, Enum):
