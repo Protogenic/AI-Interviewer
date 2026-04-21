@@ -26,23 +26,31 @@ services:
     environment:
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/ai_interviewer
       AI_SERVICE_URL: http://ai-service:8000
-      PORT_REST: 3003
+      PORT_REST: 3001
       PORT_WS: 3002
     ports:
-      - '3003:3003'
+      - '3001:3001'
       - '3002:3002'
     command: >
-      sh -c "apk add --no-cache openssl && npx prisma migrate deploy && node dist/server.js"
+      sh -c "apk add --no-cache openssl && npx prisma migrate deploy && npx tsx prisma/seed.ts && node dist/server.js"
 
   ai-service:
     build:
       context: .
       dockerfile: ai_service_api/Dockerfile
+    env_file:
+      - ./ai_service_api/ai_service/.env
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
     ports:
       - '8000:8000'
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASE_URL: http://localhost:3001/api
+        VITE_WS_URL: http://localhost:3002
     ports:
       - '5173:80'
     depends_on:

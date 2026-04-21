@@ -27,4 +27,7 @@ COPY prisma ./prisma
 
 EXPOSE 3001 3002
 
+# установим tsx для запуска prisma seed
+RUN npm install -g tsx
+
 CMD ["node", "dist/server.js"]

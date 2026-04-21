@@ -53,10 +53,10 @@ export async function processAnswer(sessionId: string, answer: string): Promise<
     user_info: session.userInfo,
     last_answer: answer,
     full_interview_history: session.turns.map((t) => ({ role: t.role, text: t.content })),
-    question_id: session.questionId,
-    previous_template_id: session.previousTemplateId,
+    phrase_id: session.questionId,
+    previous_template_id: session.previousTemplateId ?? '',
     consecutive_followups: session.consecutiveFollowups,
-    max_number_questions: session.maxNumberQuestions,
+    max_number_questions: session.maxNumberQuestions ?? 999,
   });
 
   await prisma.conversationTurn.create({
@@ -88,10 +88,10 @@ export async function generateFirstQuestion(sessionId: string): Promise<string> 
     user_info: session.userInfo,
     last_answer: '',
     full_interview_history: [],
-    question_id: session.questionId,
-    previous_template_id: session.previousTemplateId,
+    phrase_id: session.questionId,
+    previous_template_id: session.previousTemplateId ?? '',
     consecutive_followups: session.consecutiveFollowups,
-    max_number_questions: session.maxNumberQuestions,
+    max_number_questions: session.maxNumberQuestions ?? 999,
   });
 
   await prisma.conversationTurn.create({

@@ -69,10 +69,10 @@ export interface GenerateQuestionRequest {
   user_info: string;
   last_answer: string;
   full_interview_history: InterviewPart[];
-  question_id: number;
-  previous_template_id: string | null;
+  phrase_id: number;
+  previous_template_id: string;
   consecutive_followups: number;
-  max_number_questions: number | null;
+  max_number_questions: number;
 }
 
 export interface GenerateQuestionResponse {
