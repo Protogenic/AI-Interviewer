@@ -566,7 +566,7 @@ export const InterviewPage: React.FC = () => {
       }
       addMessage({
         id: `${Date.now()}-${Math.random()}`,
-        role: 'assistant',
+        role: 'interviewer',
         content: question,
         timestamp: new Date(),
       });
@@ -576,7 +576,7 @@ export const InterviewPage: React.FC = () => {
       setStatus('error');
       addMessage({
         id: `${Date.now()}-err`,
-        role: 'assistant',
+        role: 'interviewer',
         content: `⚠️ ${message}`,
         timestamp: new Date(),
       });
@@ -586,7 +586,7 @@ export const InterviewPage: React.FC = () => {
       setStatus('error');
       addMessage({
         id: `${Date.now()}-ws-err`,
-        role: 'assistant',
+        role: 'interviewer',
         content: `⚠️ Не удалось подключиться к серверу: ${err.message}. Проверьте адрес WebSocket (VITE_WS_URL) и что бэкенд запущен.`,
         timestamp: new Date(),
       });

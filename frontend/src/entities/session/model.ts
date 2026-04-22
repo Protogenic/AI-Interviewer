@@ -10,7 +10,7 @@ export const fetchHistoryFx = createEffect(async (sessionId: string): Promise<Me
   );
   return response.data.map((turn): Message => ({
     id: turn.id,
-    role: turn.role as 'assistant' | 'user',
+    role: turn.role as 'interviewer' | 'guest',
     content: turn.content,
     timestamp: new Date(turn.createdAt),
   }));

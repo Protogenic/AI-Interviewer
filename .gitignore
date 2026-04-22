@@ -24,6 +24,7 @@ pip-wheel-metadata/
 .env
 .env.*
 *.env
+!.env.example
 
 *.local
 local_settings.py

@@ -17,7 +17,7 @@ export interface SessionDTO {
 
 export interface MessageDTO {
   id: string;
-  role: 'assistant' | 'user';
+  role: 'interviewer' | 'guest';
   content: string;
   createdAt: string;
 }

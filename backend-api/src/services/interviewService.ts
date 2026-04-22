@@ -43,7 +43,7 @@ export async function processAnswer(sessionId: string, answer: string): Promise<
   });
 
   await prisma.conversationTurn.create({
-    data: { sessionId, role: 'user', content: answer },
+    data: { sessionId, role: 'guest', content: answer },
   });
 
   const result = await generateQuestion({
@@ -60,7 +60,7 @@ export async function processAnswer(sessionId: string, answer: string): Promise<
   });
 
   await prisma.conversationTurn.create({
-    data: { sessionId, role: 'assistant', content: result.question },
+    data: { sessionId, role: 'interviewer', content: result.question },
   });
 
   await prisma.interviewSession.update({
@@ -95,7 +95,7 @@ export async function generateFirstQuestion(sessionId: string): Promise<string> 
   });
 
   await prisma.conversationTurn.create({
-    data: { sessionId, role: 'assistant', content: result.question },
+    data: { sessionId, role: 'interviewer', content: result.question },
   });
 
   await prisma.interviewSession.update({

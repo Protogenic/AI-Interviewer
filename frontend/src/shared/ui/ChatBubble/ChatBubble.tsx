@@ -67,13 +67,13 @@ const Timestamp = styled.span<{ $isUser: boolean }>`
 `;
 
 export const ChatBubble: React.FC<ChatBubbleProps> = ({ message }) => {
-  const isUser = message.role === 'user';
+  const isGuest = message.role === 'guest';
   return (
-    <Row $isUser={isUser}>
-      <Avatar $isUser={isUser}>{isUser ? 'Вы' : 'ИИ'}</Avatar>
-      <Bubble $isUser={isUser}>
+    <Row $isUser={isGuest}>
+      <Avatar $isUser={isGuest}>{isGuest ? 'Вы' : 'ИИ'}</Avatar>
+      <Bubble $isUser={isGuest}>
         <p>{message.content}</p>
-        <Timestamp $isUser={isUser}>
+        <Timestamp $isUser={isGuest}>
           {message.timestamp.toLocaleTimeString('ru-RU', {
             hour: '2-digit',
             minute: '2-digit',

@@ -26,7 +26,7 @@ export interface CreateSessionBody {
 export interface ConversationTurn {
   id: string;
   sessionId: string;
-  role: 'assistant' | 'user';
+  role: 'interviewer' | 'guest';
   content: string;
   createdAt: string;
 }
@@ -34,7 +34,7 @@ export interface ConversationTurn {
 /** Сообщение для отображения в UI */
 export interface Message {
   id: string;
-  role: 'assistant' | 'user';
+  role: 'interviewer' | 'guest';
   content: string;
   timestamp: Date;
 }

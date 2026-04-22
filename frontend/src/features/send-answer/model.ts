@@ -10,7 +10,7 @@ sample({
   clock: answerSent,
   fn: (answer): Message => ({
     id: Date.now().toString(),
-    role: 'user',
+    role: 'guest',
     content: answer,
     timestamp: new Date(),
   }),
