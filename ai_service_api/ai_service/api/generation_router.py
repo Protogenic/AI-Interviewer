@@ -28,7 +28,7 @@ async def get_generate_question(input_data: GenerationRequest) -> GenerationResp
     try:
         rag_config = RagIndexConfig.for_character(character_id=input_data.character_id)
         rag_service = OnlineRagSearchService(config=rag_config)
-        action_selector = ActionSelector(profile_repository.get_reactivity_matrix(ch_id), 3, 42)
+        action_selector = ActionSelector(profile_repository.get_reactivity_matrix(ch_id), 2, 42)
         template_selector = TemplateSelector(profile_repository.get_templates(ch_id), 3, 42)
 
         generation_service = GenerateQuestionService(

@@ -25,7 +25,7 @@ class OnlineRagSearchService:
             metadata={"hnsw:space": "cosine"},
         )
 
-    def search(self, last_question: str | None, last_answer: str | None, k: int = 5) -> list[RagExample]:
+    def search(self, last_question: str | None, last_answer: str | None, k: int = 2) -> list[RagExample]:
         q = (last_question or "").strip()
         a = (last_answer or "").strip()
         if not q and not a:

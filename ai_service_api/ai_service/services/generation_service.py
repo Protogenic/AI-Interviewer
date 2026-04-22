@@ -1,6 +1,6 @@
 from ai_service.models.generation import GenerationRequest, GenerationResponse
 from ai_service.services.llm_service import BaseLLMClient
-from ai_service.services.build_prompt_service import BuildPromptService, BuildUserPromptService, BuildSystemPromptService
+from ai_service.services.build_prompt_service import BuildUserPromptService, BuildSystemPromptService
 from ai_service.exeptions.generation_error import CharacterNotFound
 from ai_service.models.build_profile import InterviewerProfile
 from ai_service.selection.action_selector import ActionSelector
@@ -50,7 +50,7 @@ class GenerateQuestionService:
         selected_template = self.__template_selector.select_template(selected_action.action, interview_position, previous_template_id)
 
         last_question = self.__extract_last_question(input_data.full_interview_history)
-        rag_examples = self.__rag_service.search(last_question, input_data.last_answer, 3)
+        rag_examples = self.__rag_service.search(last_question, input_data.last_answer, 2)
 
         #built_prompt = self.__prompt_builder.build_prompt(input_data, profile, selected_template.template, rag_examples)
         system_prompt = self.__system_prompt_builder.build_prompt(profile, selected_template.template)
@@ -87,9 +87,9 @@ class GenerateQuestionService:
 
     def __update_consecutive_followups(self, previous_count: int, selected_action: str) -> int:
         #if selected_action not in {Action.TRANSITION, DialogueAct.OPEN_QUESTION, DialogueAct.CLOSED_QUESTION}:
-        if selected_action not in {Action.TRANSITION}:
-            return previous_count + 1
-        return 0
+        if selected_action in {Action.TRANSITION, Action.BACK_CHANNEL, Action.ACKNOWLEDGMENT}:
+            return 0
+        return previous_count + 1
 
     @staticmethod
     def __extract_last_question(history: list[InterviewPart]) -> str | None:

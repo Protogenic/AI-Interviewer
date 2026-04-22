@@ -38,6 +38,8 @@ services:
     build:
       context: .
       dockerfile: ai_service_api/Dockerfile
+    environment:
+      - PYTHONUNBUFFERED=1
     env_file:
       - ./ai_service_api/ai_service/.env
     extra_hosts:

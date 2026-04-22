@@ -158,3 +158,32 @@ async def test_generate_question_rag() -> None:
     assert response.status_code == 200
     data = response.json()
     assert "question" in data
+
+
+@pytest.mark.asyncio
+async def test_generate_question_2() -> None:
+    transport_app = ASGITransport(app=app)
+
+    async with AsyncClient(transport=transport_app, base_url="http://test") as client:
+        response = await client.post(
+            "/api/generation/generate_question",
+            json={
+                "session_id": "session_001",
+                "character_id": "dud",
+                "user_name": "Иван",
+                "user_info": "Я пишу музыку",
+                "last_answer": "т",
+                "full_interview_history": [],
+                "max_number_questions": 5,
+                "phrase_id": 1,
+                "previous_template_id": "",
+                "consecutive_followups": 0
+            }
+        )
+
+    #print(response.status_code)
+    print(response.json())
+
+    assert response.status_code == 200
+    data = response.json()
+    assert "question" in data

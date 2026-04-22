@@ -2,16 +2,16 @@ from openai import AsyncOpenAI, BadRequestError
 from typing import Protocol
 import httpx
 import json
+import logging
 
 from ai_service.exeptions.generation_error import GenerationError
 
-
-SYSTEM_PROMPT = (
-    "Ты - интервьюер Юрий Дудь. Ты генерируешь одну реплику в интервью, "
-    "точно следуя заданной структуре и стилю. "
-    "Ответ всегда возвращаешь в формате JSON согласно схеме."
-    "Язык: русский."
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s %(levelname)s [%(name)s] %(message)s",
 )
+
+logger = logging.getLogger("app")
 
 
 def _assemble_from_json(raw: str) -> str:
@@ -66,16 +66,19 @@ class OpenAILLMClient:
 
     async def generate_question(self, system_prompt: str, user_prompt: str) -> str:
         messages = [
-            {"role": "system", "content": SYSTEM_PROMPT + system_prompt},
+            {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_prompt},
         ]
+
+        logger.info("PROMPT: %s", messages)
+        logger.info("MODEL: %s", self.__model)
+        logger.info("TEMP: %s", self.__temperature)
 
         try:
             response = await self.__client.chat.completions.create(
                 model=self.__model,
                 messages=messages,
                 temperature=self.__temperature,
-                max_tokens=self.__max_tokens,
                 response_format={"type": "json_object"},
             )
             raw_question = response.choices[0].message.content or ""
@@ -105,7 +108,7 @@ class OllamaLLMClient:
         payload = {
             "model": self.__model,
             "messages": [
-                {"role": "system", "content": SYSTEM_PROMPT + system_prompt},
+                {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt},
             ],
             "stream": False,
