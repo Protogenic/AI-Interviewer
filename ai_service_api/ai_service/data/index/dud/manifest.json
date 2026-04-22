@@ -1,0 +1,9 @@
+{
+  "character_id": "dud",
+  "collection_name": "dud_rag",
+  "model_name": "intfloat/multilingual-e5-small",
+  "data_dir": "ai_service\\data\\cleaned\\dud",
+  "persist_dir": "ai_service\\data\\index\\dud\\chroma",
+  "chunks_count": 4714,
+  "created_at": "2026-04-16T19:04:28.780772+00:00"
+}

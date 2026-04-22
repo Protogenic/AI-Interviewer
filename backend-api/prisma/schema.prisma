@@ -1,0 +1,40 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+model Journalist {
+  id          String             @id
+  name        String
+  description String
+  sessions    InterviewSession[]
+}
+
+model InterviewSession {
+  id                   String             @id @default(uuid())
+  journalistId         String
+  journalist           Journalist         @relation(fields: [journalistId], references: [id])
+  userName             String             @default("Гость")
+  userInfo             String             @default("")
+  status               String             @default("active")
+  createdAt            DateTime           @default(now())
+  questionId           Int                @default(1)
+  previousTemplateId   String?
+  consecutiveFollowups Int                @default(0)
+  maxNumberQuestions   Int?
+  turns                ConversationTurn[]
+}
+
+model ConversationTurn {
+  id        String           @id @default(uuid())
+  sessionId String
+  session   InterviewSession @relation(fields: [sessionId], references: [id])
+  role      String
+  content   String
+  createdAt DateTime         @default(now())
+}
