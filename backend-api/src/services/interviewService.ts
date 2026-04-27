@@ -1,17 +1,32 @@
+import crypto from 'crypto';
 import { prisma } from '../database/prisma';
 import { generateQuestion } from './aiServiceClient';
 import { InterviewPart } from '../types';
+
+function hashAnonSecret(secret: string): string {
+  return crypto.createHash('sha256').update(secret).digest('hex');
+}
 
 export async function createSession(
   journalistId: string,
   userName: string,
   userInfo: string,
   maxNumberQuestions?: number,
+  userId?: string | null,
 ) {
-  return prisma.interviewSession.create({
-    data: { journalistId, userName, userInfo, maxNumberQuestions: maxNumberQuestions ?? null },
+  const anonSecret = userId ? null : crypto.randomBytes(32).toString('hex');
+  const session = await prisma.interviewSession.create({
+    data: {
+      journalistId,
+      userName,
+      userInfo,
+      maxNumberQuestions: maxNumberQuestions ?? null,
+      userId: userId ?? null,
+      anonSecretHash: anonSecret ? hashAnonSecret(anonSecret) : null,
+    },
     include: { journalist: true },
   });
+  return { session, anonSecret };
 }
 
 export async function getSession(sessionId: string) {
@@ -21,11 +36,35 @@ export async function getSession(sessionId: string) {
   });
 }
 
+export async function listSessionsByUser(userId: string) {
+  return prisma.interviewSession.findMany({
+    where: { userId },
+    include: { journalist: true },
+    orderBy: { createdAt: 'desc' },
+  });
+}
+
 export async function getHistory(sessionId: string) {
   return prisma.conversationTurn.findMany({
     where: { sessionId },
     orderBy: { createdAt: 'asc' },
   });
+}
+
+export function canAccessSession(
+  session: { userId: string | null; anonSecretHash: string | null },
+  userId: string | null,
+  anonSecret: string | null,
+): boolean {
+  if (session.userId !== null) {
+    return session.userId === userId;
+  }
+  if (session.anonSecretHash === null) {
+    // legacy-сессии до введения cookie-привязки
+    return true;
+  }
+  if (!anonSecret) return false;
+  return hashAnonSecret(anonSecret) === session.anonSecretHash;
 }
 
 export async function completeSession(sessionId: string) {
