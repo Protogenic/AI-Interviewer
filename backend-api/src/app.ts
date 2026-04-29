@@ -10,7 +10,7 @@ import { authConfig } from './config/auth';
 
 export function createApp() {
   const app = express();
-  app.use(cors({ origin: authConfig.frontendOrigin, credentials: true }));
+  app.use(cors({ origin: authConfig.frontendOrigins, credentials: true }));
   app.use(express.json());
   app.use(cookieParser());
 

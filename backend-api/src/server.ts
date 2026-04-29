@@ -17,7 +17,7 @@ httpServer.listen(PORT_REST, () => {
 });
 
 const io = new Server({
-  cors: { origin: authConfig.frontendOrigin, credentials: true },
+  cors: { origin: authConfig.frontendOrigins, credentials: true },
 });
 setupWebSocket(io);
 io.listen(PORT_WS);
