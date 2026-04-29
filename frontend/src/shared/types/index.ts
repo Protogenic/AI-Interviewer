@@ -39,6 +39,12 @@ export interface Message {
   timestamp: Date;
 }
 
+export interface User {
+  id: string;
+  email: string;
+  createdAt: string;
+}
+
 // ─── WebSocket events ──────────────────────────────────────────────────────────
 
 /** События, которые сервер отправляет клиенту */

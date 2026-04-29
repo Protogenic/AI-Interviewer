@@ -10,6 +10,7 @@ import {
 } from '~/entities/journalist';
 import { formSubmitted } from '~/features/create-session/model';
 import { Button } from '~/shared/ui/Button/Button';
+import { AuthControls } from '~/shared/ui/AuthControls';
 
 // ─── Layout ──────────────────────────────────────────────────────────────────
 
@@ -25,6 +26,7 @@ const Header = styled.header`
   display: flex;
   align-items: center;
   gap: 12px;
+  justify-content: space-between;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 `;
 
@@ -40,7 +42,7 @@ const LogoBadge = styled.div`
 `;
 
 const LogoText = styled.span`
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 700;
   color: #ffffff;
   letter-spacing: -0.02em;
@@ -87,7 +89,7 @@ const HeroTitle = styled.h1`
 
 const HeroSubtitle = styled.p`
   font-family: 'Inter', ui-sans-serif, sans-serif;
-  font-size: 15px;
+  font-size: 17px;
   color: #94a3b8;
   line-height: 1.7;
 `;
@@ -96,7 +98,7 @@ const HeroSubtitle = styled.p`
 
 const SectionTitle = styled.h2`
   font-family: 'Inter', ui-sans-serif, sans-serif;
-  font-size: 22px;
+  font-size: 26px;
   font-weight: 700;
   color: #e2e8f0;
   letter-spacing: -0.01em;
@@ -160,7 +162,7 @@ const AvatarCircle = styled.div<{ $color: string }>`
 
 const CardName = styled.h2`
   font-family: 'Inter', ui-sans-serif, sans-serif;
-  font-size: 17px;
+  font-size: 20px;
   font-weight: 700;
   color: #f1f5f9;
   letter-spacing: -0.01em;
@@ -168,7 +170,7 @@ const CardName = styled.h2`
 
 const CardDescription = styled.p`
   font-family: 'Inter', ui-sans-serif, sans-serif;
-  font-size: 13px;
+  font-size: 15px;
   color: #94a3b8;
   line-height: 1.6;
   flex: 1;
@@ -192,7 +194,7 @@ const StatusBox = styled.div`
   gap: 16px;
   padding: 48px;
   font-family: 'Inter', ui-sans-serif, sans-serif;
-  font-size: 15px;
+  font-size: 17px;
 `;
 
 const Spinner = styled.div`
@@ -218,7 +220,7 @@ const ErrorBox = styled(StatusBox)`
 `;
 
 const ErrorHint = styled.p`
-  font-size: 13px;
+  font-size: 15px;
   color: #64748b;
   line-height: 1.6;
   font-family: 'Inter', ui-sans-serif, sans-serif;
@@ -280,7 +282,7 @@ export const HomePage: React.FC = () => {
             Убедитесь, что сервер backend-api запущен (REST:{' '}
             <code style={{ color: '#a5b4fc' }}>
               {(import.meta.env.VITE_API_BASE_URL as string | undefined)?.replace(/\/api\/?$/, '') ||
-                'http://localhost:3101'}
+                'http://localhost:3001'}
             </code>
             ).<br />
             Затем обновите страницу.
@@ -332,8 +334,11 @@ export const HomePage: React.FC = () => {
   return (
     <PageWrapper>
       <Header>
-        <LogoBadge>🎙</LogoBadge>
-        <LogoText>AI Интервьюер</LogoText>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <LogoBadge>🎙</LogoBadge>
+          <LogoText>AI Интервьюер</LogoText>
+        </div>
+        <AuthControls />
       </Header>
 
       <Main>

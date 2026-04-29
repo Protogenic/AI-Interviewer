@@ -5,12 +5,26 @@ const WS_URL = import.meta.env.VITE_WS_URL || 'http://localhost:3002';
 
 class SocketManager {
   private socket: Socket<ServerToClientEvents, ClientToServerEvents> | null = null;
+  private authToken: string | null = null;
+
+  setAuthToken(token: string | null): void {
+    if (this.authToken === token) return;
+    this.authToken = token;
+    // token changes must re-handshake
+    if (this.socket) {
+      this.disconnect();
+    }
+    if (this.authToken) {
+      this.connect();
+    }
+  }
 
   connect() {
     if (this.socket) return;
     this.socket = io(WS_URL, {
       transports: ['websocket'],
       reconnectionAttempts: 5,
+      auth: this.authToken ? { token: this.authToken } : undefined,
     });
 
     this.socket.on('connect', () => {

@@ -4,6 +4,7 @@ import { Message } from '~/shared/types';
 
 interface ChatBubbleProps {
   message: Message;
+  interviewerLabel?: string;
 }
 
 const Row = styled.div<{ $isUser: boolean }>`
@@ -66,11 +67,12 @@ const Timestamp = styled.span<{ $isUser: boolean }>`
   text-align: ${({ $isUser }) => ($isUser ? 'right' : 'left')};
 `;
 
-export const ChatBubble: React.FC<ChatBubbleProps> = ({ message }) => {
+export const ChatBubble: React.FC<ChatBubbleProps> = ({ message, interviewerLabel }) => {
   const isGuest = message.role === 'guest';
+  const interviewer = interviewerLabel?.trim() || 'ИИ';
   return (
     <Row $isUser={isGuest}>
-      <Avatar $isUser={isGuest}>{isGuest ? 'Вы' : 'ИИ'}</Avatar>
+      <Avatar $isUser={isGuest}>{isGuest ? 'Вы' : interviewer}</Avatar>
       <Bubble $isUser={isGuest}>
         <p>{message.content}</p>
         <Timestamp $isUser={isGuest}>

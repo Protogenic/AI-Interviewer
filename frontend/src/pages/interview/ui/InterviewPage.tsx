@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useUnit } from 'effector-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
@@ -9,6 +9,7 @@ import {
   setCurrentSession,
   clearSession,
 } from '~/entities/session';
+import { $journalists, loadJournalists } from '~/entities/journalist';
 import { answerSent } from '~/features/send-answer/model';
 import { socketManager } from '~/shared/api/socket';
 import { ChatBubble } from '~/shared/ui/ChatBubble/ChatBubble';
@@ -22,6 +23,7 @@ const PageWrapper = styled.div`
   background: linear-gradient(160deg, #0f0c29, #302b63, #24243e);
   display: flex;
   flex-direction: column;
+  font-family: 'Inter', ui-sans-serif, sans-serif;
 `;
 
 const Header = styled.header`
@@ -41,6 +43,39 @@ const HeaderLeft = styled.div`
   display: flex;
   align-items: center;
   gap: 12px;
+`;
+
+const JournalistBadge = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #e2e8f0;
+`;
+
+const JournalistAvatar = styled.div`
+  width: 28px;
+  height: 28px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #6366f1, #a855f7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+  color: #ffffff;
+  flex-shrink: 0;
+  letter-spacing: -0.02em;
+`;
+
+const JournalistName = styled.span`
+  font-size: 13px;
+  font-weight: 600;
+  color: #e2e8f0;
+  white-space: nowrap;
 `;
 
 const BackButton = styled.button`
@@ -213,21 +248,6 @@ const LimitSection = styled.div`
   box-sizing: border-box;
 `;
 
-const LimitSectionTitle = styled.div`
-  font-size: 16px;
-  font-weight: 700;
-  color: #f1f5f9;
-  letter-spacing: -0.01em;
-  margin-bottom: 10px;
-`;
-
-const LimitSectionLead = styled.div`
-  font-size: 14px;
-  line-height: 1.5;
-  color: #94a3b8;
-  margin-bottom: 18px;
-`;
-
 const CheckboxRow = styled.label`
   margin-top: 10px;
   display: flex;
@@ -359,7 +379,7 @@ const SetupActions = styled.div`
 const ChatArea = styled.div`
   flex: 1;
   overflow-y: auto;
-  padding: 32px 24px;
+  padding: 32px 24px 140px;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -441,6 +461,9 @@ const InputPanel = styled.div`
   border-top: 1px solid rgba(255, 255, 255, 0.06);
   background: rgba(15, 12, 41, 0.6);
   backdrop-filter: blur(8px);
+  position: sticky;
+  bottom: 0;
+  z-index: 9;
 `;
 
 const InputInner = styled.div`
@@ -507,6 +530,7 @@ export const InterviewPage: React.FC = () => {
   const { sessionId: journalistId } = useParams<{ sessionId: string }>();
   const messages = useUnit($messages);
   const currentSession = useUnit($currentSession);
+  const journalists = useUnit($journalists);
   const navigate = useNavigate();
   const [answer, setAnswer] = useState('');
   const [status, setStatus] = useState<ConnectionStatus>('idle');
@@ -531,6 +555,26 @@ export const InterviewPage: React.FC = () => {
   useEffect(() => {
     clearSession();
   }, []);
+
+  useEffect(() => {
+    if (journalists.length === 0) loadJournalists();
+  }, [journalists.length]);
+
+  const journalist = useMemo(() => {
+    if (!journalistId) return null;
+    return journalists.find((j) => j.id === journalistId) ?? null;
+  }, [journalists, journalistId]);
+
+  const journalistInitials = useMemo(() => {
+    const name = journalist?.name?.trim();
+    if (!name) return 'AI';
+    return name
+      .split(/\s+/)
+      .map((w) => w[0])
+      .slice(0, 2)
+      .join('')
+      .toUpperCase();
+  }, [journalist?.name]);
 
   const trimmedCount = questionCountRaw.trim();
   const parsedCount = unlimitedQuestions ? NaN : parseInt(trimmedCount, 10);
@@ -700,6 +744,10 @@ export const InterviewPage: React.FC = () => {
             ←
           </BackButton>
           <HeaderTitle>{showSetup ? 'Перед интервью' : 'Интервью'}</HeaderTitle>
+          <JournalistBadge title={journalist?.name ?? 'Журналист'}>
+            <JournalistAvatar aria-hidden>{journalistInitials}</JournalistAvatar>
+            <JournalistName>{journalist?.name ?? 'Журналист'}</JournalistName>
+          </JournalistBadge>
         </HeaderLeft>
         <SessionBadge $isError={status === 'error'}>
           {status === 'connecting' && <ConnectingDot />}
@@ -819,7 +867,9 @@ export const InterviewPage: React.FC = () => {
                 )}
               </EmptyChat>
             ) : (
-              messages.map((msg) => <ChatBubble key={msg.id} message={msg} />)
+              messages.map((msg) => (
+                <ChatBubble key={msg.id} message={msg} interviewerLabel={journalistInitials} />
+              ))
             )}
             <div ref={bottomRef} />
           </ChatArea>
