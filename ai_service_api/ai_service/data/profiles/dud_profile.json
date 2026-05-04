@@ -1,12 +1,12 @@
 {
   "interviewer_id": "dud",
   "linguistic_profile": {
-    "empathy_density": 0.005141264655006727,
-    "hedging_density": 0.003411493369210071,
-    "pressure_density": 0.0048049202383240435,
-    "filler_density": 0.6280511243513358,
-    "formal_density": 0.0019219680953296175,
-    "provocation_density": 0.0030270997501441474,
+    "empathy_density": 0.538151066692293,
+    "hedging_density": 0.00864885642898328,
+    "pressure_density": 0.021526042667691717,
+    "filler_density": 0.683259657889679,
+    "formal_density": 0.005045166250240246,
+    "provocation_density": 0.004468575821641361,
     "avg_question_length": 10.039162112932605,
     "avg_phrase_length": 9.188520971302427,
     "multi_sentence_ratio": 0.3068432671081678,
@@ -14,79 +14,81 @@
   },
   "reactivity_matrix": {
     "back_channel": {
-      "question": 97,
-      "summary": 60,
-      "clarification": 24,
+      "question": 77,
+      "summary": 46,
+      "transition": 30,
+      "clarification": 30,
       "acknowledgment": 12,
-      "back_channel": 12,
-      "transition": 2
+      "back_channel": 12
     },
     "vague": {
       "back_channel": 49,
-      "summary": 47,
-      "question": 66,
-      "clarification": 21,
-      "acknowledgment": 20,
-      "transition": 2
+      "transition": 23,
+      "summary": 39,
+      "question": 52,
+      "clarification": 25,
+      "acknowledgment": 17
     },
     "counter_question": {
-      "transition": 4,
-      "clarification": 7,
-      "summary": 42,
-      "acknowledgment": 10,
-      "question": 14,
+      "transition": 17,
+      "clarification": 12,
+      "summary": 33,
+      "acknowledgment": 9,
+      "question": 6,
       "back_channel": 23
     },
     "agreement": {
-      "summary": 51,
+      "summary": 37,
       "acknowledgment": 19,
-      "clarification": 23,
-      "question": 112,
+      "clarification": 27,
+      "question": 88,
       "back_channel": 51,
-      "transition": 3
+      "transition": 37
     },
     "short_fact": {
-      "clarification": 3,
+      "clarification": 4,
       "back_channel": 17,
-      "question": 17,
+      "question": 15,
       "acknowledgment": 5,
-      "summary": 3,
-      "transition": 1
+      "transition": 3,
+      "summary": 2
     },
     "uncertain": {
-      "clarification": 34,
-      "question": 168,
-      "summary": 64,
-      "transition": 3,
-      "back_channel": 56,
-      "acknowledgment": 27
+      "clarification": 46,
+      "question": 133,
+      "summary": 49,
+      "transition": 46,
+      "back_channel": 53,
+      "acknowledgment": 25
     },
     "short_opinion": {
-      "summary": 5,
-      "clarification": 2,
+      "summary": 4,
+      "clarification": 3,
       "back_channel": 1,
-      "question": 9,
-      "transition": 2,
+      "question": 8,
+      "transition": 3,
       "acknowledgment": 2
     },
     "refusal": {
-      "summary": 27,
-      "question": 58,
-      "clarification": 13,
+      "summary": 22,
+      "clarification": 15,
       "back_channel": 25,
-      "acknowledgment": 16,
-      "transition": 3
+      "question": 48,
+      "acknowledgment": 15,
+      "transition": 17
     },
     "story_with_example": {
-      "acknowledgment": 11,
-      "back_channel": 28,
-      "question": 41,
-      "summary": 10,
-      "clarification": 3
+      "acknowledgment": 9,
+      "back_channel": 27,
+      "question": 37,
+      "summary": 8,
+      "transition": 10,
+      "clarification": 2
     },
     "explanation": {
-      "acknowledgment": 3,
+      "transition": 2,
       "back_channel": 2,
+      "acknowledgment": 1,
       "clarification": 1
     },
     "strong_vague": {
@@ -97,78 +99,37 @@
   "templates": [
     {
       "structure": "request",
-      "frequency": 421,
+      "frequency": 386,
       "action": "question",
       "question_openness": "open_question",
       "emotion": "no_emotion",
       "techniques": [
         "general",
         "why_question",
-        "time_request"
+        "how_question"
       ],
-      "avg_position": 0.44678515204137387,
+      "avg_position": 0.45317409514027407,
       "reactivity": [],
       "examples": [
         "Когда вы его увидели, как вы отреагировали на это?",
         "Как вы можете это аргументировать?",
         "Как вы это прокомментируете?",
-        "А почему?",
-        "А почему вы думаете, я вас спрашиваю?"
-      ]
-    },
-    {
-      "structure": "text",
-      "frequency": 345,
-      "action": "back_channel",
-      "question_openness": "not_a_question",
-      "emotion": "no_emotion",
-      "techniques": [
-        "general",
-        "fact_checking"
-      ],
-      "avg_position": 0.4785967572117741,
-      "reactivity": [],
-      "examples": [
-        "О-о-о!",
-        "Близкие люди.",
-        "Ой.",
-        "[цензура].",
-        "М-м."
-      ]
-    },
-    {
-      "structure": "question",
-      "frequency": 334,
-      "action": "question",
-      "question_openness": "closed_question",
-      "emotion": "no_emotion",
-      "techniques": [
-        "general",
-        "fact_checking",
-        "relationship"
-      ],
-      "avg_position": 0.4762070602689013,
-      "reactivity": [],
-      "examples": [
-        "А, вискарёчек?",
-        "А серьёзно захлебнулась?",
-        "Она просто рассказывала?",
-        "Двенадцатого года?",
-        "А что-то изменилось сейчас?"
+        "Почему Эрнст?",
+        "Кто Майкл Джексон нашего времени?"
       ]
     },
     {
       "structure": "acknowledgment",
-      "frequency": 284,
+      "frequency": 374,
       "action": "back_channel",
       "question_openness": "not_a_question",
       "emotion": "no_emotion",
       "techniques": [
         "confirmation",
         "general",
-        "example_request"
+        "fact_checking"
       ],
-      "avg_position": 0.4842432124979167,
+      "avg_position": 0.46837835893511204,
       "reactivity": [],
       "examples": [
         "Ага.",
@@ -179,17 +140,59 @@
       ]
     },
     {
+      "structure": "question",
+      "frequency": 324,
+      "action": "question",
+      "question_openness": "closed_question",
+      "emotion": "no_emotion",
+      "techniques": [
+        "general",
+        "relationship",
+        "quantity_request"
+      ],
+      "avg_position": 0.4826813906749419,
+      "reactivity": [],
+      "examples": [
+        "А, вискарёчек?",
+        "Она просто рассказывала?",
+        "Двенадцатого года?",
+        "Оливковое дерево выросло оттуда?",
+        "Э, Вы её написали?"
+      ]
+    },
+    {
+      "structure": "text",
+      "frequency": 294,
+      "action": "acknowledgment",
+      "question_openness": "not_a_question",
+      "emotion": "commentary",
+      "techniques": [
+        "general",
+        "fact_checking",
+        "confirmation"
+      ],
+      "avg_position": 0.4777817746294521,
+      "reactivity": [],
+      "examples": [
+        "Какая гуманная история.",
+        "Ну, это тоже эмоция.",
+        "Не травил душу.",
+        "Вашингтоне ты не выступал.",
+        "Я говорю об ответственности."
+      ]
+    },
+    {
       "structure": "text + text",
-      "frequency": 115,
+      "frequency": 105,
       "action": "summary",
       "question_openness": "not_a_question",
       "emotion": "commentary",
       "techniques": [
         "general",
         "time_request",
-        "quantity_request"
+        "opinion_request"
       ],
-      "avg_position": 0.6353191299769164,
+      "avg_position": 0.6394335930207768,
       "reactivity": [],
       "examples": [
         "Слушай, я очень клёвый чувак. У меня должны быть какие-то недостатки.",
@@ -200,29 +203,8 @@
       ]
     },
     {
-      "structure": "request + text",
-      "frequency": 65,
-      "action": "summary",
-      "question_openness": "not_a_question",
-      "emotion": "commentary",
-      "techniques": [
-        "general",
-        "time_request",
-        "confirmation"
-      ],
-      "avg_position": 0.582680146970568,
-      "reactivity": [],
-      "examples": [
-        "Тебя не смущает то, что в Ростовской области, в городе Белая Калитва, Новошахтинске и всём остальном, это приведёт к тому, что народ будет не только глушить водку, но ещё и делать это под [цензура]. И убиваться просто в [цензура].",
-        "Ну иногда ты хочешь сжечь человека, как ты сам говорил, за то, что он делает талантливо. И ты это смотришь по России 1, например.",
-        "В основном это прикольные люди, которые, видя меня, там подмигивают, и в этом какая-то есть своя. Вот мы там увиделись и Ну мне самому приятно безумно.",
-        "Ты не раз говорил, что обсуждать политику с актёрами бессмысленно. При этом у тебя",
-        "То есть, чтобы идти резать человека, будучи хирургом, нужно отучиться на это. И также, и также актёром."
-      ]
-    },
-    {
       "structure": "acknowledgment + text",
-      "frequency": 59,
+      "frequency": 74,
       "action": "acknowledgment",
       "question_openness": "not_a_question",
       "emotion": "commentary",
@@ -231,68 +213,89 @@
         "general",
         "quantity_request"
       ],
-      "avg_position": 0.5493954584147646,
+      "avg_position": 0.5712294326314308,
       "reactivity": [],
       "examples": [
         "Хорошо, второй инсайд. Ты ходил недавно в Стендап-клуб номер один.",
         "Угу. Самый главный вопрос.",
         "Ага. Такой переворот.",
-        "Угу. Вот это называется режиссёр.",
-        "Ага. Вас же убили."
+        "Ага. Вас же убили.",
+        "Ага. Последний человек на Луне."
+      ]
+    },
+    {
+      "structure": "request + text",
+      "frequency": 51,
+      "action": "summary",
+      "question_openness": "not_a_question",
+      "emotion": "commentary",
+      "techniques": [
+        "general",
+        "how_question",
+        "time_request"
+      ],
+      "avg_position": 0.5963375891910885,
+      "reactivity": [],
+      "examples": [
+        "Тебя не смущает то, что в Ростовской области, в городе Белая Калитва, Новошахтинске и всём остальном, это приведёт к тому, что народ будет не только глушить водку, но ещё и делать это под [цензура]. И убиваться просто в [цензура].",
+        "Ну иногда ты хочешь сжечь человека, как ты сам говорил, за то, что он делает талантливо. И ты это смотришь по России 1, например.",
+        "Ты не раз говорил, что обсуждать политику с актёрами бессмысленно. При этом у тебя",
+        "Пардон, что я задам вопрос, который вам задавали 1000 раз, но это нельзя не сделать. Э, Вы сняли 2/3 фильма «Время первых».",
+        "И когда Зеленский стал президентом, ты написала очень трогательный пост про то, что ты веришь в этого человека, и ты рада до слёз. Но он ведь тоже артист."
       ]
     },
     {
       "structure": "request + request",
-      "frequency": 48,
+      "frequency": 40,
       "action": "question",
       "question_openness": "open_question",
       "emotion": "no_emotion",
       "techniques": [
+        "how_question",
         "time_request",
-        "why_question",
-        "how_question"
+        "why_question"
       ],
-      "avg_position": 0.4477252926594077,
+      "avg_position": 0.4666358276801838,
       "reactivity": [],
       "examples": [
         "Когда до вас до это добило, вы с Анжеликой разозлились, посмеялись? Как вы отреагировали?",
         "А что сказала мама? Как она реагировала, что ты пошёл за неё в отмах?",
-        "Мы поймали тебя здесь, вот в этих прекрасных местах, потому что ты снимаешься в кино у нашего кореша Вовчика Битокова. Почему ты выбрал этот фильм у режиссёра, который там всё ещё начинающий?",
         "Как вы переживали историю э с Оскаром Ди Каприо? Когда он его наконец-то получил, у вас была какая-то особенная эмоция?",
-        "Почему она А? Почему она сопротивлялась?"
+        "Почему она А? Почему она сопротивлялась?",
+        "Как вы это объясняете? Зачем?"
       ]
     },
     {
       "structure": "text + request",
-      "frequency": 45,
+      "frequency": 37,
       "action": "question",
       "question_openness": "open_question",
       "emotion": "no_emotion",
       "techniques": [
         "general",
         "how_question",
-        "fact_checking"
+        "why_question"
       ],
-      "avg_position": 0.5813082258141337,
+      "avg_position": 0.5781367685073837,
       "reactivity": [],
       "examples": [
         "Мы ценим вашу откровенность. Оказавшись перед Путиным, что бы ему сказали?",
         "Конкурс. Что вы принесли нам, Леонид?",
-        "Юрец! Ну что, капец?",
         "Твоя роль. Кто её придумал?",
-        "Конкурс. А что ты принёс в подарок?"
+        "Конкурс. А что ты принёс в подарок?",
+        "До всей этой новой жизни, до большой разницы и до всего нынешнего успеха, вы стали актёром озвучки. Как она в вашу жизнь пришла?"
       ]
     },
     {
       "structure": "empathy",
-      "frequency": 33,
+      "frequency": 30,
       "action": "back_channel",
       "question_openness": "not_a_question",
       "emotion": "no_emotion",
       "techniques": [
         "general"
       ],
-      "avg_position": 0.49454942755155545,
+      "avg_position": 0.4990221967038892,
       "reactivity": [],
       "examples": [
         "О.",
@@ -303,29 +306,90 @@
       ]
     },
     {
-      "structure": "text + question",
+      "structure": "acknowledgment + request",
       "frequency": 30,
+      "action": "clarification",
+      "question_openness": "open_question",
+      "emotion": "no_emotion",
+      "techniques": [
+        "quantity_request",
+        "confirmation",
+        "time_request"
+      ],
+      "avg_position": 0.4900703092944643,
+      "reactivity": [],
+      "examples": [
+        "Угу. Сколько денег ты привозишь из такого тура?",
+        "Угу. Сколько он тебе приносит?",
+        "Ну, хорошо, давайте «Метод» тогда не будете называть. А сколько вы получили за «Дурак»?",
+        "Так, и сколько это обычно стоит? Сколько стоят твои грилзы?",
+        "Ну примерно так. Объясни, почему это настолько хуже, чем раньше?"
+      ]
+    },
+    {
+      "structure": "bridge",
+      "frequency": 24,
+      "action": "transition",
+      "question_openness": "not_a_question",
+      "emotion": "commentary",
+      "techniques": [
+        "general",
+        "time_request",
+        "confirmation"
+      ],
+      "avg_position": 0.399396625105274,
+      "reactivity": [],
+      "examples": [
+        "Вы не договорили про фонограмму.",
+        "У вас же был период, когда, ну вот прям период синьки начался.",
+        "Смотри, просто Децл в прошлом году обиделся на Натебя за лохматое [цензура].",
+        "Ну а теперь ты официально свободен, потому что ты не на Black Star.",
+        "Вот смотри, там есть ровно две минуты, которые я хочу тебе показать."
+      ]
+    },
+    {
+      "structure": "text + question",
+      "frequency": 23,
       "action": "question",
       "question_openness": "closed_question",
       "emotion": "no_emotion",
       "techniques": [
         "general",
-        "why_question",
-        "relationship"
+        "relationship",
+        "time_request"
       ],
-      "avg_position": 0.5241147214102206,
+      "avg_position": 0.5044472560570682,
       "reactivity": [],
       "examples": [
-        "Давай так. Это противозаконно?",
         "Восемь. Всё солдауты?",
         "Ты часто говоришь про религию. Насколько ты религиозный человек?",
         "А. Она старше тебя?",
-        "Ниже. А предлагались?"
+        "Ниже. А предлагались?",
+        "У вас стартует новый сезон Comedy Club. Чем он будет отличаться от предыдущих?"
+      ]
+    },
+    {
+      "structure": "acknowledgment + acknowledgment",
+      "frequency": 22,
+      "action": "back_channel",
+      "question_openness": "not_a_question",
+      "emotion": "no_emotion",
+      "techniques": [
+        "confirmation"
+      ],
+      "avg_position": 0.42629367752684044,
+      "reactivity": [],
+      "examples": [
+        "Ага. Ага.",
+        "Угу. Угу.",
+        "Ага. Хорошо.",
+        "Ага. Ага.",
+        "Угу. Угу."
       ]
     },
     {
       "structure": "request + question",
-      "frequency": 25,
+      "frequency": 21,
       "action": "question",
       "question_openness": "open_question",
       "emotion": "no_emotion",
@@ -334,40 +398,19 @@
         "general",
         "how_question"
       ],
-      "avg_position": 0.4901685082018443,
+      "avg_position": 0.488875861955389,
       "reactivity": [],
       "examples": [
-        "Как вы это объясняете? Зачем?",
         "Э, что? Вас заперли в комнате с Первым каналом?",
         "Почему? Водянистый?",
         "Как у тебя изменилось в последние годы твоя жизнь с точки зрения кэша? Стала ли ты состоятельной леди?",
-        "Сколько телефонный разговор длился тогда? 50 минут?"
-      ]
-    },
-    {
-      "structure": "acknowledgment + request",
-      "frequency": 22,
-      "action": "question",
-      "question_openness": "open_question",
-      "emotion": "no_emotion",
-      "techniques": [
-        "quantity_request",
-        "confirmation",
-        "why_question"
-      ],
-      "avg_position": 0.4957183260269788,
-      "reactivity": [],
-      "examples": [
-        "Угу. Сколько денег ты привозишь из такого тура?",
-        "Угу. Сколько он тебе приносит?",
-        "Да. Почему ему?",
-        "А, Сокольники, да. Сколько платили вам?",
-        "Да, почему он настолько круче всех? Вы поняли, что в нём особенного?"
+        "А что ты там делала? Ты снималась или?",
+        "А во что? В юбочке, всё остальное?"
       ]
     },
     {
       "structure": "question + text",
-      "frequency": 22,
+      "frequency": 19,
       "action": "question",
       "question_openness": "closed_question",
       "emotion": "no_emotion",
@@ -375,7 +418,7 @@
         "general",
         "relationship"
       ],
-      "avg_position": 0.6960429485173859,
+      "avg_position": 0.6674459994972376,
       "reactivity": [],
       "examples": [
         "Мне? Гитарный.",
@@ -387,152 +430,128 @@
     },
     {
       "structure": "empathy + text",
-      "frequency": 18,
+      "frequency": 19,
+      "action": "back_channel",
+      "question_openness": "not_a_question",
+      "emotion": "no_emotion",
+      "techniques": [
+        "general"
+      ],
+      "avg_position": 0.645410389347201,
+      "reactivity": [],
+      "examples": [
+        "О. ​",
+        "О. ​",
+        "О! ​",
+        "О! ​"
+      ]
+    },
+    {
+      "structure": "text + acknowledgment",
+      "frequency": 17,
       "action": "summary",
       "question_openness": "not_a_question",
       "emotion": "empathy",
       "techniques": [
         "general",
-        "quantity_request",
-        "time_request"
+        "how_question"
       ],
-      "avg_position": 0.6259562834577121,
+      "avg_position": 0.49093658216671204,
       "reactivity": [],
       "examples": [
-        "Можете ли вы сформулировать три, два, один, сколько угодно э-э методов, как 20 лет прожить с человеком и, в общем, продолжать испытывать друг другу интерес, насколько я понимаю, по крайней мере. Ну, при условии.",
-        "И людям, у которых там скорбь не прошла ещё или которые не способны вот таким вот грубым образом проблемы перемалывать, им, возможно, будет неприятно. Но, но для тех, ну, в целом, я вот прямо советую, будет ссылка на этот концерт.",
-        "Ого. Такая близость к Африке и совсем сопутствующим...",
-        "Извини, что я подглядел, я просто… это было ещё, когда мы готовились к поездке, вот. ​"
-      ]
-    },
-    {
-      "structure": "acknowledgment + acknowledgment",
-      "frequency": 15,
-      "action": "back_channel",
-      "question_openness": "not_a_question",
-      "emotion": "no_emotion",
-      "techniques": [
-        "confirmation"
-      ],
-      "avg_position": 0.4717294360571226,
-      "reactivity": [],
-      "examples": [
-        "Ага. Ага.",
-        "Угу. Угу.",
-        "Ага. Хорошо.",
-        "Ага. Ага.",
-        "Угу. Да."
-      ]
-    },
-    {
-      "structure": "bridge",
-      "frequency": 14,
-      "action": "transition",
-      "question_openness": "open_question",
-      "emotion": "no_emotion",
-      "techniques": [
-        "fact_checking",
-        "quantity_request",
-        "time_request"
-      ],
-      "avg_position": 0.36829428623342814,
-      "reactivity": [],
-      "examples": [
-        "Лен, вы в курсе, что уже появлялись косвенно в нашей программе?",
-        "Во сколько ты первый раз [цензура]?",
-        "А Слепаков в курсе, что вы Шекспиром вдохновлялись для роли в сериале?",
-        "Оказавшись перед Путиным в следующий раз, что вы ему скажете?"
-      ]
-    },
-    {
-      "structure": "text + request + text",
-      "frequency": 12,
-      "action": "summary",
-      "question_openness": "not_a_question",
-      "emotion": "commentary",
-      "techniques": [
-        "general",
-        "confirmation"
-      ],
-      "avg_position": 0.39751584360672215,
-      "reactivity": [],
-      "examples": [
-        "И ты думаешь, вот он, блин, наш чувак, будет здесь вот всех, всех за честь достоинства семьи бороться. Ну, а, ну, и то есть ты как-то начинаешь ему симпатизировать, а потом с ним же происходит и разочарование главное. Не с героем, а с судьбой.",
-        "«Майор» вы снимали в 2012-13 где-то. То есть это волна протестных настроений. Тот самый протест, который слили.",
-        "Прекратите! Всё-таки, нет, всё-таки думаешь, что, э-э, так так будет лучше. Ну, или какой-нибудь вот вот в эту сторону.",
-        "Ну мы объясним. Он уверен, что ты жутко обижен на этот ролик. Более того, он по его информации ты хотел бы дать ему пизды за этот ролик.",
-        "Ну, я ничего не могу вспомнить. А у вас могу вспомнить, потому что я смотрю гораздо чаще Comedy Club. Я могу вспомнить..."
-      ]
-    },
-    {
-      "structure": "request + request + request",
-      "frequency": 12,
-      "action": "question",
-      "question_openness": "open_question",
-      "emotion": "no_emotion",
-      "techniques": [
-        "how_question",
-        "general",
-        "why_question"
-      ],
-      "avg_position": 0.501982925844305,
-      "reactivity": [],
-      "examples": [
-        "А почему? Что... что плохого в этом?",
-        "Как ты стала эти отношения собирать? Ещё несколько лет назад ты говорила в интервью, что они не ходят на спектакли, э, батя тоже не выбирался. «Аритмию» не смотрел, потому что, ну, как это там, там, там грудь.",
-        "Как вы познакомились? Я хочу понять, кто это, поскольку очевидно, что степень влияния на тебя очень большая. Как вы познакомились и при каких обстоятельствах?",
-        "Ну вот ты никогда не задавал себе вопрос, что [цензура] не расцветает в том числе потому, что есть город-витрина? Просто нам с тобой фартануло, что мы в нем живем. А тем, кто в [цензура] живет, не фартануло.",
-        "Все знают, что в [цензура] есть много Late Show, и каждый выбирает себе своё Late Show. Что, вот одновременно с Киммелом выходит Фэллон, а до них был Леттерман и всё остальное. А что ты скажешь, если я буду по [цензура] вести Late Night Show?"
-      ]
-    },
-    {
-      "structure": "acknowledgment + question",
-      "frequency": 11,
-      "action": "question",
-      "question_openness": "closed_question",
-      "emotion": "no_emotion",
-      "techniques": [
-        "general",
-        "confirmation"
-      ],
-      "avg_position": 0.34429934019485287,
-      "reactivity": [],
-      "examples": [
-        "Понятно. Они будут против?",
-        "Угу. Вы ходили на митинги?",
-        "Угу. Всё это Пермь?",
-        "Да. А, Квентин Тарантино?"
+        "Нет, ну Тараканы - это не русский рок, я всё-таки смею представить. Ну и не рок, да.",
+        "[Цензура]. Блин, сердце, сердце, я чувствую, как оно бьётся, да."
       ]
     },
     {
       "structure": "request + acknowledgment",
-      "frequency": 11,
-      "action": "question",
-      "question_openness": "closed_question",
-      "emotion": "no_emotion",
+      "frequency": 15,
+      "action": "clarification",
+      "question_openness": "open_question",
+      "emotion": "empathy",
       "techniques": [
-        "why_question",
-        "fact_checking",
-        "general"
+        "how_question",
+        "time_request",
+        "reaction_request"
       ],
-      "avg_position": 0.4809032498898352,
+      "avg_position": 0.45444080372604195,
       "reactivity": [],
       "examples": [
-        "Почему? Вы же смотрели баттл, да?",
-        "Маленький, как у меня. 11 UK, да?",
-        "Ты же в 2007-м году ещё сделал то же, что сейчас делают все блогеры, ведущие, когда идут читать рэп. Ты же свой альбом записал, да?"
+        "Когда гора была у вас на балконе, как реагировала ваша вторая половина на это? Вы тогда уже были вместе, как я понимаю.",
+        "Как сцена… Как, расскажите технически. Вот мы… Да, как снимается сцена, когда актёру, как его зовут?"
       ]
     },
     {
-      "structure": "paraphrase",
+      "structure": "acknowledgment + question",
+      "frequency": 15,
+      "action": "transition",
+      "question_openness": "closed_question",
+      "emotion": "no_emotion",
+      "techniques": [
+        "general",
+        "why_question",
+        "hypothetical"
+      ],
+      "avg_position": 0.4295331036272197,
+      "reactivity": [],
+      "examples": [
+        "Давай так. Это противозаконно?",
+        "Я никогда не понимал, почему большим актёрам или режиссёрам так важны конкурсы. А ты это понимаешь?",
+        "Так. Это сутки?",
+        "Так. А если кроме Еревана?",
+        "Так. А, Ларс фон Триер?"
+      ]
+    },
+    {
+      "structure": "request + request + request",
+      "frequency": 10,
+      "action": "clarification",
+      "question_openness": "open_question",
+      "emotion": "no_emotion",
+      "techniques": [
+        "why_question",
+        "how_question",
+        "relationship"
+      ],
+      "avg_position": 0.4664396901838508,
+      "reactivity": [],
+      "examples": [
+        "Ответьте мне, как отец отцу. Почему ваша дочь всю жизнь живёт в Америке? Зачем рожать ребёнка для того, чтобы 90% времени он был вдали от тебя?",
+        "А почему? Что... что плохого в этом?",
+        "Почему он в их жизни есть? Как ты это объясняешь? Ну, это просто болезнь, которая случилась, или этому социальное объяснение тоже какое-то есть?"
+      ]
+    },
+    {
+      "structure": "text + request + text",
       "frequency": 10,
       "action": "summary",
       "question_openness": "not_a_question",
       "emotion": "commentary",
       "techniques": [
+        "confirmation",
+        "general",
+        "definition_request"
+      ],
+      "avg_position": 0.40206533250767984,
+      "reactivity": [],
+      "examples": [
+        "И ты думаешь, вот он, блин, наш чувак, будет здесь вот всех, всех за честь достоинства семьи бороться. Ну, а, ну, и то есть ты как-то начинаешь ему симпатизировать, а потом с ним же происходит и разочарование главное. Не с героем, а с судьбой.",
+        "«Майор» вы снимали в 2012-13 где-то. То есть это волна протестных настроений. Тот самый протест, который слили.",
+        "Ну мы объясним. Он уверен, что ты жутко обижен на этот ролик. Более того, он по его информации ты хотел бы дать ему пизды за этот ролик.",
+        "Ну, я ничего не могу вспомнить. А у вас могу вспомнить, потому что я смотрю гораздо чаще Comedy Club. Я могу вспомнить...",
+        "А, это что-то... Но там же шутка-то потом на на том, что какая гибкая у вас мораль. Здесь же на на на ну, по-моему, на это была игра вся."
+      ]
+    },
+    {
+      "structure": "paraphrase",
+      "frequency": 9,
+      "action": "summary",
+      "question_openness": "not_a_question",
+      "emotion": "commentary",
+      "techniques": [
         "general"
       ],
-      "avg_position": 0.3180605399950987,
+      "avg_position": 0.3262236726512374,
       "reactivity": [],
       "examples": [
         "Это постанова, оказывается.",
@@ -540,27 +559,6 @@
         "Нет, наш мотив, чтобы люди стали проще.",
         "Случайно оказывается в нужное время в нужном месте.",
         "Я хочу, чтобы это более был ужасный комментарий."
-      ]
-    },
-    {
-      "structure": "text + text + text",
-      "frequency": 10,
-      "action": "summary",
-      "question_openness": "not_a_question",
-      "emotion": "commentary",
-      "techniques": [
-        "general",
-        "confirmation",
-        "fact_checking"
-      ],
-      "avg_position": 0.6247900219850171,
-      "reactivity": [],
-      "examples": [
-        "Горький не дожил до появления нашей программы. И поэтому ему невозможно задать вопрос. Тем не менее, я вам, вам хочется, его хочется задать вопрос.",
-        "228 - это это протест против действительно отвратительной и ломающей судьбы статьи. У меня нет к этому вопросов. А АУЕ, мне кажется, пропаганда воровского образа жизни.",
-        "Вообще ровно, ну, спокойно. На самом деле, ну это я и в шутку говорю. На самом деле ты ты понимаешь, естественно, мне хотелось бы, я даже не знаю, будет ли моя дочь православная, вот в чём всё дело.",
-        "Ну всё. Он уже победил. А я ещё нет.",
-        "Союз спасения. Там не главная, незаметная роль, но всё равно. Калашников и Т-34."
       ]
     },
     {
@@ -582,36 +580,56 @@
       ]
     },
     {
-      "structure": "question + request",
+      "structure": "text + text + text",
       "frequency": 8,
-      "action": "question",
-      "question_openness": "open_question",
-      "emotion": "no_emotion",
+      "action": "summary",
+      "question_openness": "not_a_question",
+      "emotion": "commentary",
       "techniques": [
-        "quantity_request",
-        "why_question",
-        "general"
+        "general",
+        "confirmation",
+        "fact_checking"
       ],
-      "avg_position": 0.5474958763557483,
+      "avg_position": 0.6312655258927089,
       "reactivity": [],
       "examples": [
-        "С какого дубля? Сколько раз приходилось вот так вот взмахнуть?",
-        "Он там жил? Почему?",
-        "Ну, можно я тебя спрошу, пока мы здесь стоим? А какой у тебя любимый альбом Кино?"
+        "Горький не дожил до появления нашей программы. И поэтому ему невозможно задать вопрос. Тем не менее, я вам, вам хочется, его хочется задать вопрос.",
+        "228 - это это протест против действительно отвратительной и ломающей судьбы статьи. У меня нет к этому вопросов. А АУЕ, мне кажется, пропаганда воровского образа жизни.",
+        "Ну всё. Он уже победил. А я ещё нет.",
+        "Союз спасения. Там не главная, незаметная роль, но всё равно. Калашников и Т-34.",
+        "И Чернушка, Черногория. Тоже самое безумное, а формальное, техническое, ну тоже рифма. А, поэтому мы здесь и путешествуем между разными красивыми локациями этой страны."
       ]
     },
     {
-      "structure": "text + text + request",
-      "frequency": 8,
+      "structure": "question + request",
+      "frequency": 7,
       "action": "clarification",
       "question_openness": "open_question",
       "emotion": "no_emotion",
       "techniques": [
+        "relationship",
         "why_question",
-        "how_question",
-        "definition_request"
+        "confirmation"
       ],
-      "avg_position": 0.42782789138843824,
+      "avg_position": 0.575839443107868,
+      "reactivity": [],
+      "examples": [
+        "Лиза, ваша дочь, ваша рок-принцесса, когда-нибудь видела вас именно на голубом огоньке? И что она говорила?",
+        "А ну при этом у тебя ты там копил на брекеты? То есть это было каким-то важным пунктом или ты просто подумал: «Почему бы не поставить?»"
+      ]
+    },
+    {
+      "structure": "text + text + request",
+      "frequency": 6,
+      "action": "clarification",
+      "question_openness": "open_question",
+      "emotion": "no_emotion",
+      "techniques": [
+        "time_request",
+        "why_question",
+        "behavioral"
+      ],
+      "avg_position": 0.3952885873062675,
       "reactivity": [],
       "examples": [
         "Сейчас исключительно исследовательский вопрос. Я не хочу заниматься нравоучениями и или лампой светить вам в лицо по-прокурорски. Но объясните, почему вся наша эстрада покупает себе летние или нелетние дома и квартиры во Флориде, а не в Краснодарском крае, не в Крыму?",
@@ -620,90 +638,70 @@
       ]
     },
     {
-      "structure": "text + text + question",
-      "frequency": 7,
+      "structure": "text + text + acknowledgment",
+      "frequency": 6,
+      "action": "transition",
+      "question_openness": "not_a_question",
+      "emotion": "commentary",
+      "techniques": [
+        "how_question",
+        "general"
+      ],
+      "avg_position": 0.7051053732202474,
+      "reactivity": [],
+      "examples": [
+        "Не, мне это ни в коем случае не надо. У меня это не рабочая сторона. Я готов вот так же выглядеть, как куриная задница, вот, и совершенно нормально.",
+        "У меня в шоу «Книгожалоб» я в конце гадаю. Гадаю на стихотворениях. Украл идею, каюсь, у Николая Солодникова, но он уже но он уже так не делает."
+      ]
+    },
+    {
+      "structure": "acknowledgment + text + request",
+      "frequency": 6,
+      "action": "summary",
+      "question_openness": "not_a_question",
+      "emotion": "empathy",
+      "techniques": [
+        "relationship",
+        "time_request",
+        "general"
+      ],
+      "avg_position": 0.6137465629877996,
+      "reactivity": [],
+      "examples": [
+        "Да. Полицейский с Рублёвки, автор сценария, наш отец, наш идейный вдохновитель, режиссёр-постановщик и всё-всё-всё. Человек, который, когда ещё работал сценаристом, уже ездил на Ferrari, чтобы вы понимали, друзья.",
+        "Да, разумеется. Условие очень простое. Несмотря на то, что ты в целом примирился с Поперечным по ходу нашего интервью..."
+      ]
+    },
+    {
+      "structure": "request + bridge",
+      "frequency": 6,
+      "action": "summary",
+      "question_openness": "not_a_question",
+      "emotion": "commentary",
+      "techniques": [
+        "confirmation"
+      ],
+      "avg_position": 0.27069013490455324,
+      "reactivity": [],
+      "examples": [
+        "То есть, чтобы идти резать человека, будучи хирургом, нужно отучиться на это. И также, и также актёром."
+      ]
+    },
+    {
+      "structure": "acknowledgment + request + request",
+      "frequency": 5,
       "action": "question",
       "question_openness": "open_question",
-      "emotion": "no_emotion",
+      "emotion": "empathy",
       "techniques": [
         "why_question",
-        "general"
-      ],
-      "avg_position": 0.5715100709957224,
-      "reactivity": [],
-      "examples": [
-        "М-м. У бывшего президента Украины Януковича как-то нашли золотой батон. Самый дикий подарок, который когда-либо дарили вам?",
-        "Смотри, мы выехали из Москвы и едем в Вологду. Yes. Зачем мы это делаем?",
-        "«Ирония судьбы. Продолжение». Зачем вы на это согласились?"
-      ]
-    },
-    {
-      "structure": "text + acknowledgment",
-      "frequency": 7,
-      "action": "summary",
-      "question_openness": "not_a_question",
-      "emotion": "commentary",
-      "techniques": [
-        "general",
-        "quantity_request"
-      ],
-      "avg_position": 0.3110083974112721,
-      "reactivity": [],
-      "examples": [
-        "Нет, ну Тараканы - это не русский рок, я всё-таки смею представить. Ну и не рок, да.",
-        "[Цензура]. Блин, сердце, сердце, я чувствую, как оно бьётся, да.",
-        "Это же не вся семья. У отца три брака, да, и от каждого брака по ребёнку."
-      ]
-    },
-    {
-      "structure": "empathy + request",
-      "frequency": 5,
-      "action": "summary",
-      "question_openness": "not_a_question",
-      "emotion": "empathy",
-      "techniques": [
-        "time_request",
-        "behavioral"
-      ],
-      "avg_position": 0.4832045526499827,
-      "reactivity": [],
-      "examples": [
-        "Но, э, тебе не кажется, что когда ты, я понимаю, что лохматое [цензура] и оскорбление мамы - это разные вещи. Но тебе не кажется, что когда вот ты обижаешься на пацанов из Ютуба, ты становишься немного Децлом.",
-        "Правильно ли я понимаю, что когда-то вы были, э, очень либеральных взглядов. Вы даже, в общем, были вполне оппозиционных взглядов."
-      ]
-    },
-    {
-      "structure": "request + empathy",
-      "frequency": 5,
-      "action": "clarification",
-      "question_openness": "open_question",
-      "emotion": "empathy",
-      "techniques": [
-        "reaction_request",
-        "relationship",
         "time_request"
       ],
-      "avg_position": 0.43097020576509915,
+      "avg_position": 0.4494682975273149,
       "reactivity": [],
       "examples": [
-        "Когда гора была у вас на балконе, как реагировала ваша вторая половина на это? Вы тогда уже были вместе, как я понимаю."
-      ]
-    },
-    {
-      "structure": "text + empathy",
-      "frequency": 5,
-      "action": "summary",
-      "question_openness": "not_a_question",
-      "emotion": "commentary",
-      "techniques": [
-        "hypothetical",
-        "general"
-      ],
-      "avg_position": 0.3400947940947941,
-      "reactivity": [],
-      "examples": [
-        "Не-не-не-не-не, тёща - любовь. Если бы ты увидел это просто, просто супер.",
-        "Это распространённая история, да-да. Это супер."
+        "Да. И зачем? Ну, какой смысл?",
+        "Да. У тебя похожие ощущения были? Когда я это услышал?"
       ]
     },
     {
@@ -723,201 +721,148 @@
       ]
     },
     {
-      "structure": "acknowledgment + text + request",
-      "frequency": 5,
-      "action": "question",
-      "question_openness": "open_question",
-      "emotion": "no_emotion",
-      "techniques": [
-        "how_question",
-        "confirmation"
-      ],
-      "avg_position": 0.6346776937671778,
-      "reactivity": [],
-      "examples": [
-        "Да ничего не происходит. Многие родители настолько замучены. Это знаешь, как у меня спрашивают, это из серии: \"Как ты ездишь в метро?\"",
-        "Ага. Э-э. Как вас занесло на бобслей?"
-      ]
-    },
-    {
-      "structure": "acknowledgment + request + request",
+      "structure": "text + empathy",
       "frequency": 5,
       "action": "summary",
       "question_openness": "not_a_question",
       "emotion": "commentary",
       "techniques": [
-        "how_question",
-        "time_request"
-      ],
-      "avg_position": 0.5008176368163527,
-      "reactivity": [],
-      "examples": [
-        "Да, и быстречок. Потому что так будет правильно. Друзья, ваши варианты в комментариях к нашему видосу, лайки, шмайки, всё остальное, как это принято говорить, ставьте.",
-        "Да. Ты выглядишь как человек, который знает, что про тебя сказал Иван Дорн. Который, ну, весна прошлого года, когда он сказал, что… Да-да-да, когда он сказал, что просто вот Крида слушать невозможно."
-      ]
-    },
-    {
-      "structure": "request + text + text",
-      "frequency": 5,
-      "action": "summary",
-      "question_openness": "not_a_question",
-      "emotion": "commentary",
-      "techniques": [
-        "time_request",
+        "hypothetical",
         "general"
       ],
-      "avg_position": 0.658161926166762,
+      "avg_position": 0.3628496620199079,
       "reactivity": [],
       "examples": [
-        "Когда мы снимали Камчатку, мы думали, что вертолёт - это страшно. Вертолёт - это вообще не страшно по сравнению вот с этим. Вообще, это вот совсем.",
-        "Ну что, футболисты ФНЛ получают... Ну футбольные... Нет, смотри, футбольный контракт, зарплата в миллион евро в [цензура] футболе сейчас — это очень рядовая зарплата."
+        "Не-не-не-не-не, тёща - любовь. Если бы ты увидел это просто, просто супер.",
+        "Это распространённая история, да-да. Это супер."
+      ]
+    },
+    {
+      "structure": "request + empathy",
+      "frequency": 5,
+      "action": "summary",
+      "question_openness": "not_a_question",
+      "emotion": "commentary",
+      "techniques": [
+        "how_question",
+        "relationship",
+        "general"
+      ],
+      "avg_position": 0.5173458671407605,
+      "reactivity": [],
+      "examples": [
+        "Я видел, как твоя дочь в твоём Инстаграме читает трек Ники Минаж. Это очень круто.",
+        "А ну и ты ещё как-то рассказывал, что не... ну ты думаешь, что она не будет читать рэп, что у неё другие планы."
       ]
     },
     {
       "structure": "text + request + request",
       "frequency": 5,
-      "action": "summary",
-      "question_openness": "not_a_question",
-      "emotion": "commentary",
+      "action": "clarification",
+      "question_openness": "open_question",
+      "emotion": "no_emotion",
       "techniques": [
-        "general",
-        "time_request"
+        "confirmation"
       ],
       "avg_position": 0.6216255395258716,
       "reactivity": [],
       "examples": [
-        "Ну, мы же хотим объяснить ему. Ну, это же если не получается, надо пробовать что-то новое, как завещал Сергей Шнуров. То, что.",
-        "И шубкой повернулась. И, знаешь, это как в американских фильмах, э-э, обычно все мудрости отец, э-э, передаёт детям, когда они кидают бейсбольный мяч. А а бабушка передаёт мудрость, когда садится в автобус."
+        "Слушайте, это абсолютно ваш жанр. То есть вы себе не изменяете. Э, нет ли ощущения, что вы делаете вот одно и то же?"
       ]
     },
     {
-      "structure": "text + text + text + request",
+      "structure": "acknowledgment + acknowledgment + request",
       "frequency": 4,
       "action": "summary",
       "question_openness": "open_question",
-      "emotion": "no_emotion",
+      "emotion": "empathy",
       "techniques": [
-        "fact_checking",
-        "general"
+        "time_request"
       ],
-      "avg_position": 0.5325790964682074,
+      "avg_position": 0.72078978145593,
       "reactivity": [],
       "examples": [
-        "Слушай, ну смотри, а вам в раннем возрасте пришла слава и большое количество денег. Ну не тебе, а парням, ты чуть старше их всех... Этим. И ты серьёзно хочешь, чтобы [цензура], как неизменный спутник больших неожиданных денег, никогда в их жизни не приходил?",
-        "Ну, примерно, ну, всё равно, Константин, это попытка спасти, ну, труп. Это же... Ну, это же сценарий абсолютно. Вот в итоге то, что вышло, вам понравилось?"
+        "Да, ну просто вы из ваших уст это вполне. В общем, все мемы связаны с программой Голос, я понял. Когда последний раз вы били не по кнопке, а по лицу?"
       ]
     },
     {
-      "structure": "text + request + question",
+      "structure": "text + text + question",
       "frequency": 4,
       "action": "question",
-      "question_openness": "open_question",
+      "question_openness": "blitz",
       "emotion": "no_emotion",
       "techniques": [
-        "general",
-        "example_request",
-        "why_question"
+        "general"
       ],
-      "avg_position": 0.3003386660613284,
+      "avg_position": 0.7182590632409145,
       "reactivity": [],
       "examples": [
-        "Охренеть. Скажи. А самая крутая история, которую ты привёз из Штатов?",
-        "А, ещё лучше. У тебя есть, насколько я знаю, условие по контракту, что ты не можешь поливать Black Star [цензура]. Так ведь?",
-        "Ох! Какой замечательный ответ. А ваш любимый город в России, кроме Москвы и Петербурга?",
-        "Вау. Почему? Чем семья отличается от, э-э, других людей?"
+        "Блиц. Я спрашиваю коротко, ты отвечаешь не обязательно коротко. Театр или кино?",
+        "Блиц. Я спрашиваю коротко, ты отвечаешь необязательно коротко. Бондарчук или Серебренников?"
+      ]
+    },
+    {
+      "structure": "acknowledgment + acknowledgment + text",
+      "frequency": 4,
+      "action": "clarification",
+      "question_openness": "open_question",
+      "emotion": "empathy",
+      "techniques": [
+        "background_request"
+      ],
+      "avg_position": 0.28876172344402645,
+      "reactivity": [],
+      "examples": [
+        "Да. Так, а что это собой представляет? Несколько гектаров."
       ]
     },
     {
       "structure": "question + text + request",
       "frequency": 4,
-      "action": "question",
+      "action": "transition",
       "question_openness": "open_question",
       "emotion": "no_emotion",
       "techniques": [
         "time_request",
-        "general",
-        "quantity_request"
+        "example_request"
       ],
       "avg_position": 0.4760604037615763,
       "reactivity": [],
       "examples": [
-        "Мне? Ну если ты не побрезгуешь. Они максимально одеты были просто полраза.",
         "А это совпало с реализацией в профессии? А, вот прямо чисто именно с реализацией, я не могу это связать. Ну, когда у тебя попёрла карьера, и ты поняла: «Блин».",
-        "А вот можете привести пример по каким-то там безусловно удачным вашим работам? Например, там «Коллектор» или «Метод» или «Географ». Когда вы подходили к режиссёру и говорили: «Дружище, давай-ка тут мы что-то поменяем».",
-        "Обнимемся? Ой, вы чудесные. Сколько стоит такой концерт, э, в производстве?"
+        "А вот можете привести пример по каким-то там безусловно удачным вашим работам? Например, там «Коллектор» или «Метод» или «Географ». Когда вы подходили к режиссёру и говорили: «Дружище, давай-ка тут мы что-то поменяем»."
       ]
     },
     {
-      "structure": "request + text + text + text",
+      "structure": "question + acknowledgment",
       "frequency": 4,
-      "action": "summary",
+      "action": "transition",
+      "question_openness": "open_question",
+      "emotion": "no_emotion",
+      "techniques": [
+        "quantity_request"
+      ],
+      "avg_position": 0.4614249385050309,
+      "reactivity": [],
+      "examples": [
+        "С какого дубля? Сколько раз приходилось вот так вот взмахнуть?"
+      ]
+    },
+    {
+      "structure": "bridge + text",
+      "frequency": 4,
+      "action": "transition",
       "question_openness": "not_a_question",
       "emotion": "commentary",
       "techniques": [
         "general",
         "time_request"
       ],
-      "avg_position": 0.4760696080408101,
+      "avg_position": 0.8059968228752978,
       "reactivity": [],
       "examples": [
-        "Э-э ну когда смотрел, естественно, запрещённый фильм для меня, Республику Шкид. Это э фильм, который из меня выбивает слёзы всегда. Облако Рая, Республика Шкид. Ну вот такая вот история.",
-        "Вчера я летел с очень мутным настроением, потому что я всю последнюю неделю представляю, как я вот выхожу к этому обрыву и не могу это сделать. И не могу. Я очень боюсь высоты. Высота - мой самый большой страх.",
-        "Пока мы были у храма, ты вывел на сторону кладбища и показал, какая здесь есть традиция. Здесь, во-первых, могилы... что-то такое. Ну они открытые."
-      ]
-    },
-    {
-      "structure": "text + text + text + text",
-      "frequency": 4,
-      "action": "summary",
-      "question_openness": "not_a_question",
-      "emotion": "commentary",
-      "techniques": [
-        "general"
-      ],
-      "avg_position": 0.6620362172831721,
-      "reactivity": [],
-      "examples": [
-        "Так. Юрец. И вот съёмочный день мы подобрались к этому вопросу. Юрец, твой съёмочный день стоит около 200.000 руб.",
-        "[цензура] нормально... кайф, че... я тоже хочу... дайте мне полтора миллиарда, я куплю себе квартиру.",
-        "Ну вы шутите, но по-доброму. Ну это ж по-доброму. Сравни шутки Воли над людьми и ваши шутки на... над тем же гостем.",
-        "Ребята, хорошего вам прайда! Сенк ю! Поздравляю! Сейчас будет ба-бах!"
-      ]
-    },
-    {
-      "structure": "request + text + request",
-      "frequency": 4,
-      "action": "clarification",
-      "question_openness": "open_question",
-      "emotion": "no_emotion",
-      "techniques": [
-        "definition_request",
-        "time_request",
-        "how_question"
-      ],
-      "avg_position": 0.32403356754281315,
-      "reactivity": [],
-      "examples": [
-        "Ну а что… что значит «хотел бы, но не сделал»? Давай уточним. Когда ты в последний раз дрался?",
-        "Расскажи, пожалуйста, технологию придумывания юмора. Технология придумывания шуток и миниатюр. Как это происходит, например, на примере этого кабинета?"
-      ]
-    },
-    {
-      "structure": "request + text + question",
-      "frequency": 4,
-      "action": "question",
-      "question_openness": "open_question",
-      "emotion": "no_emotion",
-      "techniques": [
-        "general",
-        "why_question",
-        "time_request"
-      ],
-      "avg_position": 0.5258156462316196,
-      "reactivity": [],
-      "examples": [
-        "А что именно? Кардио. Бегаете?",
-        "…который знает, кто что написал. Ну ты смотришь видосы, [цензура] видосов, и точно все, которые хоть как-то касаются тебя. Зачем ты это делаешь?",
-        "Так, а когда они? Извиняюсь. Бро, а у нас Германия с какого по какое?"
+        "Всё, теперь я… мне есть где жить ещё месяц. ​",
+        "И я могу сейчас посмотреть на первый выпуск с овсяным печеньем и… чего я не делал, кстати, ещё ни разу. ​"
       ]
     },
     {
@@ -936,26 +881,11 @@
       ]
     },
     {
-      "structure": "acknowledgment + acknowledgment + request",
-      "frequency": 3,
-      "action": "summary",
-      "question_openness": "open_question",
-      "emotion": "no_emotion",
-      "techniques": [
-        "time_request"
-      ],
-      "avg_position": 0.44878885001415214,
-      "reactivity": [],
-      "examples": [
-        "Да, ну просто вы из ваших уст это вполне. В общем, все мемы связаны с программой Голос, я понял. Когда последний раз вы били не по кнопке, а по лицу?"
-      ]
-    },
-    {
       "structure": "text + acknowledgment + request",
       "frequency": 3,
       "action": "clarification",
       "question_openness": "closed_question",
-      "emotion": "no_emotion",
+      "emotion": "empathy",
       "techniques": [
         "confirmation"
       ],
@@ -966,20 +896,53 @@
       ]
     },
     {
-      "structure": "text + text + request + text",
+      "structure": "empathy + request",
       "frequency": 3,
-      "action": "summary",
-      "question_openness": "not_a_question",
-      "emotion": "commentary",
+      "action": "clarification",
+      "question_openness": "open_question",
+      "emotion": "challenge",
       "techniques": [
-        "time_request",
-        "quantity_request"
+        "behavioral",
+        "how_question",
+        "time_request"
       ],
-      "avg_position": 0.4029727738839335,
+      "avg_position": 0.5090046944958216,
       "reactivity": [],
       "examples": [
-        "Ты очень часто говоришь и в интервью, и у тебя есть песня \"Исповедь, моя игра\". Не ту, которую ты играешь на концертах, а ту, которую ты поёшь со своим Гуфом. А про то, как прошли твои девяностые. При этом ты очень редко конкретизируешь.",
-        "А, ну, смотри. Он всегда есть. Кажется, сколько там, 50 м, какая-то шняга, но когда ты смотришь сбоку на эту скалу, у меня просто начинает дрожать всё. Возможно, это опять самый счастливый день в моей жизни."
+        "В тот период или расскажите о нём. Как это было и как это прошло?"
+      ]
+    },
+    {
+      "structure": "text + request + question",
+      "frequency": 3,
+      "action": "question",
+      "question_openness": "open_question",
+      "emotion": "no_emotion",
+      "techniques": [
+        "example_request",
+        "why_question",
+        "relationship"
+      ],
+      "avg_position": 0.3832579884700131,
+      "reactivity": [],
+      "examples": [
+        "Охренеть. Скажи. А самая крутая история, которую ты привёз из Штатов?",
+        "Вау. Почему? Чем семья отличается от, э-э, других людей?"
+      ]
+    },
+    {
+      "structure": "text + acknowledgment + text",
+      "frequency": 3,
+      "action": "transition",
+      "question_openness": "uncertain_question",
+      "emotion": "no_emotion",
+      "techniques": [
+        "hypothetical"
+      ],
+      "avg_position": 0.1931645334343642,
+      "reactivity": [],
+      "examples": [
+        "Давай давай оговорим. Если в [цензура] будет так, ты за? Если в [цензура] [цензура]."
       ]
     },
     {
@@ -998,19 +961,98 @@
       ]
     },
     {
-      "structure": "empathy + text + request",
+      "structure": "request + empathy + text",
+      "frequency": 3,
+      "action": "clarification",
+      "question_openness": "not_a_question",
+      "emotion": "challenge",
+      "techniques": [
+        "hypothetical",
+        "fact_checking"
+      ],
+      "avg_position": 0.5450981252697257,
+      "reactivity": [],
+      "examples": [
+        "Объясни мне, а, одну простую штуку. Ты понимаешь, что на свете живёт несколько миллионов человек, которые никогда бы не узнали о Кемеровском канале Немагия, если бы ты на них не разозлился. Десятков миллионов человек."
+      ]
+    },
+    {
+      "structure": "acknowledgment + text + text + text",
       "frequency": 3,
       "action": "question",
       "question_openness": "open_question",
-      "emotion": "no_emotion",
+      "emotion": "empathy",
+      "techniques": [
+        "how_question"
+      ],
+      "avg_position": 0.45998510591522823,
+      "reactivity": [],
+      "examples": [
+        "Слушай, ну это жёсткий жаргон, на существование которого в как называется, что праздник в хату арестанта, да, есть? Весело в хату арестанта. Это хотя бы кто-то слышал. А АУЕ, ну это уже прямо знаешь, достаётся..."
+      ]
+    },
+    {
+      "structure": "acknowledgment + text + text",
+      "frequency": 3,
+      "action": "transition",
+      "question_openness": "not_a_question",
+      "emotion": "empathy",
+      "techniques": [
+        "general"
+      ],
+      "avg_position": 0.8467432851765656,
+      "reactivity": [],
+      "examples": [
+        "Да. Очень. И вот опять."
+      ]
+    },
+    {
+      "structure": "request + text + text",
+      "frequency": 3,
+      "action": "transition",
+      "question_openness": "not_a_question",
+      "emotion": "commentary",
       "techniques": [
         "time_request"
       ],
-      "avg_position": 0.6359400197366837,
+      "avg_position": 0.6850280544184436,
       "reactivity": [],
       "examples": [
-        "Так, а о’кей. Дорого. Э, ну, как как можно жить, когда вы снимаете коммерческое кино?",
-        "Блин, супер. Сейчас мне очень интересно подобрать... Ну про то, когда умрёт [цензура], тебя спрашивали?"
+        "Когда мы снимали Камчатку, мы думали, что вертолёт - это страшно. Вертолёт - это вообще не страшно по сравнению вот с этим. Вообще, это вот совсем."
+      ]
+    },
+    {
+      "structure": "request + text + request",
+      "frequency": 3,
+      "action": "clarification",
+      "question_openness": "open_question",
+      "emotion": "no_emotion",
+      "techniques": [
+        "quantity_request"
+      ],
+      "avg_position": 0.22904974840428327,
+      "reactivity": [],
+      "examples": [
+        "Сколько времени нужно, чтобы озвучить один фильм? Вы главный герой голливудского фильма. На сколько на это уходит?"
+      ]
+    },
+    {
+      "structure": "bridge + text + request",
+      "frequency": 3,
+      "action": "transition",
+      "question_openness": "open_question",
+      "emotion": "no_emotion",
+      "techniques": [
+        "why_question",
+        "how_question",
+        "definition_request"
+      ],
+      "avg_position": 0.49557142753344136,
+      "reactivity": [],
+      "examples": [
+        "Смотри, мы выехали из Москвы и едем в Вологду. Yes. Зачем мы это делаем?",
+        "Как же случилось в первый раз? По любви и по абсолютному доверию, вот. Ну, типа, ты встретила принца и растаяла, смогла довериться.",
+        "Ну а что… что значит «хотел бы, но не сделал»? Давай уточним. Когда ты в последний раз дрался?"
       ]
     },
     {
@@ -1021,6 +1063,7 @@
       "emotion": "no_emotion",
       "techniques": [
         "confirmation",
+        "how_question",
         "fact_checking"
       ],
       "avg_position": 0.38501594921225113,
@@ -1031,65 +1074,36 @@
       ]
     },
     {
-      "structure": "question + acknowledgment",
+      "structure": "acknowledgment + bridge",
       "frequency": 3,
-      "action": "question",
-      "question_openness": "open_question",
-      "emotion": "no_emotion",
-      "techniques": [
-        "time_request"
-      ],
-      "avg_position": 0.49886961497640486,
-      "reactivity": [],
-      "examples": [
-        "Девять? Слушай, когда Сатир про тебя снял это видео, я очень кайфанул, мне было так смешно, я выложил это в Ютуб, ой не в Ютубе, выложил к себе в Инстаграм, да, и поддержал чувака."
-      ]
-    },
-    {
-      "structure": "text + text + request + request",
-      "frequency": 3,
-      "action": "clarification",
+      "action": "transition",
       "question_openness": "not_a_question",
-      "emotion": "commentary",
+      "emotion": "empathy",
       "techniques": [
-        "why_question"
+        "hypothetical",
+        "fact_checking",
+        "relationship"
       ],
-      "avg_position": 0.2657651685084273,
+      "avg_position": 0.25855988849226225,
       "reactivity": [],
       "examples": [
-        "Давай. Смотри. С одной стороны ты кайфуешь от того, что делает Сатир, с другой стороны у тебя большие проблемы с Данилой Поперечным. Объясни пожалуйста почему."
+        "Да. Ну, в общем, друзья, если кто-то не в курсе, Егор Крид — человек, который обычно бывает в чайхоне, кальянчик, вот этот вот пых-пых, «Корона Экстра» — пьёт настоящее крафтовое пивко прямо… Добро пожаловать в наш простой мир."
       ]
     },
     {
-      "structure": "acknowledgment + acknowledgment + text",
+      "structure": "text + text + text + text",
       "frequency": 3,
       "action": "summary",
       "question_openness": "not_a_question",
       "emotion": "commentary",
       "techniques": [
-        "confirmation"
-      ],
-      "avg_position": 0.3624025659320687,
-      "reactivity": [],
-      "examples": [
-        "Угу. Угу. В этом плане, э, позор, э, стыд или внимание.",
-        "Да, да. Угу. Я ни в коем случае не хотел бы продлевать горе людей, но при этом..."
-      ]
-    },
-    {
-      "structure": "bridge + text",
-      "frequency": 3,
-      "action": "transition",
-      "question_openness": "not_a_question",
-      "emotion": "commentary",
-      "techniques": [
         "general"
       ],
-      "avg_position": 0.7802488747683346,
+      "avg_position": 0.7833559820185884,
       "reactivity": [],
       "examples": [
-        "Всё, теперь я… мне есть где жить ещё месяц. ​",
-        "И я могу сейчас посмотреть на первый выпуск с овсяным печеньем и… чего я не делал, кстати, ещё ни разу. ​"
+        "[цензура] нормально... кайф, че... я тоже хочу... дайте мне полтора миллиарда, я куплю себе квартиру.",
+        "Ну вы шутите, но по-доброму. Ну это ж по-доброму. Сравни шутки Воли над людьми и ваши шутки на... над тем же гостем."
       ]
     },
     {
@@ -1108,51 +1122,18 @@
       ]
     },
     {
-      "structure": "acknowledgment + question + request",
-      "frequency": 2,
-      "action": "question",
-      "question_openness": "open_question",
-      "emotion": "no_emotion",
-      "techniques": [
-        "why_question",
-        "general"
-      ],
-      "avg_position": 0.5224752154855411,
-      "reactivity": [],
-      "examples": [
-        "Да. И зачем? Ну, какой смысл?",
-        "Да. Чем она занимается? Что она делает?"
-      ]
-    },
-    {
-      "structure": "text + question + text",
-      "frequency": 2,
-      "action": "question",
-      "question_openness": "uncertain_question",
-      "emotion": "no_emotion",
-      "techniques": [
-        "general"
-      ],
-      "avg_position": 0.497599181893294,
-      "reactivity": [],
-      "examples": [
-        "Давай давай оговорим. Если в [цензура] будет так, ты за? Если в [цензура] [цензура].",
-        "Рим. У тебя есть любимое место там? Фонтан, ещё что-то..."
-      ]
-    },
-    {
-      "structure": "request + empathy + text",
+      "structure": "text + text + text + request",
       "frequency": 2,
       "action": "clarification",
-      "question_openness": "not_a_question",
-      "emotion": "commentary",
+      "question_openness": "closed_question",
+      "emotion": "no_emotion",
       "techniques": [
-        "hypothetical"
+        "confirmation"
       ],
-      "avg_position": 0.4639353975115753,
+      "avg_position": 0.5584196484620214,
       "reactivity": [],
       "examples": [
-        "Объясни мне, а, одну простую штуку. Ты понимаешь, что на свете живёт несколько миллионов человек, которые никогда бы не узнали о Кемеровском канале Немагия, если бы ты на них не разозлился. Десятков миллионов человек."
+        "Слава богу. Ну, это главное. А это не противозаконно. То есть я имею право это делать, правильно?"
       ]
     },
     {
@@ -1172,41 +1153,11 @@
       ]
     },
     {
-      "structure": "text + empathy + question",
-      "frequency": 2,
-      "action": "question",
-      "question_openness": "uncertain_question",
-      "emotion": "no_emotion",
-      "techniques": [
-        "general"
-      ],
-      "avg_position": 0.4782923627144733,
-      "reactivity": [],
-      "examples": [
-        "Красиво. Круто. Вы дружите до сих пор?"
-      ]
-    },
-    {
-      "structure": "text + request + question + text",
-      "frequency": 2,
-      "action": "question",
-      "question_openness": "open_question",
-      "emotion": "no_emotion",
-      "techniques": [
-        "general"
-      ],
-      "avg_position": 0.7252638739549274,
-      "reactivity": [],
-      "examples": [
-        "Продолжает. Что? Чем тебе нравится? Чем это..."
-      ]
-    },
-    {
       "structure": "request + text + text + acknowledgment",
       "frequency": 2,
       "action": "question",
       "question_openness": "closed_question",
-      "emotion": "no_emotion",
+      "emotion": "empathy",
       "techniques": [
         "general",
         "how_question",
@@ -1220,110 +1171,51 @@
       ]
     },
     {
-      "structure": "text + text + acknowledgment",
+      "structure": "request + acknowledgment + text",
       "frequency": 2,
       "action": "transition",
-      "question_openness": "closed_question",
-      "emotion": "no_emotion",
-      "techniques": [
-        "general"
-      ],
-      "avg_position": 0.7238178764442157,
-      "reactivity": [],
-      "examples": [
-        "Есть вещи, которые делает власть, и которые мне отвратительны. А есть те, которые делают, и которые приемлемы. Э, да, для начала, что отвратительно?"
-      ]
-    },
-    {
-      "structure": "acknowledgment + text + text + text",
-      "frequency": 2,
-      "action": "question",
       "question_openness": "open_question",
       "emotion": "no_emotion",
       "techniques": [
-        "general"
-      ],
-      "avg_position": 0.5409391973343808,
-      "reactivity": [],
-      "examples": [
-        "Слушай, ну это жёсткий жаргон, на существование которого в как называется, что праздник в хату арестанта, да, есть? Весело в хату арестанта. Это хотя бы кто-то слышал. А АУЕ, ну это уже прямо знаешь, достаётся..."
-      ]
-    },
-    {
-      "structure": "request + request + question",
-      "frequency": 2,
-      "action": "clarification",
-      "question_openness": "open_question",
-      "emotion": "no_emotion",
-      "techniques": [
-        "definition_request"
-      ],
-      "avg_position": 0.02751301645952301,
-      "reactivity": [],
-      "examples": [
-        "Что значит новый Петров? Что это? А Петров - новый Козловский?"
-      ]
-    },
-    {
-      "structure": "request + request + text",
-      "frequency": 2,
-      "action": "question",
-      "question_openness": "open_question",
-      "emotion": "no_emotion",
-      "techniques": [
+        "how_question",
         "reaction_request",
         "time_request"
       ],
-      "avg_position": 0.41300699300699306,
+      "avg_position": 0.2709942895532415,
       "reactivity": [],
       "examples": [
         "Слушай, а как режиссёр реагировала? Она тебя отговаривала, когда ты узнала, что так будешь готовиться? Или"
       ]
     },
     {
-      "structure": "empathy + bridge",
+      "structure": "bridge + request + text",
       "frequency": 2,
       "action": "summary",
       "question_openness": "not_a_question",
       "emotion": "commentary",
       "techniques": [
+        "how_question",
         "time_request"
       ],
-      "avg_position": 0.21159090909090908,
+      "avg_position": 0.32613512735184946,
       "reactivity": [],
       "examples": [
-        "Когда мы сидели на крыше и уже выключили камеры, к сожалению, в этот момент, Юрец, э-э, продолжая свою мысль о том, что он, э-э, там любит прыгать, испытывать себя, он сказал: \"О, а я же в Нальчике снимаюсь. Так давайте мы того, там, просто сиганём откуда-нибудь\"."
+        "Когда я последний раз прилетал в Нальчик год назад, я, ты не представляешь, как я хотел сюда, потому что я обожаю хычины, лимонад, э-э, теперь и люля. Не, ну, в общем, я думаю, что будут классные люди, классное место, классные горы, очень вкусная еда. Я лечу с отличным настроением."
       ]
     },
     {
-      "structure": "text + request + request + request",
+      "structure": "request + text + text + text",
       "frequency": 2,
-      "action": "clarification",
+      "action": "transition",
       "question_openness": "not_a_question",
       "emotion": "commentary",
       "techniques": [
-        "time_request",
-        "confirmation"
+        "how_question"
       ],
-      "avg_position": 0.22731643356643358,
+      "avg_position": 0.2742179385348567,
       "reactivity": [],
       "examples": [
-        "У вас две дочери. Ты говорил, что это осознанное решение было. Но при этом у вас же были тогда совсем туманные перспективы. То есть вы жили в общаге."
-      ]
-    },
-    {
-      "structure": "acknowledgment + text + text",
-      "frequency": 2,
-      "action": "acknowledgment",
-      "question_openness": "not_a_question",
-      "emotion": "commentary",
-      "techniques": [
-        "general"
-      ],
-      "avg_position": 0.7973876550375756,
-      "reactivity": [],
-      "examples": [
-        "Да. Очень. И вот опять."
+        "Вчера я летел с очень мутным настроением, потому что я всю последнюю неделю представляю, как я вот выхожу к этому обрыву и не могу это сделать. И не могу. Я очень боюсь высоты. Высота - мой самый большой страх."
       ]
     },
     {
@@ -1342,18 +1234,18 @@
       ]
     },
     {
-      "structure": "text + text + empathy + request",
+      "structure": "request + text + question",
       "frequency": 2,
       "action": "clarification",
-      "question_openness": "not_a_question",
-      "emotion": "commentary",
+      "question_openness": "open_question",
+      "emotion": "no_emotion",
       "techniques": [
-        "time_request"
+        "general"
       ],
-      "avg_position": 0.41228620436167607,
+      "avg_position": 0.5824133224133223,
       "reactivity": [],
       "examples": [
-        "Женщина — это мать. У неё простая природная задача. И когда речь идёт о таких конфликтах, ей лучше в них вообще не соваться. Объясните, пожалуйста."
+        "Какие у вас были отношения? Вот помимо этих прекрасных, трогательных, которые вы рассказали по части училища. От неприятия до признания?"
       ]
     },
     {
@@ -1363,7 +1255,9 @@
       "question_openness": "open_question",
       "emotion": "no_emotion",
       "techniques": [
-        "how_question"
+        "hypothetical",
+        "how_question",
+        "time_request"
       ],
       "avg_position": 0.4848888216608682,
       "reactivity": [],
@@ -1383,85 +1277,52 @@
       "avg_position": 0.6823536530025714,
       "reactivity": [],
       "examples": [
-        "Ну, вот. А, о’кей. Я понял.",
-        "Ну, вопрос простой. У тебя полно [цензура], ты супер известный, как найти... да."
+        "Ну, вот. А, о’кей. Я понял."
       ]
     },
     {
-      "structure": "text + text + request + question",
-      "frequency": 2,
-      "action": "question",
-      "question_openness": "closed_question",
-      "emotion": "no_emotion",
-      "techniques": [
-        "general"
-      ],
-      "avg_position": 0.7204913208698748,
-      "reactivity": [],
-      "examples": [
-        "Поправь, кстати, на Кинопоиске, там 192 написано. Э-э, я, честно тебе скажу, я впервые встречаю девушку не спортсменку, у которой рост 184. Я слышал, и не раз, причём, что у высоких девушек бывают переживания, комплексы из-за того, что они такие высокие. У тебя такое было?"
-      ]
-    },
-    {
-      "structure": "request + bridge",
+      "structure": "bridge + acknowledgment",
       "frequency": 2,
       "action": "clarification",
       "question_openness": "closed_question",
-      "emotion": "no_emotion",
+      "emotion": "empathy",
       "techniques": [
-        "general"
+        "relationship"
       ],
-      "avg_position": 0.19930236329281706,
+      "avg_position": 0.26858543532762863,
       "reactivity": [],
       "examples": [
-        "Рассказывай. Ты теперь свободный человек?"
+        "Ты теперь крёстная мама Антона Лапенко? Мафия, да, типа?"
       ]
     },
     {
-      "structure": "acknowledgment + question + text",
-      "frequency": 2,
-      "action": "question",
-      "question_openness": "open_question",
-      "emotion": "no_emotion",
-      "techniques": [
-        "why_question"
-      ],
-      "avg_position": 0.3605567369184798,
-      "reactivity": [],
-      "examples": [
-        "Да, конечно. Зачем ты их сделал? Выглядят странновато."
-      ]
-    },
-    {
-      "structure": "text + bridge",
+      "structure": "text + request + acknowledgment",
       "frequency": 2,
       "action": "transition",
-      "question_openness": "not_a_question",
-      "emotion": "commentary",
-      "techniques": [
-        "fact_checking",
-        "general"
-      ],
-      "avg_position": 0.4187607357010553,
-      "reactivity": [],
-      "examples": [
-        "Так. Если кто не в курсе, между Дубаем и Абу-Даби полтора часа на тачке.",
-        "Слу... ну ты ж помнишь столько информации..."
-      ]
-    },
-    {
-      "structure": "acknowledgment + acknowledgment + question",
-      "frequency": 2,
-      "action": "question",
       "question_openness": "open_question",
       "emotion": "no_emotion",
       "techniques": [
-        "why_question"
+        "general"
       ],
-      "avg_position": 0.6624246106002881,
+      "avg_position": 0.38019966722129783,
       "reactivity": [],
       "examples": [
-        "А, да, я хотел сказать, да. Вот здесь появится, да, это м- монтажные этим. Нет, не надо, зачем?"
+        "А, ещё лучше. У тебя есть, насколько я знаю, условие по контракту, что ты не можешь поливать Black Star [цензура]. Так ведь?"
+      ]
+    },
+    {
+      "structure": "acknowledgment + text + question",
+      "frequency": 2,
+      "action": "transition",
+      "question_openness": "open_question",
+      "emotion": "no_emotion",
+      "techniques": [
+        "time_request"
+      ],
+      "avg_position": 0.5130190746426065,
+      "reactivity": [],
+      "examples": [
+        "Так, а когда они? Извиняюсь. Бро, а у нас Германия с какого по какое?"
       ]
     },
     {
@@ -1478,23 +1339,38 @@
       "examples": [
         "Круто. А ты ставил детям ставишь кино?"
       ]
+    },
+    {
+      "structure": "empathy + text + request",
+      "frequency": 2,
+      "action": "summary",
+      "question_openness": "not_a_question",
+      "emotion": "empathy",
+      "techniques": [
+        "general"
+      ],
+      "avg_position": 0.6993645750595712,
+      "reactivity": [],
+      "examples": [
+        "Ого. Ну, Вторая мировая. Ты такую интересную экскурсию нам тут провёл по военному по военному объекту, но при этом, э, ты говоришь, что ты пацифист."
+      ]
     }
   ],
   "characteristic_phrases": [
     "Когда вы его увидели, как вы отреагировали на это?",
     "Как вы можете это аргументировать?",
-    "О-о-о!",
-    "Близкие люди.",
-    "А, вискарёчек?",
-    "А серьёзно захлебнулась?",
     "Ага.",
     "Угу.",
+    "А, вискарёчек?",
+    "Она просто рассказывала?",
+    "Какая гуманная история.",
+    "Ну, это тоже эмоция.",
     "Слушай, я очень клёвый чувак. У меня должны быть какие-то недостатки.",
     "Слушай, а ковёр этот роскошный. Это из Таджикистана.",
-    "Тебя не смущает то, что в Ростовской области, в городе Белая Калитва, Новошахтинске и всём остальном, это приведёт к тому, что народ будет не только глушить водку, но ещё и делать это под [цензура]. И убиваться просто в [цензура].",
-    "Ну иногда ты хочешь сжечь человека, как ты сам говорил, за то, что он делает талантливо. И ты это смотришь по России 1, например.",
     "Хорошо, второй инсайд. Ты ходил недавно в Стендап-клуб номер один.",
     "Угу. Самый главный вопрос.",
+    "Тебя не смущает то, что в Ростовской области, в городе Белая Калитва, Новошахтинске и всём остальном, это приведёт к тому, что народ будет не только глушить водку, но ещё и делать это под [цензура]. И убиваться просто в [цензура].",
+    "Ну иногда ты хочешь сжечь человека, как ты сам говорил, за то, что он делает талантливо. И ты это смотришь по России 1, например.",
     "Когда до вас до это добило, вы с Анжеликой разозлились, посмеялись? Как вы отреагировали?",
     "А что сказала мама? Как она реагировала, что ты пошёл за неё в отмах?",
     "Мы ценим вашу откровенность. Оказавшись перед Путиным, что бы ему сказали?",

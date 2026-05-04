@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Any
 import chromadb
 import logging
+from collections import Counter
 
 from ai_service.models.rag import RagIndexConfig
 from ai_service.offline_pipeline.indexing.chunking import Chunking
@@ -72,6 +73,19 @@ class OfflineRagIndexBuilder:
             ]
 
             embeddings = self.embedder.embed_passages(documents)
+
+            c = Counter(ids)
+            dups = [k for k, v in c.items() if v > 1]
+            if dups:
+                print("DUP IDS IN THIS BATCH:", dups[:20])
+                # покажем какие чанки дают дубль
+                for d in dups[:5]:
+                    idxs = [i for i, x in enumerate(ids) if x == d]
+                    print("dup id:", d, "positions:", idxs)
+                    for pos in idxs:
+                        ch = batch[pos]
+                        print("  chunk:", ch.interview_id, ch.source_file, ch.question_replica_id)
+                raise RuntimeError("Duplicate ids before upsert")
 
             collection.upsert(
                 ids=ids,

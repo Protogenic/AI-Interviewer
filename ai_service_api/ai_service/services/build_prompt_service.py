@@ -4,13 +4,23 @@ import random
 from ai_service.models.generation import GenerationRequest, BuildPromptResult, InterviewPart
 from ai_service.models.build_profile import InterviewerProfile, Template
 from ai_service.models.rag import RagExample
-from ai_service.offline_pipeline.profiling.markers import MARKERS
+from ai_service.services.markers.dud_markers import DUD_MARKERS
+from ai_service.services.markers.sobchak_markers import SOBCHAK_MARKERS
+from ai_service.services.markers.pozner_markers import POZNER_MARKERS
+from ai_service.services.instructions import INTERVIEWER_INSTRUCTIONS
+
+CHARACTER_MARKERS = {
+    "dud": DUD_MARKERS,
+    "sobchak": SOBCHAK_MARKERS,
+    "pozner": POZNER_MARKERS,
+}
 
 
 def _sample_marker(
     density: Optional[float],
     category: str,
     emotion: str,
+    character_id: str,
     scale: float = 40.0,
 ) -> Tuple[bool, str]:
     rng = random.Random()
@@ -22,39 +32,45 @@ def _sample_marker(
     if not use:
         return False, ""
 
+    markers = CHARACTER_MARKERS.get(character_id)
+
     if emotion == "empathy":
         if category == "empathy" or category == "filler" or category == "hedging":
-            meta = MARKERS[category]
+            meta = markers[category]
             instruction = (
-                "# ОБЯЗАТЕЛЬНО В ЭТОЙ РЕПЛИКЕ"
-                f"Используй ровно один подходящий маркер {meta['label']} "
+                "# МАРКЕРЫ"
+                f"Если уместно,Используй любой, ровно один подходящий маркер {meta['label']} "
                 f"из списка: [ {', '.join(meta['examples'])}]. "
                 "Если маркер уже был недавно в ИСТОРИИ ДИАЛОГА, то выбери другой. "
-                f"Вставь его естественно в любое место внутри фразы."
+                f"Вставь его естественно в любое место внутри фразы, "
+                f"маркер обязательно должен сочетаться с другими словами и подходить под контекст."
             )
             return True, instruction
 
     if emotion == "challenge":
         if category == "pressure" or category == "provocation" or category == "formal":
-            meta = MARKERS[category]
+            meta = markers[category]
             instruction = (
-                "# ОБЯЗАТЕЛЬНО В ЭТОЙ РЕПЛИКЕ"
-                f"Используй ровно один подходящий маркер {meta['label']} "
+                "# МАРКЕРЫ"
+                f"Если уместно, используй любой, но ровно один подходящий маркер {meta['label']} "
                 f"из списка: [ {', '.join(meta['examples'])} ]."
                 "Если маркер уже был недавно в ИСТОРИИ ДИАЛОГА, то выбери другой. "
-                f"Вставь его естественно в любое место внутри фразы."
+                f"Вставь его естественно в любое место внутри фразы,"
+                f"маркер обязательно должен сочетаться с другими словами и подходить под контекст."
+
             )
             return True, instruction
 
     if emotion == "neutral" or  emotion == "commentary" or  emotion == "no_emotion":
         if category != "pressure" and category != "provocation" and category != "empathy":
-            meta = MARKERS[category]
+            meta = markers[category]
             instruction = (
-                "# ОБЯЗАТЕЛЬНО В ЭТОЙ РЕПЛИКЕ"
-                f"Используй ровно один подходящий маркер {meta['label']}."
+                "# МАРКЕРЫ"
+                f"Если уместно,Используй любой, но ровно один подходящий маркер {meta['label']}."
                 f"из списка: [ {', '.join(meta['examples'])} ]. "
                 "Если маркер уже был недавно в ИСТОРИИ ДИАЛОГА, то выбери другой. "
-                f"Вставь его исходя из контекста вопроса в любое место внутри фразы."
+                f"Вставь его исходя из контекста вопроса в любое место внутри фразы,"
+                f"маркер обязательно должен сочетаться с другими словами и подходить под контекст."
             )
             return True, instruction
     return False, " "
@@ -65,8 +81,9 @@ class BuildSystemPromptService:
             self,
             profile: InterviewerProfile,
             template: Template,
+            interviewer_id: str
     ) -> BuildPromptResult:
-        style_instructions = self.profile_to_instruction(profile, template)
+        style_instructions = self.profile_to_instruction(profile, template, interviewer_id)
 
         style_block = self._build_style_block(style_instructions)
         constraints_block = self._build_output_constraints(template)
@@ -83,15 +100,15 @@ class BuildSystemPromptService:
         return result
 
 
-    def profile_to_instruction(self, profile: InterviewerProfile, template: Template) -> List[str]:
+    def profile_to_instruction(self, profile: InterviewerProfile, template: Template, interviewer_id: str) -> List[str]:
         ling_profile = profile.linguistic_profile
         instructions: List[str] = []
 
-        instructions.append(
-            "Ты - Юрий Дудь, российский журналист-интервьюер. "
-            "Твоя задача - выдать одну реплику этого интервьюера "
-            "в соответствии с последним ответом гостя и историей диалога."
-        )
+        instr = INTERVIEWER_INSTRUCTIONS.get(interviewer_id)
+        if instr is not None:
+            instructions.append(instr)
+        else:
+            raise ValueError(f"Unknown interviewer_id: {interviewer_id}")
 
         multi_sentence_ratio = getattr(ling_profile, "multi_sentence_ratio", None)
         if multi_sentence_ratio is not None and multi_sentence_ratio > 0.5:
@@ -113,15 +130,15 @@ class BuildSystemPromptService:
         if avg_len is not None:
             if avg_len < 10:
                 instructions.append(
-                    "Длина: реплика должна быть короткой и лаконичной (до 10 слов)."
+                    "Длина: реплика должна быть короткой и лаконичной (строго до 10 слов)."
                 )
             elif avg_len > 30:
                 instructions.append(
-                    "Длина: реплика развёрнутая, многосоставная (более 30 слов)."
+                    "Длина: реплика развёрнутая, многосоставная (строго более 30 слов)."
                 )
             else:
                 instructions.append(
-                    f"Длина: реплика средней длины (~{int(avg_len)} +- 5 слов)."
+                    f"Длина: реплика средней длины (~{int(avg_len)} +- 5 слов). Длина всей реплики не должна превышать эту рамку."
                 )
 
         density_map = {
@@ -133,14 +150,9 @@ class BuildSystemPromptService:
             "provocation": getattr(ling_profile, "provocation_density", None),
         }
         for category, density in density_map.items():
-            _, line = _sample_marker(density, category, template.emotion)
+            _, line = _sample_marker(density, category, template.emotion, interviewer_id)
             if line:
                 instructions.append(line)
-
-        instructions.append(
-            "# ОБРАЩЕНИЕ"
-            "Всегда 'ты'. Никогда 'вы'. В примерах ниже может встречаться 'вы' - это артефакт расшифровок, игнорируй."
-        )
 
         instructions.append(
             "# ПУНКТУАЦИЯ"

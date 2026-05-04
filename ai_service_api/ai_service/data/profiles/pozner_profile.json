@@ -1,0 +1,468 @@
+{
+  "interviewer_id": "pozner",
+  "linguistic_profile": {
+    "empathy_density": 0.5836226851851852,
+    "hedging_density": 0.019675925925925927,
+    "pressure_density": 0.009259259259259259,
+    "filler_density": 0.7288773148148148,
+    "formal_density": 0.004340277777777778,
+    "provocation_density": 0.0023148148148148147,
+    "avg_question_length": 13.027027027027026,
+    "avg_phrase_length": 10.441087613293051,
+    "multi_sentence_ratio": 0.3867069486404834,
+    "number_of_questions": 0.513595166163142
+  },
+  "reactivity_matrix": {
+    "refusal": {
+      "question": 13,
+      "summary": 3,
+      "back_channel": 4,
+      "clarification": 3,
+      "acknowledgment": 2,
+      "transition": 3
+    },
+    "short_fact": {
+      "transition": 1,
+      "question": 6,
+      "back_channel": 4,
+      "acknowledgment": 1,
+      "clarification": 1,
+      "summary": 1
+    },
+    "vague": {
+      "question": 12,
+      "summary": 4,
+      "back_channel": 11,
+      "transition": 7,
+      "clarification": 4,
+      "acknowledgment": 2
+    },
+    "back_channel": {
+      "clarification": 1,
+      "acknowledgment": 3,
+      "question": 8,
+      "transition": 8,
+      "back_channel": 5,
+      "summary": 2
+    },
+    "short_opinion": {
+      "acknowledgment": 1,
+      "question": 1,
+      "summary": 2
+    },
+    "uncertain": {
+      "transition": 15,
+      "question": 27,
+      "acknowledgment": 7,
+      "back_channel": 7,
+      "summary": 6,
+      "clarification": 4
+    },
+    "agreement": {
+      "back_channel": 9,
+      "summary": 10,
+      "acknowledgment": 13,
+      "question": 7,
+      "transition": 3,
+      "clarification": 4
+    },
+    "story_with_example": {
+      "back_channel": 2,
+      "summary": 2,
+      "clarification": 1,
+      "question": 1
+    },
+    "explanation": {
+      "acknowledgment": 2,
+      "question": 1,
+      "back_channel": 1,
+      "transition": 1
+    },
+    "counter_question": {
+      "transition": 1,
+      "acknowledgment": 1
+    }
+  },
+  "templates": [
+    {
+      "structure": "acknowledgment",
+      "frequency": 63,
+      "action": "back_channel",
+      "question_openness": "not_a_question",
+      "emotion": "empathy",
+      "techniques": [
+        "general",
+        "confirmation"
+      ],
+      "avg_position": 0.4083467750354801,
+      "reactivity": [],
+      "examples": [
+        "Да.",
+        "Да.",
+        "Да.",
+        "Ну да.",
+        "Да."
+      ]
+    },
+    {
+      "structure": "text",
+      "frequency": 48,
+      "action": "acknowledgment",
+      "question_openness": "not_a_question",
+      "emotion": "commentary",
+      "techniques": [
+        "general",
+        "fact_checking",
+        "confirmation"
+      ],
+      "avg_position": 0.5394493412083214,
+      "reactivity": [],
+      "examples": [
+        "Ну это дом культуры железнодорожников.",
+        "Вернусь все-таки к этой теме.",
+        "И это остается.",
+        "Но без образования.",
+        "Сильный коллектив-то был, очень."
+      ]
+    },
+    {
+      "structure": "request",
+      "frequency": 43,
+      "action": "question",
+      "question_openness": "open_question",
+      "emotion": "no_emotion",
+      "techniques": [
+        "general",
+        "time_request",
+        "hypothetical"
+      ],
+      "avg_position": 0.5739310999234007,
+      "reactivity": [],
+      "examples": [
+        "Какое качество вы более всего цените в человеке?",
+        "Какое ваше любимое занятие?",
+        "Если бы предложили вам возглавить страну сегодня, вы согласились бы?",
+        "Что скажете Всевышнему, если или когда вы с ним встретитесь?",
+        "А были ли еще какие-то западные исполнители, которые на вас повлияли?"
+      ]
+    },
+    {
+      "structure": "question",
+      "frequency": 33,
+      "action": "question",
+      "question_openness": "closed_question",
+      "emotion": "no_emotion",
+      "techniques": [
+        "general",
+        "opinion_request"
+      ],
+      "avg_position": 0.5785270356810366,
+      "reactivity": [],
+      "examples": [
+        "В июне месяце какого года?",
+        "На вас повлияли?",
+        "Вы закончили?",
+        "И не мешало?",
+        "Вы еще сочиняли музыку к фильмам?"
+      ]
+    },
+    {
+      "structure": "text + text",
+      "frequency": 11,
+      "action": "summary",
+      "question_openness": "not_a_question",
+      "emotion": "commentary",
+      "techniques": [
+        "general",
+        "hypothetical"
+      ],
+      "avg_position": 0.555797031574599,
+      "reactivity": [],
+      "examples": [
+        "Не хочу! Я не хочу представить.",
+        "Это был Геннадий Бурбулис. Спасибо большое.",
+        "...труп твоего врага. Это китайцы придумали.",
+        "Это была Марина Неелова. Спасибо вам.",
+        "Просто санитарные меры. Обыкновенные, мыть руки..."
+      ]
+    },
+    {
+      "structure": "empathy",
+      "frequency": 9,
+      "action": "clarification",
+      "question_openness": "open_question",
+      "emotion": "no_emotion",
+      "techniques": [
+        "time_request"
+      ],
+      "avg_position": 0.5571529615413006,
+      "reactivity": [],
+      "examples": [
+        "Скажите, пожалуйста, когда вы принимали решение о прекращении существования СССР, вы подумали о судьбе тех десятков миллионов людей, которые окажутся вдруг за границей?"
+      ]
+    },
+    {
+      "structure": "acknowledgment + acknowledgment",
+      "frequency": 8,
+      "action": "acknowledgment",
+      "question_openness": "not_a_question",
+      "emotion": "commentary",
+      "techniques": [
+        "general"
+      ],
+      "avg_position": 0.4168719753338925,
+      "reactivity": [],
+      "examples": [
+        "Ну конечно. Конечно.",
+        "Галича, конечно. И там ваши ребята пели очень хорошо."
+      ]
+    },
+    {
+      "structure": "bridge",
+      "frequency": 5,
+      "action": "transition",
+      "question_openness": "not_a_question",
+      "emotion": "commentary",
+      "techniques": [
+        "general",
+        "time_request"
+      ],
+      "avg_position": 0.4128227398341887,
+      "reactivity": [],
+      "examples": [
+        "Вот я хотел спросить, значит, между вами и Пахмутовой, ну, расстояние возрастное очень большое.",
+        "А рэп пока оставим, но все-таки вернемся...",
+        "Ограничение по времени мы к этому вернемся сейчас, мы уйдем на рекламу и продолжим этот, на мой взгляд, крайне важный разговор."
+      ]
+    },
+    {
+      "structure": "text + request",
+      "frequency": 4,
+      "action": "question",
+      "question_openness": "open_question",
+      "emotion": "no_emotion",
+      "techniques": [
+        "how_question",
+        "why_question",
+        "quantity_request"
+      ],
+      "avg_position": 0.6303197789182787,
+      "reactivity": [],
+      "examples": [
+        "В огромном количестве. Как кто?",
+        "Один вопрос, совершенно не имеющий значения, но он просто мне любопытен. Почему двенадцатиструнная гитара?",
+        "Даже если я больше никогда не приеду в Северную Корею, то опыт нашего сотрудничества навсегда изменил мой взгляд на мир и подход к работе. Как изменил?"
+      ]
+    },
+    {
+      "structure": "text + text + text",
+      "frequency": 4,
+      "action": "transition",
+      "question_openness": "not_a_question",
+      "emotion": "commentary",
+      "techniques": [
+        "general"
+      ],
+      "avg_position": 0.33371496249506516,
+      "reactivity": [],
+      "examples": [
+        "По-моему, Лапин. Вот там у вас есть хорошая песня такая вот... человек обладавший одной из лучших библиотек, кстати, в городе Москве и не только.",
+        "В эфире программа Познер. Мой гость — руководитель Роспотребнадзора Анна Попова. Здравствуйте, Анна Юрьевна.",
+        "В эфире программа Познер. Моего гостя зовут Мортен Травик. Здравствуйте."
+      ]
+    },
+    {
+      "structure": "acknowledgment + question",
+      "frequency": 4,
+      "action": "question",
+      "question_openness": "uncertain_question",
+      "emotion": "no_emotion",
+      "techniques": [
+        "general"
+      ],
+      "avg_position": 0.6137211036539896,
+      "reactivity": [],
+      "examples": [
+        "Хорошо. А вам знакомо чувство ревности?"
+      ]
+    },
+    {
+      "structure": "request + text",
+      "frequency": 3,
+      "action": "transition",
+      "question_openness": "not_a_question",
+      "emotion": "commentary",
+      "techniques": [
+        "how_question"
+      ],
+      "avg_position": 0.6215686274509804,
+      "reactivity": [],
+      "examples": [
+        "И вот это как... А он остался там ведь жить."
+      ]
+    },
+    {
+      "structure": "acknowledgment + request",
+      "frequency": 3,
+      "action": "summary",
+      "question_openness": "not_a_question",
+      "emotion": "empathy",
+      "techniques": [
+        "how_question",
+        "quantity_request"
+      ],
+      "avg_position": 0.5173180681668641,
+      "reactivity": [],
+      "examples": [
+        "Да, да, двадцать три. Потрясающая совершенно песня, Как молоды мы были.",
+        "Да. Как Фаина Георгиевна, кстати, говорила."
+      ]
+    },
+    {
+      "structure": "text + request + request",
+      "frequency": 3,
+      "action": "transition",
+      "question_openness": "not_a_question",
+      "emotion": "commentary",
+      "techniques": [
+        "confirmation",
+        "how_question",
+        "behavioral"
+      ],
+      "avg_position": 0.20546563144273366,
+      "reactivity": [],
+      "examples": [
+        "А, вот. Поэтому я очень вам признателен, что все-таки вы вняли моей просьбе. И хочу сразу сказать, что читая многие интервью, которые вы дали, я прочитал все...",
+        "Мы с вами встречались 23 марта прошлого года. Это был 12-й день после того, как ВОЗ Всемирная организация здравоохранения объявила пандемию. И на тот момент вы вот что сказали и прошу посмотреть на экран.",
+        "Анна Юрьевна, в начале нашей программы вы упомянули мутацию вируса. И вот когда мы встречались год, ну почти год назад, меньше чуть-чуть... вот что вы говорили:"
+      ]
+    },
+    {
+      "structure": "acknowledgment + text",
+      "frequency": 3,
+      "action": "transition",
+      "question_openness": "not_a_question",
+      "emotion": "empathy",
+      "techniques": [
+        "general"
+      ],
+      "avg_position": 0.43096313842464645,
+      "reactivity": [],
+      "examples": [
+        "Да, это нужно. Вот есть актерские роли,"
+      ]
+    },
+    {
+      "structure": "text + acknowledgment + text + request",
+      "frequency": 2,
+      "action": "clarification",
+      "question_openness": "not_a_question",
+      "emotion": "empathy",
+      "techniques": [
+        "general"
+      ],
+      "avg_position": 0.6419857876036321,
+      "reactivity": [],
+      "examples": [
+        "М-м... Да, интересно. Интересно. Скажите мне, пожалуйста..."
+      ]
+    },
+    {
+      "structure": "question + question",
+      "frequency": 2,
+      "action": "question",
+      "question_openness": "open_question",
+      "emotion": "no_emotion",
+      "techniques": [
+        "general"
+      ],
+      "avg_position": 0.8937820765890249,
+      "reactivity": [],
+      "examples": [
+        "Какая судьба вашей рок-оперы? Какая из них — «Мастера»?"
+      ]
+    },
+    {
+      "structure": "request + request",
+      "frequency": 2,
+      "action": "clarification",
+      "question_openness": "not_a_question",
+      "emotion": "empathy",
+      "techniques": [
+        "how_question"
+      ],
+      "avg_position": 0.5849673202614379,
+      "reactivity": [],
+      "examples": [
+        "Ой, Владимир Владимирович, какие замечательные вещи вдруг выясняются! Вот видите, видите, как бывает!"
+      ]
+    },
+    {
+      "structure": "text + acknowledgment + text + text",
+      "frequency": 2,
+      "action": "summary",
+      "question_openness": "not_a_question",
+      "emotion": "empathy",
+      "techniques": [
+        "quantity_request",
+        "time_request"
+      ],
+      "avg_position": 0.35294117647058826,
+      "reactivity": [],
+      "examples": [
+        "Ну неважно. Да. Этот фильм был сделан в семьдесят пятом году. И там играют два замечательных артиста, Дастин Хоффман и сэр Лоуренс Оливье."
+      ]
+    },
+    {
+      "structure": "question + request",
+      "frequency": 2,
+      "action": "question",
+      "question_openness": "open_question",
+      "emotion": "no_emotion",
+      "techniques": [
+        "general"
+      ],
+      "avg_position": 0.7243496951353248,
+      "reactivity": [],
+      "examples": [
+        "В каком смысле? Теряешь что?"
+      ]
+    },
+    {
+      "structure": "acknowledgment + acknowledgment + acknowledgment",
+      "frequency": 2,
+      "action": "acknowledgment",
+      "question_openness": "not_a_question",
+      "emotion": "empathy",
+      "techniques": [
+        "general"
+      ],
+      "avg_position": 0.4228187919463087,
+      "reactivity": [],
+      "examples": [
+        "Да. Да. Да."
+      ]
+    }
+  ],
+  "characteristic_phrases": [
+    "Да.",
+    "Да.",
+    "Ну это дом культуры железнодорожников.",
+    "Вернусь все-таки к этой теме.",
+    "Какое качество вы более всего цените в человеке?",
+    "Какое ваше любимое занятие?",
+    "В июне месяце какого года?",
+    "На вас повлияли?",
+    "Не хочу! Я не хочу представить.",
+    "Это был Геннадий Бурбулис. Спасибо большое.",
+    "Скажите, пожалуйста, когда вы принимали решение о прекращении существования СССР, вы подумали о судьбе тех десятков миллионов людей, которые окажутся вдруг за границей?",
+    "Ну конечно. Конечно.",
+    "Галича, конечно. И там ваши ребята пели очень хорошо.",
+    "Вот я хотел спросить, значит, между вами и Пахмутовой, ну, расстояние возрастное очень большое.",
+    "А рэп пока оставим, но все-таки вернемся...",
+    "В огромном количестве. Как кто?",
+    "Один вопрос, совершенно не имеющий значения, но он просто мне любопытен. Почему двенадцатиструнная гитара?",
+    "По-моему, Лапин. Вот там у вас есть хорошая песня такая вот... человек обладавший одной из лучших библиотек, кстати, в городе Москве и не только.",
+    "В эфире программа Познер. Мой гость — руководитель Роспотребнадзора Анна Попова. Здравствуйте, Анна Юрьевна."
+  ]
+}
