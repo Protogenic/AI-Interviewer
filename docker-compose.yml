@@ -47,16 +47,36 @@ services:
     ports:
       - '8000:8000'
 
+ 
+  stt-service:
+    build:
+      context: .
+      dockerfile: stt_service/Dockerfile
+    environment:
+      - PYTHONUNBUFFERED=1
+      - WHISPER_MODEL=small
+      - WHISPER_COMPUTE_TYPE=int8
+      - WHISPER_VAD_FILTER=false
+      - HF_TOKEN=${HF_TOKEN:-}
+      - HF_HOME=/cache/huggingface
+    volumes:
+      - stt_hf_cache:/cache/huggingface
+    ports:
+      - '8010:8010'
+
   frontend:
     build:
       context: ./frontend
       args:
         VITE_API_BASE_URL: http://localhost:3001/api
         VITE_WS_URL: http://localhost:3002
+        VITE_STT_URL: http://localhost:8010
     ports:
       - '5173:80'
     depends_on:
       - backend-api
+      - stt-service
 
 volumes:
   postgres_data:
+  stt_hf_cache:

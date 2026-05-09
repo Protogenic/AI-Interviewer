@@ -11,7 +11,9 @@ import {
 } from '~/entities/session';
 import { $journalists, loadJournalists } from '~/entities/journalist';
 import { answerSent } from '~/features/send-answer/model';
+import { useVoiceRecorder, VoiceInputButton, AudioPreview } from '~/features/voice-input';
 import { socketManager } from '~/shared/api/socket';
+import { transcribeAudio } from '~/shared/api/stt';
 import { ChatBubble } from '~/shared/ui/ChatBubble/ChatBubble';
 import { Button } from '~/shared/ui/Button/Button';
 import { Input } from '~/shared/ui/Input/Input';
@@ -514,6 +516,22 @@ const TextFieldInput = styled.input`
   }
 `;
 
+const VoiceError = styled.div`
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.22);
+  color: #fecaca;
+  font-size: 13px;
+  line-height: 1.45;
+`;
+
+const SttError = styled(VoiceError)`
+  background: rgba(245, 158, 11, 0.12);
+  border-color: rgba(245, 158, 11, 0.22);
+  color: #fde68a;
+`;
+
 // ─── Component ────────────────────────────────────────────────────────────────
 
 type ConnectionStatus = 'idle' | 'connecting' | 'live' | 'error';
@@ -542,6 +560,9 @@ export const InterviewPage: React.FC = () => {
   const [unlimitedQuestions, setUnlimitedQuestions] = useState(false);
   const [questionCountRaw, setQuestionCountRaw] = useState('');
   const [submitAttempted, setSubmitAttempted] = useState(false);
+  const [sttError, setSttError] = useState<string | null>(null);
+  const [recognizedText, setRecognizedText] = useState('');
+  const [isVoiceRecognizing, setIsVoiceRecognizing] = useState(false);
 
   const startPayloadRef = useRef<StartPayload | null>(null);
   const sessionMetaRef = useRef<{ displayName: string; displayInfo: string }>({
@@ -675,6 +696,61 @@ export const InterviewPage: React.FC = () => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
+  const {
+    state: voiceState,
+    audioUrl,
+    transcript,
+    error: voiceError,
+    isArmingMic,
+    startRecording,
+    stopRecording,
+    clearRecording,
+    isSupported: isVoiceSupported,
+  } = useVoiceRecorder();
+
+  useEffect(() => {
+    if (voiceState === 'done') return;
+    setRecognizedText('');
+    setIsVoiceRecognizing(false);
+    setSttError(null);
+  }, [voiceState]);
+
+  useEffect(() => {
+    if (voiceState !== 'done' || !audioUrl) return;
+
+    let cancelled = false;
+    setIsVoiceRecognizing(true);
+    setRecognizedText('');
+    setSttError(null);
+
+    (async () => {
+      try {
+        const blob = await fetch(audioUrl).then((r) => r.blob());
+        const text = await transcribeAudio(blob, { language: 'ru', filename: 'voice.webm' });
+        if (cancelled) return;
+        setRecognizedText(text.trim());
+      } catch (e) {
+        if (cancelled) return;
+        setSttError(e instanceof Error ? e.message : 'Ошибка распознавания речи');
+        setRecognizedText('');
+      } finally {
+        if (!cancelled) setIsVoiceRecognizing(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [voiceState, audioUrl]);
+
+  useEffect(() => {
+    if (voiceState !== 'done' || audioUrl) return;
+
+    setIsVoiceRecognizing(false);
+    setRecognizedText(transcript.trim());
+    setSttError(null);
+  }, [voiceState, audioUrl, transcript]);
+
   const handleSend = () => {
     if (!answer.trim()) return;
     answerSent(answer);
@@ -686,6 +762,21 @@ export const InterviewPage: React.FC = () => {
       e.preventDefault();
       handleSend();
     }
+  };
+
+  const handleMicClick = () => {
+    if (voiceState === 'recording') {
+      stopRecording();
+    } else {
+      startRecording();
+    }
+  };
+
+  const handleVoiceSend = () => {
+    const text = recognizedText.trim();
+    if (!text || isVoiceRecognizing) return;
+    answerSent(text);
+    clearRecording();
   };
 
   const handleComplete = () => {
@@ -876,23 +967,51 @@ export const InterviewPage: React.FC = () => {
 
           <InputPanel>
             <InputInner>
-              <Input
-                value={answer}
-                onChange={(e) => setAnswer(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="Ваш ответ... (Enter для отправки)"
-                disabled={status === 'connecting'}
-              />
+              {voiceError && <VoiceError>{voiceError}</VoiceError>}
+              {sttError && <SttError>{sttError}</SttError>}
+              {voiceState === 'done' && (audioUrl || transcript.trim()) ? (
+                <AudioPreview
+                  audioUrl={audioUrl}
+                  recognizedText={recognizedText}
+                  isRecognizing={isVoiceRecognizing}
+                  onDelete={clearRecording}
+                  onSend={handleVoiceSend}
+                />
+              ) : (
+                <Input
+                  value={answer}
+                  onChange={(e) => setAnswer(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder={
+                    voiceState === 'recording'
+                      ? '🎙 Идёт запись...'
+                      : 'Ваш ответ... (Enter для отправки)'
+                  }
+                  disabled={status === 'connecting' || voiceState === 'recording'}
+                  rightSlot={
+                    isVoiceSupported ? (
+                      <VoiceInputButton
+                        isRecording={voiceState === 'recording'}
+                        isArming={voiceState === 'recording' && isArmingMic}
+                        onClick={handleMicClick}
+                        disabled={false}
+                      />
+                    ) : undefined
+                  }
+                />
+              )}
               <ButtonRow>
                 <Button variant="secondary" onClick={handleComplete}>
                   Завершить интервью
                 </Button>
-                <Button
-                  onClick={handleSend}
-                  disabled={!answer.trim() || status === 'connecting'}
-                >
-                  Отправить →
-                </Button>
+                {voiceState !== 'done' && (
+                  <Button
+                    onClick={handleSend}
+                    disabled={!answer.trim() || status === 'connecting' || voiceState === 'recording'}
+                  >
+                    Отправить →
+                  </Button>
+                )}
               </ButtonRow>
             </InputInner>
           </InputPanel>

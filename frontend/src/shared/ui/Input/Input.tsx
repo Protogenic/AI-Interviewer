@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
+  rightSlot?: React.ReactNode;
 }
 
 const Wrapper = styled.div`
@@ -19,9 +20,15 @@ const Label = styled.label`
   text-transform: uppercase;
 `;
 
-const StyledInput = styled.input`
+const InputWrapper = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
+`;
+
+const StyledInput = styled.input<{ $hasRightSlot?: boolean }>`
   width: 100%;
-  padding: 11px 16px;
+  padding: 11px ${({ $hasRightSlot }) => ($hasRightSlot ? '50px' : '16px')} 11px 16px;
   font-size: 15px;
   color: #1e293b;
   background: #ffffff;
@@ -46,11 +53,23 @@ const StyledInput = styled.input`
   }
 `;
 
-export const Input: React.FC<InputProps> = ({ label, ...props }) => {
+const RightSlot = styled.div`
+  position: absolute;
+  right: 9px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+`;
+
+export const Input: React.FC<InputProps> = ({ label, rightSlot, ...props }) => {
   return (
     <Wrapper>
       {label && <Label>{label}</Label>}
-      <StyledInput {...props} />
+      <InputWrapper>
+        <StyledInput $hasRightSlot={Boolean(rightSlot)} {...props} />
+        {rightSlot && <RightSlot>{rightSlot}</RightSlot>}
+      </InputWrapper>
     </Wrapper>
   );
 };
