@@ -4,7 +4,7 @@ import httpx
 import json
 import logging
 
-from ai_service.exeptions.generation_error import GenerationError
+from ai_service.exeptions.generation_error import GenerationError, LLMResponseError
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -45,7 +45,6 @@ class BaseLLMClient(Protocol):
     async def generate_question(self, system_prompt: str, user_prompt: str) -> str:
         ...
 
-
 class OpenAILLMClient:
     def __init__(
         self,
@@ -84,10 +83,12 @@ class OpenAILLMClient:
             raw_question = response.choices[0].message.content or ""
             question =  _assemble_from_json(raw_question)
             return question
+        except LLMResponseError:
+            raise
         except BadRequestError as e:
             raise GenerationError(f"OpenAI bad request: {e}") from e
         except Exception as e:
-            raise GenerationError(f"OpenAI generation failed: {e}") from e
+            raise LLMResponseError(f"OpenAI generation failed: {e}") from e
 
 
 class OllamaLLMClient:
@@ -132,6 +133,53 @@ class OllamaLLMClient:
                 f"Ollama HTTP error: {e.response.status_code} {e.response.text}"
             ) from e
         except Exception as e:
-            raise GenerationError(f"Ollama generation failed: {e}") from e
+            raise LLMResponseError(f"Ollama generation failed: {e}") from e
 
 
+class OpenRouterLLMClient:
+    def __init__(
+        self,
+        api_key: str,
+        model: str = "deepseek/deepseek-chat:free",
+        base_url: str = "https://openrouter.ai/api/v1",
+        temperature: float = 0.7,
+        max_tokens: int = 500,
+    ) -> None:
+        self.__client = AsyncOpenAI(
+            api_key=api_key,
+            base_url=base_url,
+        )
+        self.__model = model
+        self.__temperature = temperature
+        self.__max_tokens = max_tokens
+
+    async def generate_question(self, system_prompt: str, user_prompt: str) -> str:
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ]
+
+        logger.info("PROVIDER: openrouter")
+        logger.info("MODEL: %s", self.__model)
+        logger.info("TEMP: %s", self.__temperature)
+
+        request_kwargs: dict = {
+            "model": self.__model,
+            "messages": messages,
+            "temperature": self.__temperature,
+            "max_tokens": self.__max_tokens,
+            "response_format": {"type": "json_object"},
+        }
+
+        try:
+            response = await self.__client.chat.completions.create(**request_kwargs)
+            raw_question = response.choices[0].message.content or ""
+            if not raw_question.strip():
+                raise LLMResponseError("OpenRouter returned an empty message content")
+            return _assemble_from_json(raw_question)
+        except LLMResponseError:
+            raise
+        except BadRequestError as e:
+            raise GenerationError(f"OpenRouter bad request: {e}") from e
+        except Exception as e:
+            raise LLMResponseError(f"OpenRouter generation failed: {e}") from e

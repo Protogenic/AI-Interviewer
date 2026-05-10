@@ -1,8 +1,8 @@
 import json
 from typing import Dict, List
 from pathlib import Path
-from ai_service.exeptions.generation_error import CharacterNotFound
 
+from ai_service.exeptions.generation_error import CharacterNotFound, ProfileDataCorruptedError
 from ai_service.models.build_profile import InterviewerProfile, Template, LinguisticProfile
 
 
@@ -18,13 +18,25 @@ class GetProfileInfo:
         profile_path = self.__profiles_dir / f"{character_id}_profile.json"
 
         if not profile_path.exists():
-            print("ERROR: profile_path")
             raise CharacterNotFound(character_id=character_id)
 
-        with profile_path.open("r", encoding="utf-8") as f:
-            raw_profile = json.load(f)
+        try:
+            with profile_path.open("r", encoding="utf-8") as f:
+                raw_profile = json.load(f)
+        except json.JSONDecodeError as e:
+            raise ProfileDataCorruptedError(
+                character_id=character_id,
+                reason=f"invalid JSON: {e}",
+            ) from e
 
-        profile = self.__parse_profile(raw_profile)
+        try:
+            profile = self.__parse_profile(raw_profile)
+        except (KeyError, TypeError, ValueError) as e:
+            raise ProfileDataCorruptedError(
+                character_id=character_id,
+                reason=f"unexpected profile structure: {e}",
+            ) from e
+
         self.__profiles[character_id] = profile
         return profile
 

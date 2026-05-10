@@ -6,7 +6,7 @@ import time
 
 load_dotenv(Path(__file__).resolve().parent / ".env")
 
-from ai_service.api import generation_router, health_router
+from ai_service.api import generation_router
 from ai_service.core import config
 
 
@@ -60,7 +60,6 @@ def create_app() -> FastAPI:
             media_type=response.media_type,
         )
 
-    app.include_router(health_router.router, prefix="/api")
     app.include_router(generation_router.router, prefix="/api")
 
     return app

@@ -5,6 +5,7 @@ from ai_service.selection.compability import ACTION_TECHNIQUE_COMPATIBILITY
 from ai_service.offline_pipeline.categories import Action, Technique
 from ai_service.models.selection import TemplateSelection
 from ai_service.models.build_profile import Template
+from ai_service.exeptions.generation_error import TemplateSelectionError
 
 class TemplateSelector:
     def __init__(self,
@@ -55,9 +56,9 @@ class TemplateSelector:
         weights = [max(item[1], 0.01) for item in top_candidates]
 
         if not templates:
-            raise ValueError(
-                f"No templates found for action={action}, "
-                f"interview_position={interview_position}"
+            raise TemplateSelectionError(
+                action=action.value if hasattr(action, "value") else str(action),
+                interview_position=interview_position,
             )
 
         select = self.random.choices(templates, weights=weights, k=1)
@@ -69,7 +70,10 @@ class TemplateSelector:
                 reason="selected_by_compatibility_position_frequency"
             )
         else:
-            raise ValueError
+            raise TemplateSelectionError(
+                action=action.value if hasattr(action, "value") else str(action),
+                interview_position=interview_position,
+            )
 
 
     def _get_compatible_techniques(self, action: Action) -> List[Technique]:

@@ -1,7 +1,6 @@
 from ai_service.models.generation import GenerationRequest, GenerationResponse
 from ai_service.services.llm_service import BaseLLMClient
 from ai_service.services.build_prompt_service import BuildUserPromptService, BuildSystemPromptService
-from ai_service.exeptions.generation_error import CharacterNotFound
 from ai_service.models.build_profile import InterviewerProfile
 from ai_service.selection.action_selector import ActionSelector
 from ai_service.selection.template_selector import TemplateSelector
@@ -14,14 +13,12 @@ from ai_service.models.generation import InterviewPart
 class GenerateQuestionService:
     def __init__(self,
                  llm_client: BaseLLMClient,
-                 interview_characters: set[str],
                  profile_repository,
                  action_selector: ActionSelector,
                  template_selector: TemplateSelector,
                  max_number_question: int,
                  rag_service: OnlineRagSearchService) -> None:
         self.__llm_client = llm_client
-        self.__interview_characters = interview_characters
         #self.__prompt_builder = BuildPromptService()
         self.__user_prompt_builder = BuildUserPromptService()
         self.__system_prompt_builder = BuildSystemPromptService()
@@ -34,9 +31,6 @@ class GenerateQuestionService:
 
     async def generate_question(self, input_data: GenerationRequest) -> GenerationResponse:
         current_answer = input_data.last_answer
-
-        if input_data.character_id not in self.__interview_characters:
-            raise CharacterNotFound(character_id=input_data.character_id)
 
         profile: InterviewerProfile = self.__profile_repository.get_profile(input_data.character_id)
 

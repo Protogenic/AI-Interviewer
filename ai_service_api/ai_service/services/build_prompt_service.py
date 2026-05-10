@@ -8,6 +8,7 @@ from ai_service.services.markers.dud_markers import DUD_MARKERS
 from ai_service.services.markers.sobchak_markers import SOBCHAK_MARKERS
 from ai_service.services.markers.pozner_markers import POZNER_MARKERS
 from ai_service.services.instructions import INTERVIEWER_INSTRUCTIONS
+from ai_service.exeptions.generation_error import UnknownInterviewerError
 
 CHARACTER_MARKERS = {
     "dud": DUD_MARKERS,
@@ -108,7 +109,7 @@ class BuildSystemPromptService:
         if instr is not None:
             instructions.append(instr)
         else:
-            raise ValueError(f"Unknown interviewer_id: {interviewer_id}")
+            raise UnknownInterviewerError(interviewer_id)
 
         multi_sentence_ratio = getattr(ling_profile, "multi_sentence_ratio", None)
         if multi_sentence_ratio is not None and multi_sentence_ratio > 0.5:

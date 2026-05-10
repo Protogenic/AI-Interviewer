@@ -1,0 +1,16 @@
+# LLM провайдер - устанавливает один провайдер.
+# Поддерживаются: openai | openrouter | ollama
+LLM_PROVIDER=openai
+
+
+# Параметры для генерации - скопировать
+LLM_TEMPERATURE=0.7
+LLM_MAX_TOKENS=4000
+
+
+# OpenRouter
+OPENROUTER_API_KEY=
+OPENROUTER_BASE_URL=https://openrouter.ai/api/v1
+
+# DeepSeek V3
+OPENROUTER_MODEL=deepseek/deepseek-chat
