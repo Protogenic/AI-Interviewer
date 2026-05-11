@@ -26,6 +26,7 @@ services:
     environment:
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/ai_interviewer
       AI_SERVICE_URL: http://ai-service:8000
+      TTS_SERVICE_URL: http://tts-service:8100
       PORT_REST: 3001
       PORT_WS: 3002
     ports:
@@ -63,6 +64,16 @@ services:
       - stt_hf_cache:/cache/huggingface
     ports:
       - '8010:8010'
+
+  tts-service:
+    build:
+      context: ./tts_service
+      dockerfile: Dockerfile
+    environment:
+      - PYTHONUNBUFFERED=1
+      - ENGINE=dummy
+    ports:
+      - '8100:8100'
 
   frontend:
     build:

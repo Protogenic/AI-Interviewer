@@ -21,6 +21,7 @@ tts_engine = build_engine(
     device=settings_proj.device,
     xtts_model=settings_proj.xtts_model,
     language=settings_proj.default_language,
+    models_dir=settings_proj.models_dir,
 )
 
 

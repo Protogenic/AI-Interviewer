@@ -49,7 +49,7 @@ export interface User {
 
 /** События, которые сервер отправляет клиенту */
 export interface ServerToClientEvents {
-  'interview:question': (data: { question: string; sessionId: string }) => void;
+  'interview:question': (data: { question: string; sessionId: string; audio: string | null }) => void;
   'interview:error': (data: { message: string }) => void;
 }
 

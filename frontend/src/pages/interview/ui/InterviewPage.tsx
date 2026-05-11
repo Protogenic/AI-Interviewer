@@ -615,7 +615,14 @@ export const InterviewPage: React.FC = () => {
     const p = startPayloadRef.current;
     if (!p) return;
 
-    const handleQuestion = ({ question, sessionId }: { question: string; sessionId: string }) => {
+    const handleQuestion = ({ question, sessionId, audio }: { question: string; sessionId: string; audio: string | null }) => {
+      if (audio) {
+        const bytes = Uint8Array.from(atob(audio), c => c.charCodeAt(0));
+        const url = URL.createObjectURL(new Blob([bytes], { type: 'audio/wav' }));
+        const player = new Audio(url);
+        player.onended = () => URL.revokeObjectURL(url);
+        player.play().catch(() => {});
+      }
       setStatus('live');
       const meta = sessionMetaRef.current;
       if (wiredSessionIdRef.current !== sessionId) {

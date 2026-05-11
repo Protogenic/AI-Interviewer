@@ -68,9 +68,9 @@ export function setupWebSocket(io: Server): void {
           auth.anonSessionIds.add(session.id);
         }
 
-        const question = await interviewService.generateFirstQuestion(session.id);
+        const { question, audio } = await interviewService.generateFirstQuestion(session.id);
 
-        socket.emit('interview:question', { question, sessionId: session.id });
+        socket.emit('interview:question', { question, sessionId: session.id, audio });
       } catch (err) {
         console.error('[WS] interview:start error', err);
         socket.emit('interview:error', { message: 'Не удалось начать интервью' });
@@ -84,8 +84,8 @@ export function setupWebSocket(io: Server): void {
           socket.emit('interview:error', { message: auth.reason });
           return;
         }
-        const question = await interviewService.processAnswer(data.sessionId, data.answer);
-        socket.emit('interview:question', { question, sessionId: data.sessionId });
+        const { question, audio } = await interviewService.processAnswer(data.sessionId, data.answer);
+        socket.emit('interview:question', { question, sessionId: data.sessionId, audio });
       } catch (err) {
         console.error('[WS] interview:answer error', err);
         socket.emit('interview:error', { message: 'Не удалось сгенерировать вопрос' });

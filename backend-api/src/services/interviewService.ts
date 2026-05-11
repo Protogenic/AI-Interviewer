@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 import { prisma } from '../database/prisma';
 import { generateQuestion } from './aiServiceClient';
+import { synthesize } from './ttsClient';
 import { InterviewPart } from '../types';
 
 function hashAnonSecret(secret: string): string {
@@ -74,8 +75,16 @@ export async function completeSession(sessionId: string) {
   });
 }
 
-export async function processAnswer(sessionId: string, answer: string): Promise<string> {
-  // берём историю до того, как сохранили новый ответ
+export interface QuestionResult {
+  question: string;
+  audio: string | null;
+}
+
+async function synthesizeForJournalist(question: string, journalistId: string): Promise<string | null> {
+  return synthesize(question, journalistId);
+}
+
+export async function processAnswer(sessionId: string, answer: string): Promise<QuestionResult> {
   const session = await prisma.interviewSession.findUniqueOrThrow({
     where: { id: sessionId },
     include: { turns: { orderBy: { createdAt: 'asc' } } },
@@ -111,11 +120,11 @@ export async function processAnswer(sessionId: string, answer: string): Promise<
     },
   });
 
-  return result.question;
+  const audio = await synthesizeForJournalist(result.question, session.journalistId);
+  return { question: result.question, audio };
 }
 
-export async function generateFirstQuestion(sessionId: string): Promise<string> {
-  // история пустая, просто нужны параметры сессии
+export async function generateFirstQuestion(sessionId: string): Promise<QuestionResult> {
   const session = await prisma.interviewSession.findUniqueOrThrow({
     where: { id: sessionId },
   });
@@ -146,5 +155,6 @@ export async function generateFirstQuestion(sessionId: string): Promise<string> 
     },
   });
 
-  return result.question;
+  const audio = await synthesizeForJournalist(result.question, session.journalistId);
+  return { question: result.question, audio };
 }

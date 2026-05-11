@@ -49,6 +49,7 @@ export interface InterviewCompletePayload {
 export interface InterviewQuestionPayload {
   question: string;
   sessionId: string;
+  audio: string | null;
 }
 
 export interface InterviewErrorPayload {
