@@ -43,6 +43,8 @@ class VoiceRepository:
             raise VoiceNotFound(voice_id=voice_id)
         return self.__voices[voice_id]
 
-    def reference_path(self, voice_id: str) -> Path:
+    def reference_paths(self, voice_id: str) -> List[Path]:
         self.get(voice_id)
-        return self.__voices_dir / voice_id / "reference.wav"
+        voice_dir = self.__voices_dir / voice_id
+        wavs = sorted(voice_dir.glob("*.wav"))
+        return wavs if wavs else [voice_dir / "reference.wav"]

@@ -11,6 +11,7 @@ class ProjectSettings(BaseSettings):
     device: str = "cpu"
     xtts_model: str = "tts_models/multilingual/multi-dataset/xtts_v2"
     voices_dir: str = str(Path(__file__).resolve().parent.parent / "data" / "voices")
+    models_dir: str = str(Path(__file__).resolve().parent.parent / "data" / "models")
 
     sample_rate: int = 22050
     default_voice_id: str = "dud"
