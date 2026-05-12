@@ -54,9 +54,9 @@ class OpenAILLMClient:
         max_tokens: int = 500,
     ) -> None:
         if api_key:
-            self.__client = AsyncOpenAI(api_key=api_key)
+            self._client = AsyncOpenAI(api_key=api_key)
         else:
-            self.__client = AsyncOpenAI()
+            self._client = AsyncOpenAI()
 
         self.__model = model
         self.__temperature = temperature
@@ -74,14 +74,16 @@ class OpenAILLMClient:
         logger.info("TEMP: %s", self.__temperature)
 
         try:
-            response = await self.__client.chat.completions.create(
+            response = await self._client.chat.completions.create(
                 model=self.__model,
                 messages=messages,
                 temperature=self.__temperature,
                 response_format={"type": "json_object"},
             )
             raw_question = response.choices[0].message.content or ""
-            question =  _assemble_from_json(raw_question)
+            if not raw_question.strip():
+                raise LLMResponseError("OpenAI returned empty message content")
+            question = _assemble_from_json(raw_question)
             return question
         except LLMResponseError:
             raise
@@ -145,7 +147,7 @@ class OpenRouterLLMClient:
         temperature: float = 0.7,
         max_tokens: int = 500,
     ) -> None:
-        self.__client = AsyncOpenAI(
+        self._client = AsyncOpenAI(
             api_key=api_key,
             base_url=base_url,
         )
@@ -172,7 +174,7 @@ class OpenRouterLLMClient:
         }
 
         try:
-            response = await self.__client.chat.completions.create(**request_kwargs)
+            response = await self._client.chat.completions.create(**request_kwargs)
             raw_question = response.choices[0].message.content or ""
             if not raw_question.strip():
                 raise LLMResponseError("OpenRouter returned an empty message content")
