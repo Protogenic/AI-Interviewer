@@ -11,6 +11,7 @@ export interface SessionDTO {
   journalistId: string;
   userName: string;
   userInfo: string;
+  interviewTopic: string;
   status: string;
   createdAt: string;
 }
@@ -26,6 +27,7 @@ export interface CreateSessionBody {
   journalistId: string;
   userName?: string;
   userInfo?: string;
+  interviewTopic?: string;
 }
 
 // ─── WebSocket event payloads ──────────────────────────────────────────────────
@@ -34,6 +36,7 @@ export interface InterviewStartPayload {
   journalistId: string;
   userName?: string;
   userInfo?: string;
+  interviewTopic?: string;
   maxNumberQuestions?: number;
 }
 
@@ -68,6 +71,7 @@ export interface GenerateQuestionRequest {
   character_id: string;
   user_name: string;
   user_info: string;
+  interview_topic: string;
   last_answer: string;
   full_interview_history: InterviewPart[];
   phrase_id: number;

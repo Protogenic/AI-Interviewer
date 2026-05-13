@@ -6,10 +6,13 @@ import { authConfig } from '../../config/auth';
 
 export const interviewsRouter = Router();
 
+const MAX_USER_INFO_LENGTH = 1000;
+
 const CreateSessionSchema = z.object({
   journalistId: z.string().min(1),
   userName: z.string().optional(),
-  userInfo: z.string().optional(),
+  userInfo: z.string().max(MAX_USER_INFO_LENGTH).optional(),
+  interviewTopic: z.string().max(255).optional(),
   maxNumberQuestions: z.number().int().positive().optional(),
 });
 
@@ -35,6 +38,7 @@ interviewsRouter.post('/', optionalAuth, async (req: Request, res: Response, nex
       body.journalistId,
       body.userName ?? 'Гость',
       body.userInfo  ?? '',
+      body.interviewTopic ?? '',
       body.maxNumberQuestions,
       req.user?.id ?? null,
     );
@@ -49,7 +53,7 @@ interviewsRouter.post('/', optionalAuth, async (req: Request, res: Response, nex
   }
 });
 
-// GET /api/interviews — история залогиненного пользователя
+// GET /api/interviews - история залогиненного пользователя
 interviewsRouter.get('/', requireAuth, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const sessions = await interviewService.listSessionsByUser(req.user!.id);

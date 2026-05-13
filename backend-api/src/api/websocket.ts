@@ -60,6 +60,7 @@ export function setupWebSocket(io: Server): void {
           data.journalistId,
           data.userName ?? 'Гость',
           data.userInfo  ?? '',
+          data.interviewTopic ?? '',
           data.maxNumberQuestions,
           auth.userId ?? null,
         );

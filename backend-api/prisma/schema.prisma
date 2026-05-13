@@ -45,6 +45,7 @@ model InterviewSession {
   anonSecretHash       String?
   userName             String             @default("Гость")
   userInfo             String             @default("")
+  interviewTopic       String             @default("")
   status               String             @default("active")
   createdAt            DateTime           @default(now())
   questionId           Int                @default(1)
