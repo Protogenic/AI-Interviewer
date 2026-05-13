@@ -8,3 +8,4 @@ chromadb
 sentence-transformers
 huggingface-hub
 numpy
+python-dotenv>=1.0

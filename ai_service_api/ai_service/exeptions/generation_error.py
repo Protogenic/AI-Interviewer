@@ -5,7 +5,7 @@ class GenerationError(Exception):
 class CharacterNotFound(GenerationError):
     """Ошибка: запрошенный интервьюер не найден в базе"""
     def __init__(self, character_id: str):
-        self.__character_id = character_id
+        self.character_id = character_id
         self.__message = f"Character '{character_id}' does not exist in the database."
         super().__init__(self.__message)
 
@@ -13,7 +13,7 @@ class CharacterNotFound(GenerationError):
 class UnknownInterviewerError(GenerationError):
     """Идентификатор интервьюера не найден в таблице инструкций или маркеров."""
     def __init__(self, character_id: str):
-        self.__character_id = character_id
+        self.interviewer_id = character_id
         self.__message = f"No instructions or markers registered for interviewer '{character_id}."
         super().__init__(self.__message)
 

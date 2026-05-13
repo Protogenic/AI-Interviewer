@@ -36,14 +36,14 @@ class GenerateQuestionService:
 
         annotator = RuleAnnotator()
         answer_type = annotator.annotate_answer_type(current_answer)
-        interview_position = self.__extract_interview_position(input_data)
-        previous_template_id = self.__extract_previous_template(input_data)
-        consecutive_followups = self.__extract_consecutive_followups(input_data)
+        interview_position = self.extract_interview_position(input_data)
+        previous_template_id = self.extract_previous_template(input_data)
+        consecutive_followups = self.extract_consecutive_followups(input_data)
 
         selected_action = self.__action_selector.select(answer_type, interview_position, consecutive_followups)
         selected_template = self.__template_selector.select_template(selected_action.action, interview_position, previous_template_id)
 
-        last_question = self.__extract_last_question(input_data.full_interview_history)
+        last_question = self.extract_last_question(input_data.full_interview_history)
         rag_examples = self.__rag_service.search(last_question, input_data.last_answer, 2)
 
         #built_prompt = self.__prompt_builder.build_prompt(input_data, profile, selected_template.template, rag_examples)
@@ -52,7 +52,7 @@ class GenerateQuestionService:
         #generated_question = await self.__llm_client.generate_question(prompt=built_prompt.prompt)
         generated_question = await self.__llm_client.generate_question(system_prompt=system_prompt.prompt, user_prompt= user_prompt.prompt)
 
-        updates_consecutive_followups = self.__update_consecutive_followups(
+        updates_consecutive_followups = self.update_consecutive_followups(
             previous_count=input_data.consecutive_followups,
             selected_action=selected_action.action
         )
@@ -66,27 +66,27 @@ class GenerateQuestionService:
         return  output_response
 
 
-    def __extract_interview_position(self, input_data: GenerationRequest) -> float:
+    def extract_interview_position(self, input_data: GenerationRequest) -> float:
         if self.__max_number_question <= 0:
             return 0.0
         return min(input_data.phrase_id / self.__max_number_question, 1.0)
 
     @staticmethod
-    def __extract_consecutive_followups(input_data: GenerationRequest) -> int:
+    def extract_consecutive_followups(input_data: GenerationRequest) -> int:
         return input_data.consecutive_followups
 
     @staticmethod
-    def __extract_previous_template(input_data: GenerationRequest) -> str | None:
+    def extract_previous_template(input_data: GenerationRequest) -> str | None:
         return input_data.previous_template_id
 
-    def __update_consecutive_followups(self, previous_count: int, selected_action: str) -> int:
+    def update_consecutive_followups(self, previous_count: int, selected_action: str) -> int:
         #if selected_action not in {Action.TRANSITION, DialogueAct.OPEN_QUESTION, DialogueAct.CLOSED_QUESTION}:
         if selected_action in {Action.TRANSITION, Action.BACK_CHANNEL, Action.ACKNOWLEDGMENT}:
             return 0
         return previous_count + 1
 
     @staticmethod
-    def __extract_last_question(history: list[InterviewPart]) -> str | None:
+    def extract_last_question(history: list[InterviewPart]) -> str | None:
         seen_guest = False
         for part in reversed(history):
             if not seen_guest and part.role == "guest":
