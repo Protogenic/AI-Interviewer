@@ -47,7 +47,7 @@ class GenerateQuestionService:
         rag_examples = self.__rag_service.search(last_question, input_data.last_answer, 2)
 
         #built_prompt = self.__prompt_builder.build_prompt(input_data, profile, selected_template.template, rag_examples)
-        system_prompt = self.__system_prompt_builder.build_prompt(profile, selected_template.template, input_data.character_id)
+        system_prompt = self.__system_prompt_builder.build_prompt(profile, selected_template.template, input_data.character_id, input_data.interview_topic)
         user_prompt = self.__user_prompt_builder.build_prompt(input_data, selected_template.template, rag_examples)
         #generated_question = await self.__llm_client.generate_question(prompt=built_prompt.prompt)
         generated_question = await self.__llm_client.generate_question(system_prompt=system_prompt.prompt, user_prompt= user_prompt.prompt)

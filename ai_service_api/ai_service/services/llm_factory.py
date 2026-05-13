@@ -39,6 +39,8 @@ def create_llm_client():
             model=settings.OPENROUTER_MODEL,
             temperature=settings.LLM_TEMPERATURE,
             max_tokens=settings.LLM_MAX_TOKENS,
+            max_retries=settings.OPENROUTER_RETRY_MAX_ATTEMPTS,
+            retry_base_delay=settings.OPENROUTER_RETRY_BASE_DELAY,
         )
 
     raise LLMConfigurationError(provider=settings.LLM_PROVIDER)

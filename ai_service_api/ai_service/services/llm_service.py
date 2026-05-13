@@ -1,5 +1,6 @@
 from openai import AsyncOpenAI, BadRequestError
 from typing import Protocol
+import asyncio
 import httpx
 import json
 import logging
@@ -15,6 +16,8 @@ logger = logging.getLogger("app")
 
 
 def _assemble_from_json(raw: str) -> str:
+    import re
+
     text = (raw or "").strip()
 
     if text.startswith("```"):
@@ -24,21 +27,26 @@ def _assemble_from_json(raw: str) -> str:
 
     try:
         data = json.loads(text)
+        parts = data.get("parts") if isinstance(data, dict) else None
+        if isinstance(parts, list):
+            pieces = [
+                p["content"].strip()
+                for p in parts
+                if isinstance(p, dict)
+                and isinstance(p.get("content"), str)
+                and p["content"].strip()
+            ]
+            if pieces:
+                return " ".join(pieces)
+        return raw.strip()
     except json.JSONDecodeError:
-        return raw.strip()
+        pass
 
-    parts = data.get("parts") if isinstance(data, dict) else None
-    if not isinstance(parts, list):
-        return raw.strip()
+    matches = re.findall(r'"content"\s*:\s*"((?:[^"\\]|\\.)*)"', text)
+    if matches:
+        return " ".join(m.strip() for m in matches if m.strip())
 
-    pieces = []
-    for p in parts:
-        if isinstance(p, dict):
-            content = p.get("content")
-            if isinstance(content, str) and content.strip():
-                pieces.append(content.strip())
-
-    return " ".join(pieces) if pieces else raw.strip()
+    return raw.strip()
 
 
 class BaseLLMClient(Protocol):
@@ -142,10 +150,12 @@ class OpenRouterLLMClient:
     def __init__(
         self,
         api_key: str,
-        model: str = "deepseek/deepseek-chat:free",
+        model: str = "mistralai/mistral-small-3.1-24b-instruct",
         base_url: str = "https://openrouter.ai/api/v1",
         temperature: float = 0.7,
         max_tokens: int = 500,
+        max_retries: int = 3,
+        retry_base_delay: float = 1.0,
     ) -> None:
         self._client = AsyncOpenAI(
             api_key=api_key,
@@ -154,6 +164,8 @@ class OpenRouterLLMClient:
         self.__model = model
         self.__temperature = temperature
         self.__max_tokens = max_tokens
+        self.__max_retries = max_retries
+        self.__retry_base_delay = retry_base_delay
 
     async def generate_question(self, system_prompt: str, user_prompt: str) -> str:
         messages = [
@@ -173,15 +185,29 @@ class OpenRouterLLMClient:
             "response_format": {"type": "json_object"},
         }
 
-        try:
-            response = await self._client.chat.completions.create(**request_kwargs)
-            raw_question = response.choices[0].message.content or ""
-            if not raw_question.strip():
-                raise LLMResponseError("OpenRouter returned an empty message content")
-            return _assemble_from_json(raw_question)
-        except LLMResponseError:
-            raise
-        except BadRequestError as e:
-            raise GenerationError(f"OpenRouter bad request: {e}") from e
-        except Exception as e:
-            raise LLMResponseError(f"OpenRouter generation failed: {e}") from e
+        last_exc: Exception | None = None
+
+        for attempt in range(self.__max_retries + 1):
+            try:
+                response = await self._client.chat.completions.create(**request_kwargs)
+                raw_question = response.choices[0].message.content or ""
+                if not raw_question.strip():
+                    raise LLMResponseError("OpenRouter returned an empty message content")
+                return _assemble_from_json(raw_question)
+            except BadRequestError as e:
+                raise GenerationError(f"OpenRouter bad request: {e}") from e
+            except Exception as e:
+                last_exc = e
+                if attempt < self.__max_retries:
+                    delay = self.__retry_base_delay * (2 ** attempt)
+                    logger.warning(
+                        "OpenRouter attempt %d/%d failed, retrying in %.1fs: %s",
+                        attempt + 1, self.__max_retries + 1, delay, e,
+                    )
+                    await asyncio.sleep(delay)
+
+        if isinstance(last_exc, GenerationError):
+            raise last_exc
+        raise LLMResponseError(
+            f"OpenRouter generation failed after {self.__max_retries + 1} attempts: {last_exc}"
+        ) from last_exc

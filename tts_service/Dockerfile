@@ -2,7 +2,7 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-COPY tts_service/requirements.txt /app/requirements.txt
+COPY requirements.txt /app/requirements.txt
 
 RUN --mount=type=cache,target=/root/.cache/pip \
     python -m pip install --upgrade pip && \

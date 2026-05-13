@@ -82,9 +82,10 @@ class BuildSystemPromptService:
             self,
             profile: InterviewerProfile,
             template: Template,
-            interviewer_id: str
+            interviewer_id: str,
+            interview_topic: str
     ) -> BuildPromptResult:
-        style_instructions = self.profile_to_instruction(profile, template, interviewer_id)
+        style_instructions = self.profile_to_instruction(profile, template, interviewer_id, interview_topic)
 
         style_block = self._build_style_block(style_instructions)
         constraints_block = self._build_output_constraints(template)
@@ -101,7 +102,12 @@ class BuildSystemPromptService:
         return result
 
 
-    def profile_to_instruction(self, profile: InterviewerProfile, template: Template, interviewer_id: str) -> List[str]:
+    def profile_to_instruction(self,
+                               profile: InterviewerProfile,
+                               template: Template,
+                               interviewer_id: str,
+                               interview_topic: str
+                               ) -> List[str]:
         ling_profile = profile.linguistic_profile
         instructions: List[str] = []
 
@@ -157,9 +163,17 @@ class BuildSystemPromptService:
 
         instructions.append(
             "# ПУНКТУАЦИЯ"
-            "Используй: точка, запятая, '?', '!', '...'."
-            "Тире '—' и дефис '-' не используй. Вместо тире начинай новое предложение или ставь запятую."
+            "Используй только: точка, запятая, '?', '!', '...'."
+            "Тире '—', дефис '-', кавычки не используй. Вместо тире ставь просто пробел."
         )
+
+        if interview_topic:
+            instructions.append(
+                f"# ТЕМА ИНТЕРВЬЮ\n"
+                f"Это интервью на тему: «{interview_topic}». "
+                f"Все вопросы, уточнения и переходы должны оставаться в рамках этой темы. "
+                f"Не уходи за её пределы, даже если гость отвечает широко."
+            )
 
         instructions.append(
             "# ОБРАЗЦЫ СТИЛЯ ИНТЕРВЬЮЕРА "
@@ -246,7 +260,7 @@ class BuildUserPromptService:
             rag_examples: list[RagExample]
     ) -> BuildPromptResult:
 
-        structure_block = self._build_structure_block(template)
+        structure_block = self._build_structure_block(template, input_data.interview_topic)
         context_block = self._build_context_block(input_data.full_interview_history, input_data.last_answer)
         examples_block = self._build_examples_block(rag_examples)
 
@@ -266,7 +280,7 @@ class BuildUserPromptService:
         return result
 
     @staticmethod
-    def _build_structure_block(template: Template) -> str:
+    def _build_structure_block(template: Template, interview_topic: str) -> str:
         structure = getattr(template, "structure", None)
         action = getattr(template, "action", None)
         question_openness = getattr(template, "question_openness", None)
@@ -314,7 +328,15 @@ class BuildUserPromptService:
             if action == "clarification":
                 lines_block.append(f"- Основное действие фразы: уточнить детали или спросить что-то по той же теме.")
             if action == "transition":
-                lines_block.append(f"- Основное действие фразы (ПРИОРИТЕТ): перейти к совершенно новой теме, которой нет в истории диалога.")
+                if interview_topic != "":
+                    lines_block.append(
+                        f"- Основное действие фразы (ПРИОРИТЕТ): перейти к новому аспекту или углу темы «{interview_topic}», "
+                        f"которого ещё не касались в этом разговоре. Не выходи за рамки темы «{interview_topic}»."
+                    )
+                else:
+                    lines_block.append(
+                        f"- Основное действие фразы (ПРИОРИТЕТ): перейти к совершенно новой теме, которой нет в истории диалога."
+                    )
             if action == "summary":
                 lines_block.append(f"- Основное действие фразы: подытожить или перефразировать для подтверждения.")
             if action == "question":

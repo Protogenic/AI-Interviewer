@@ -12,6 +12,7 @@ class GenerationRequest(BaseModel):
     character_id: str
     user_name: str
     user_info: str
+    interview_topic: str = ""
     last_answer: str = ""
     full_interview_history: List[InterviewPart]
     max_number_questions: int

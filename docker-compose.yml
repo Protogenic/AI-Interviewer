@@ -23,6 +23,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    env_file:
+      - ./backend-api/.env
     environment:
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/ai_interviewer
       AI_SERVICE_URL: http://ai-service:8000
