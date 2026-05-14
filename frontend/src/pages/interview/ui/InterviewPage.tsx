@@ -17,6 +17,7 @@ import { transcribeAudio } from '~/shared/api/stt';
 import { ChatBubble } from '~/shared/ui/ChatBubble/ChatBubble';
 import { Button } from '~/shared/ui/Button/Button';
 import { Input } from '~/shared/ui/Input/Input';
+import { Modal } from '~/shared/ui/Modal';
 
 // ─── Layout ───────────────────────────────────────────────────────────────────
 
@@ -540,6 +541,20 @@ const AnswerCounter = styled.span<{ $isLimitReached: boolean }>`
   text-align: right;
 `;
 
+const GeneratingHint = styled.div`
+  align-self: flex-start;
+  color: #c7d2fe;
+  font-size: 13px;
+  line-height: 1.4;
+`;
+
+const ModalText = styled.p`
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: #cbd5e1;
+`;
+
 // ─── Component ────────────────────────────────────────────────────────────────
 
 type ConnectionStatus = 'idle' | 'connecting' | 'live' | 'error';
@@ -576,6 +591,10 @@ export const InterviewPage: React.FC = () => {
   const [sttError, setSttError] = useState<string | null>(null);
   const [recognizedText, setRecognizedText] = useState('');
   const [isVoiceRecognizing, setIsVoiceRecognizing] = useState(false);
+  const [answersSentCount, setAnswersSentCount] = useState(0);
+  const [showLimitReachedModal, setShowLimitReachedModal] = useState(false);
+  const [isAwaitingNextQuestion, setIsAwaitingNextQuestion] = useState(false);
+  const [generatingDots, setGeneratingDots] = useState('.');
 
   const startPayloadRef = useRef<StartPayload | null>(null);
   const sessionMetaRef = useRef<{ displayName: string; displayInfo: string }>({
@@ -621,6 +640,7 @@ export const InterviewPage: React.FC = () => {
     !unlimitedQuestions &&
     trimmedCount !== '' &&
     (Number.isNaN(parsedCount) || parsedCount < 1);
+  const activeQuestionLimit = !unlimitedQuestions ? parsedCount : undefined;
   const answerWordsCount = answer.trim() ? answer.trim().split(/\s+/).length : 0;
   const answerCharsCount = answer.length;
   const isAnswerLimitReached = answerCharsCount >= ANSWER_MAX_LENGTH;
@@ -632,6 +652,7 @@ export const InterviewPage: React.FC = () => {
     if (!p) return;
 
     const handleQuestion = ({ question, sessionId, audio }: { question: string; sessionId: string; audio: string | null }) => {
+      setIsAwaitingNextQuestion(false);
       if (audio) {
         const bytes = Uint8Array.from(atob(audio), c => c.charCodeAt(0));
         const url = URL.createObjectURL(new Blob([bytes], { type: 'audio/wav' }));
@@ -661,6 +682,7 @@ export const InterviewPage: React.FC = () => {
     };
 
     const handleError = ({ message }: { message: string }) => {
+      setIsAwaitingNextQuestion(false);
       setStatus('error');
       addMessage({
         id: `${Date.now()}-err`,
@@ -671,6 +693,7 @@ export const InterviewPage: React.FC = () => {
     };
 
     const handleConnectError = (err: Error) => {
+      setIsAwaitingNextQuestion(false);
       setStatus('error');
       addMessage({
         id: `${Date.now()}-ws-err`,
@@ -719,6 +742,21 @@ export const InterviewPage: React.FC = () => {
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  useEffect(() => {
+    if (!isAwaitingNextQuestion || showLimitReachedModal) {
+      setGeneratingDots('.');
+      return;
+    }
+
+    const intervalId = window.setInterval(() => {
+      setGeneratingDots((prev) => (prev.length >= 3 ? '.' : `${prev}.`));
+    }, 450);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, [isAwaitingNextQuestion, showLimitReachedModal]);
 
   const {
     state: voiceState,
@@ -778,8 +816,22 @@ export const InterviewPage: React.FC = () => {
   const handleSend = () => {
     const normalizedAnswer = answer.slice(0, ANSWER_MAX_LENGTH);
     if (!normalizedAnswer.trim()) return;
+
+    const nextAnswersCount = answersSentCount + 1;
+    const reachedLimit =
+      typeof activeQuestionLimit === 'number' &&
+      Number.isFinite(activeQuestionLimit) &&
+      activeQuestionLimit > 0 &&
+      nextAnswersCount >= activeQuestionLimit;
+
     answerSent(normalizedAnswer);
+    setAnswersSentCount(nextAnswersCount);
+    setIsAwaitingNextQuestion(true);
     setAnswer('');
+
+    if (reachedLimit) {
+      setShowLimitReachedModal(true);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -800,11 +852,27 @@ export const InterviewPage: React.FC = () => {
   const handleVoiceSend = () => {
     const text = recognizedText.trim().slice(0, ANSWER_MAX_LENGTH);
     if (!text || isVoiceRecognizing) return;
+
+    const nextAnswersCount = answersSentCount + 1;
+    const reachedLimit =
+      typeof activeQuestionLimit === 'number' &&
+      Number.isFinite(activeQuestionLimit) &&
+      activeQuestionLimit > 0 &&
+      nextAnswersCount >= activeQuestionLimit;
+
     answerSent(text);
+    setAnswersSentCount(nextAnswersCount);
+    setIsAwaitingNextQuestion(true);
     clearRecording();
+
+    if (reachedLimit) {
+      setShowLimitReachedModal(true);
+    }
   };
 
   const handleComplete = () => {
+    setShowLimitReachedModal(false);
+    setIsAwaitingNextQuestion(false);
     if (currentSession?.id) {
       socketManager.emit('interview:complete', { sessionId: currentSession.id });
     }
@@ -839,7 +907,15 @@ export const InterviewPage: React.FC = () => {
     };
     startPayloadRef.current = payload;
     sessionMetaRef.current = { displayName, displayInfo };
+    setAnswersSentCount(0);
+    setShowLimitReachedModal(false);
+    setIsAwaitingNextQuestion(false);
     setHasStarted(true);
+  };
+
+  const handleContinueAfterLimit = () => {
+    setShowLimitReachedModal(false);
+    setUnlimitedQuestions(true);
   };
 
   const statusLabel: Record<ConnectionStatus, string> = {
@@ -1009,6 +1085,9 @@ export const InterviewPage: React.FC = () => {
             <InputInner>
               {voiceError && <VoiceError>{voiceError}</VoiceError>}
               {sttError && <SttError>{sttError}</SttError>}
+              {isAwaitingNextQuestion && !showLimitReachedModal && (
+                <GeneratingHint>Готовлю следующий вопрос{generatingDots}</GeneratingHint>
+              )}
               {voiceState === 'done' && (audioUrl || transcript.trim()) ? (
                 <AudioPreview
                   audioUrl={audioUrl}
@@ -1061,6 +1140,24 @@ export const InterviewPage: React.FC = () => {
               </ButtonRow>
             </InputInner>
           </InputPanel>
+          <Modal
+            open={Boolean(showLimitReachedModal && activeQuestionLimit)}
+            title="Лимит вопросов достигнут"
+            onClose={handleContinueAfterLimit}
+            closeOnBackdrop={false}
+            actions={
+              <>
+                <Button variant="secondary" onClick={handleContinueAfterLimit}>
+                  Нет, продолжить интервью
+                </Button>
+                <Button onClick={handleComplete}>Да</Button>
+              </>
+            }
+          >
+            <ModalText>
+              Вы ограничивали интервью (количество вопросов - {activeQuestionLimit}). Желаете завершить?
+            </ModalText>
+          </Modal>
         </>
       )}
     </PageWrapper>

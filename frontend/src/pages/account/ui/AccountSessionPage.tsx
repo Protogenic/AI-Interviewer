@@ -59,6 +59,8 @@ const Bubble = styled.div<{ $role: 'interviewer' | 'guest' }>`
   font-family: 'Inter', ui-sans-serif, sans-serif;
   line-height: 1.6;
   white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 `;
 
 const Muted = styled.div`

@@ -57,6 +57,13 @@ const Bubble = styled.div<{ $isUser: boolean }>`
           border-bottom-left-radius: 4px;
           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
         `}
+
+  p {
+    margin: 0;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
 `;
 
 const Timestamp = styled.span<{ $isUser: boolean }>`
