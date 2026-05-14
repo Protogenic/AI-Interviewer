@@ -2,6 +2,8 @@
 
 ![Результаты работы разных моделей](https://github.com/Protogenic/AI-Interviewer/tree/rag_research/src/results_script_and_table/table.PNG)
 
+![Результаты повторного прогона в 10 повторений](https://github.com/Protogenic/AI-Interviewer/tree/rag_research/src/results_script_and_table/res_rep.PNG)
+
 # Общая схема пайплайна
 
 1. Скачать аудио с YouTube (опционально): `download_audio.py`.
