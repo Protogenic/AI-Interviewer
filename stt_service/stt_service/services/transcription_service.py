@@ -50,8 +50,9 @@ def transcribe_file(tmp_path: str, language: Optional[str]) -> dict[str, Any]:
 
     transcribe_kw: dict[str, Any] = dict(
         language=language or None,
-        beam_size=5,
-        condition_on_previous_text=True,
+        beam_size=1,
+        best_of=1,
+        condition_on_previous_text=False,
         initial_prompt=s.whisper_initial_prompt,
     )
     if s.whisper_vad_filter:

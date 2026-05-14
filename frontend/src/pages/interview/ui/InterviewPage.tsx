@@ -532,13 +532,25 @@ const SttError = styled(VoiceError)`
   color: #fde68a;
 `;
 
+const AnswerCounter = styled.span<{ $isLimitReached: boolean }>`
+  display: block;
+  margin-top: 6px;
+  font-size: 13px;
+  color: ${({ $isLimitReached }) => ($isLimitReached ? '#fbbf24' : '#94a3b8')};
+  text-align: right;
+`;
+
 // ─── Component ────────────────────────────────────────────────────────────────
 
 type ConnectionStatus = 'idle' | 'connecting' | 'live' | 'error';
 
+const ANSWER_MAX_LENGTH = 300;
+const INTERVIEW_TOPIC_MAX_LENGTH = 1000;
+
 type StartPayload = {
   userName?: string;
   userInfo?: string;
+  interviewTopic?: string;
   maxNumberQuestions?: number;
   displayName: string;
   displayInfo: string;
@@ -557,6 +569,7 @@ export const InterviewPage: React.FC = () => {
 
   const [userName, setUserName] = useState('');
   const [userInfo, setUserInfo] = useState('');
+  const [interviewTopic, setInterviewTopic] = useState('');
   const [unlimitedQuestions, setUnlimitedQuestions] = useState(false);
   const [questionCountRaw, setQuestionCountRaw] = useState('');
   const [submitAttempted, setSubmitAttempted] = useState(false);
@@ -608,6 +621,9 @@ export const InterviewPage: React.FC = () => {
     !unlimitedQuestions &&
     trimmedCount !== '' &&
     (Number.isNaN(parsedCount) || parsedCount < 1);
+  const answerWordsCount = answer.trim() ? answer.trim().split(/\s+/).length : 0;
+  const answerCharsCount = answer.length;
+  const isAnswerLimitReached = answerCharsCount >= ANSWER_MAX_LENGTH;
 
   useEffect(() => {
     if (!journalistId || !hasStarted) return;
@@ -676,6 +692,7 @@ export const InterviewPage: React.FC = () => {
         journalistId: journalistId!,
         userName: p.userName,
         userInfo: p.userInfo,
+        interviewTopic: p.interviewTopic,
         maxNumberQuestions: p.maxNumberQuestions,
       });
     });
@@ -735,7 +752,7 @@ export const InterviewPage: React.FC = () => {
         const blob = await fetch(audioUrl).then((r) => r.blob());
         const text = await transcribeAudio(blob, { language: 'ru', filename: 'voice.webm' });
         if (cancelled) return;
-        setRecognizedText(text.trim());
+        setRecognizedText(text.trim().slice(0, ANSWER_MAX_LENGTH));
       } catch (e) {
         if (cancelled) return;
         setSttError(e instanceof Error ? e.message : 'Ошибка распознавания речи');
@@ -754,13 +771,14 @@ export const InterviewPage: React.FC = () => {
     if (voiceState !== 'done' || audioUrl) return;
 
     setIsVoiceRecognizing(false);
-    setRecognizedText(transcript.trim());
+    setRecognizedText(transcript.trim().slice(0, ANSWER_MAX_LENGTH));
     setSttError(null);
   }, [voiceState, audioUrl, transcript]);
 
   const handleSend = () => {
-    if (!answer.trim()) return;
-    answerSent(answer);
+    const normalizedAnswer = answer.slice(0, ANSWER_MAX_LENGTH);
+    if (!normalizedAnswer.trim()) return;
+    answerSent(normalizedAnswer);
     setAnswer('');
   };
 
@@ -780,7 +798,7 @@ export const InterviewPage: React.FC = () => {
   };
 
   const handleVoiceSend = () => {
-    const text = recognizedText.trim();
+    const text = recognizedText.trim().slice(0, ANSWER_MAX_LENGTH);
     if (!text || isVoiceRecognizing) return;
     answerSent(text);
     clearRecording();
@@ -810,11 +828,13 @@ export const InterviewPage: React.FC = () => {
 
     const displayName = userName.trim() || 'Гость';
     const displayInfo = userInfo.trim();
+    const normalizedInterviewTopic = interviewTopic.trim().slice(0, INTERVIEW_TOPIC_MAX_LENGTH);
     const payload: StartPayload = {
       displayName,
       displayInfo,
       userName: userName.trim() || undefined,
       userInfo: displayInfo || undefined,
+      interviewTopic: normalizedInterviewTopic || undefined,
       maxNumberQuestions: unlimitedQuestions ? undefined : parsedCount,
     };
     startPayloadRef.current = payload;
@@ -885,6 +905,19 @@ export const InterviewPage: React.FC = () => {
                   rows={4}
                 />
                 <FieldHint>Можно оставить пустым — тогда контекст будет общим.</FieldHint>
+              </FieldBlock>
+
+              <FieldBlock>
+                <TextAreaLabel htmlFor="interview-topic">Тема интервью</TextAreaLabel>
+                <TextArea
+                  id="interview-topic"
+                  placeholder="Например: frontend architecture, system design, подготовка к собеседованию"
+                  value={interviewTopic}
+                  onChange={(e) => setInterviewTopic(e.target.value.slice(0, INTERVIEW_TOPIC_MAX_LENGTH))}
+                  rows={3}
+                  maxLength={INTERVIEW_TOPIC_MAX_LENGTH}
+                />
+                <FieldHint>Необязательно. До {INTERVIEW_TOPIC_MAX_LENGTH} символов.</FieldHint>
               </FieldBlock>
 
               <FieldBlock>
@@ -985,27 +1018,33 @@ export const InterviewPage: React.FC = () => {
                   onSend={handleVoiceSend}
                 />
               ) : (
-                <Input
-                  value={answer}
-                  onChange={(e) => setAnswer(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  placeholder={
-                    voiceState === 'recording'
-                      ? '🎙 Идёт запись...'
-                      : 'Ваш ответ... (Enter для отправки)'
-                  }
-                  disabled={status === 'connecting' || voiceState === 'recording'}
-                  rightSlot={
-                    isVoiceSupported ? (
-                      <VoiceInputButton
-                        isRecording={voiceState === 'recording'}
-                        isArming={voiceState === 'recording' && isArmingMic}
-                        onClick={handleMicClick}
-                        disabled={false}
-                      />
-                    ) : undefined
-                  }
-                />
+                <>
+                  <Input
+                    value={answer}
+                    onChange={(e) => setAnswer(e.target.value.slice(0, ANSWER_MAX_LENGTH))}
+                    onKeyDown={handleKeyDown}
+                    placeholder={
+                      voiceState === 'recording'
+                        ? '🎙 Идёт запись...'
+                        : 'Ваш ответ... (Enter для отправки)'
+                    }
+                    disabled={status === 'connecting' || voiceState === 'recording'}
+                    maxLength={ANSWER_MAX_LENGTH}
+                    rightSlot={
+                      isVoiceSupported ? (
+                        <VoiceInputButton
+                          isRecording={voiceState === 'recording'}
+                          isArming={voiceState === 'recording' && isArmingMic}
+                          onClick={handleMicClick}
+                          disabled={false}
+                        />
+                      ) : undefined
+                    }
+                  />
+                  <AnswerCounter $isLimitReached={isAnswerLimitReached}>
+                    Слов: {answerWordsCount} · Символов: {answerCharsCount}/{ANSWER_MAX_LENGTH}
+                  </AnswerCounter>
+                </>
               )}
               <ButtonRow>
                 <Button variant="secondary" onClick={handleComplete}>

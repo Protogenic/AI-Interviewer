@@ -19,6 +19,7 @@ export interface CreateSessionBody {
   journalistId: string;
   userName?: string;
   userInfo?: string;
+  interviewTopic?: string;
   maxNumberQuestions?: number;
 }
 
@@ -59,6 +60,7 @@ export interface ClientToServerEvents {
     journalistId: string;
     userName?: string;
     userInfo?: string;
+    interviewTopic?: string;
     /** Если не передано — без ограничения (как на бэкенде: null). */
     maxNumberQuestions?: number;
   }) => void;

@@ -35,7 +35,7 @@ services:
       - '3001:3001'
       - '3002:3002'
     command: >
-      sh -c "apk add --no-cache openssl && npx prisma migrate deploy && npx tsx prisma/seed.ts && node dist/server.js"
+      sh -c "./node_modules/.bin/prisma migrate deploy && ./node_modules/.bin/tsx prisma/seed.ts && node dist/server.js"
 
   ai-service:
     build:
@@ -57,7 +57,7 @@ services:
       dockerfile: stt_service/Dockerfile
     environment:
       - PYTHONUNBUFFERED=1
-      - WHISPER_MODEL=small
+      - WHISPER_MODEL=base
       - WHISPER_COMPUTE_TYPE=int8
       - WHISPER_VAD_FILTER=false
       - HF_TOKEN=${HF_TOKEN:-}
