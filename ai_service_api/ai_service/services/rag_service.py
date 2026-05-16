@@ -3,7 +3,12 @@ import chromadb
 
 from ai_service.models.rag import RagExample, RagIndexConfig
 from ai_service.offline_pipeline.indexing.embedding import E5SentenceTransformerEmbedder
-from ai_service.exeptions.generation_error import CharacterNotFound
+from ai_service.exeptions.generation_error import (
+    RagIndexNotFoundError,
+    RagManifestCorruptedError,
+    RagSearchError,
+    RagStoreUnavailableError,
+)
 
 
 class OnlineRagSearchService:
@@ -12,20 +17,39 @@ class OnlineRagSearchService:
         self.embedder = E5SentenceTransformerEmbedder(model_name=config.model_name)
 
         if not self.config.manifest_path.exists():
-            print("ERROR: RAG manifest ", config.manifest_path)
-            raise CharacterNotFound("Неизвестный персонаж")
+            raise RagIndexNotFoundError(
+                character_id=config.character_id,
+                missing_path=str(config.manifest_path),
+            )
         if not self.config.persist_dir.exists():
-            print("ERROR: RAG persist", config.persist_dir)
-            raise CharacterNotFound("Неизвестный персонаж")
+            raise RagIndexNotFoundError(
+                character_id=config.character_id,
+                missing_path=str(config.persist_dir),
+            )
 
-        self._manifest = json.loads(self.config.manifest_path.read_text(encoding="utf-8"))
-        self._client = chromadb.PersistentClient(path=str(self.config.persist_dir))
-        self._collection = self._client.get_or_create_collection(
-            name=self.config.collection_name,
-            metadata={"hnsw:space": "cosine"},
-        )
+        try:
+            self._manifest = json.loads(self.config.manifest_path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as e:
+            raise RagManifestCorruptedError(
+                character_id=config.character_id,
+                manifest_path=str(config.manifest_path),
+                reason=str(e),
+            ) from e
 
-    def search(self, last_question: str | None, last_answer: str | None, k: int = 5) -> list[RagExample]:
+        try:
+            self._client = chromadb.PersistentClient(path=str(self.config.persist_dir))
+            self._collection = self._client.get_or_create_collection(
+                name=self.config.collection_name,
+                metadata={"hnsw:space": "cosine"},
+            )
+        except Exception as e:
+            raise RagStoreUnavailableError(
+                character_id=config.character_id,
+                persist_dir=str(config.persist_dir),
+                reason=str(e),
+            ) from e
+
+    def search(self, last_question: str | None, last_answer: str | None, k: int = 2) -> list[RagExample]:
         q = (last_question or "").strip()
         a = (last_answer or "").strip()
         if not q and not a:
@@ -40,11 +64,17 @@ class OnlineRagSearchService:
 
         query_emb = self.embedder.embed_queries([query_text])
 
-        res = self._collection.query(
-            query_embeddings=query_emb,
-            n_results=k,
-            include=["metadatas", "distances"],
-        )
+        try:
+            res = self._collection.query(
+                query_embeddings=query_emb,
+                n_results=k,
+                include=["metadatas", "distances"],
+            )
+        except Exception as e:
+            raise RagSearchError(
+                character_id=self.config.character_id,
+                reason=str(e),
+            ) from e
 
         metadatas = (res.get("metadatas") or [[]])[0]
         distances = (res.get("distances") or [[]])[0]

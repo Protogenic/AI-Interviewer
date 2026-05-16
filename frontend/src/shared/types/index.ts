@@ -19,6 +19,7 @@ export interface CreateSessionBody {
   journalistId: string;
   userName?: string;
   userInfo?: string;
+  interviewTopic?: string;
   maxNumberQuestions?: number;
 }
 
@@ -39,11 +40,17 @@ export interface Message {
   timestamp: Date;
 }
 
+export interface User {
+  id: string;
+  email: string;
+  createdAt: string;
+}
+
 // ─── WebSocket events ──────────────────────────────────────────────────────────
 
 /** События, которые сервер отправляет клиенту */
 export interface ServerToClientEvents {
-  'interview:question': (data: { question: string; sessionId: string }) => void;
+  'interview:question': (data: { question: string; sessionId: string; audio: string | null }) => void;
   'interview:error': (data: { message: string }) => void;
 }
 
@@ -53,6 +60,7 @@ export interface ClientToServerEvents {
     journalistId: string;
     userName?: string;
     userInfo?: string;
+    interviewTopic?: string;
     /** Если не передано — без ограничения (как на бэкенде: null). */
     maxNumberQuestions?: number;
   }) => void;

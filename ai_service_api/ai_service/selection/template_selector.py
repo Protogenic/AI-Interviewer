@@ -5,6 +5,7 @@ from ai_service.selection.compability import ACTION_TECHNIQUE_COMPATIBILITY
 from ai_service.offline_pipeline.categories import Action, Technique
 from ai_service.models.selection import TemplateSelection
 from ai_service.models.build_profile import Template
+from ai_service.exeptions.generation_error import TemplateSelectionError
 
 class TemplateSelector:
     def __init__(self,
@@ -32,6 +33,12 @@ class TemplateSelector:
             if (set(tpl_techs) & set(compatible_techniques)) and tpl_action == action:
                 filtered.append(template)
 
+        if not filtered:
+            for template in self.templates:
+                tpl_action = getattr(template, "action")
+                if tpl_action == action:
+                    filtered.append(template)
+
         scored = []
         for template in filtered:
             score = self._score_template(
@@ -48,13 +55,25 @@ class TemplateSelector:
         templates = [item[0] for item in top_candidates]
         weights = [max(item[1], 0.01) for item in top_candidates]
 
-        selected = self.random.choices(templates, weights=weights, k=1)[0]
+        if not templates:
+            raise TemplateSelectionError(
+                action=action.value if hasattr(action, "value") else str(action),
+                interview_position=interview_position,
+            )
 
-        return TemplateSelection(
-            template=selected,
-            candidates_count=len(filtered),
-            reason="selected_by_compatibility_position_frequency"
-        )
+        select = self.random.choices(templates, weights=weights, k=1)
+        if select:
+            selected = select[0]
+            return TemplateSelection(
+                template=selected,
+                candidates_count=len(filtered),
+                reason="selected_by_compatibility_position_frequency"
+            )
+        else:
+            raise TemplateSelectionError(
+                action=action.value if hasattr(action, "value") else str(action),
+                interview_position=interview_position,
+            )
 
 
     def _get_compatible_techniques(self, action: Action) -> List[Technique]:

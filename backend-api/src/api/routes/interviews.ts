@@ -1,26 +1,48 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
 import * as interviewService from '../../services/interviewService';
+import { optionalAuth, requireAuth } from '../../middleware/authMiddleware';
+import { authConfig } from '../../config/auth';
 
 export const interviewsRouter = Router();
+
+const MAX_USER_INFO_LENGTH = 1000;
 
 const CreateSessionSchema = z.object({
   journalistId: z.string().min(1),
   userName: z.string().optional(),
-  userInfo: z.string().optional(),
+  userInfo: z.string().max(MAX_USER_INFO_LENGTH).optional(),
+  interviewTopic: z.string().max(255).optional(),
   maxNumberQuestions: z.number().int().positive().optional(),
 });
 
+function setAnonCookie(res: Response, secret: string): void {
+  res.cookie(authConfig.anonCookieName, secret, {
+    httpOnly: true,
+    secure: authConfig.cookieSecure,
+    sameSite: 'lax',
+    path: authConfig.anonCookiePath,
+    maxAge: authConfig.anonCookieMaxAgeMs,
+  });
+}
+
+function readAnonCookie(req: Request): string | null {
+  return req.cookies?.[authConfig.anonCookieName] ?? null;
+}
+
 // POST /api/interviews
-interviewsRouter.post('/', async (req: Request, res: Response, next: NextFunction) => {
+interviewsRouter.post('/', optionalAuth, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const body = CreateSessionSchema.parse(req.body);
-    const session = await interviewService.createSession(
+    const { session, anonSecret } = await interviewService.createSession(
       body.journalistId,
       body.userName ?? 'Гость',
       body.userInfo  ?? '',
+      body.interviewTopic ?? '',
       body.maxNumberQuestions,
+      req.user?.id ?? null,
     );
+    if (anonSecret) setAnonCookie(res, anonSecret);
     res.status(201).json(session);
   } catch (err) {
     if (err instanceof z.ZodError) {
@@ -31,11 +53,26 @@ interviewsRouter.post('/', async (req: Request, res: Response, next: NextFunctio
   }
 });
 
+// GET /api/interviews - история залогиненного пользователя
+interviewsRouter.get('/', requireAuth, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const sessions = await interviewService.listSessionsByUser(req.user!.id);
+    res.json(sessions);
+  } catch (err) {
+    next(err);
+  }
+});
+
 // GET /api/interviews/:id
-interviewsRouter.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
+interviewsRouter.get('/:id', optionalAuth, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const session = await interviewService.getSession(req.params.id);
-    if (!session) {
+    const ok = session && interviewService.canAccessSession(
+      session,
+      req.user?.id ?? null,
+      readAnonCookie(req),
+    );
+    if (!ok) {
       res.status(404).json({ error: 'Session not found' });
       return;
     }
@@ -46,8 +83,18 @@ interviewsRouter.get('/:id', async (req: Request, res: Response, next: NextFunct
 });
 
 // GET /api/interviews/:id/history
-interviewsRouter.get('/:id/history', async (req: Request, res: Response, next: NextFunction) => {
+interviewsRouter.get('/:id/history', optionalAuth, async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const session = await interviewService.getSession(req.params.id);
+    const ok = session && interviewService.canAccessSession(
+      session,
+      req.user?.id ?? null,
+      readAnonCookie(req),
+    );
+    if (!ok) {
+      res.status(404).json({ error: 'Session not found' });
+      return;
+    }
     const turns = await interviewService.getHistory(req.params.id);
     res.json(turns);
   } catch (err) {

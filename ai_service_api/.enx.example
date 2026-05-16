@@ -1,0 +1,13 @@
+# LLM провайдер - устанавливает один провайдер.
+LLM_PROVIDER=openrouter
+
+
+# Параметры для генерации - скопировать
+LLM_TEMPERATURE=0.7
+LLM_MAX_TOKENS=4000
+
+
+# OpenRouter
+OPENROUTER_API_KEY=
+OPENROUTER_BASE_URL=https://openrouter.ai/api/v1
+OPENROUTER_MODEL=mistralai/mistral-small-3.1-24b-instruct

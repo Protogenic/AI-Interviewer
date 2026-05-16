@@ -4,7 +4,6 @@ from typing import List
 
 from ai_service.offline_pipeline.categories import Action, QuestionOpenness, Emotion, Technique, AnswerType
 from ai_service.offline_pipeline.parsing.markers import InterviewerTechniqueMarkers, InterviewerActionMarkers, InterviewerEmotionMarkers, InterviewerQuestionOpennessMarkers, GuestAnswerTypeMarkers
-
 logger = logging.getLogger(__name__)
 
 

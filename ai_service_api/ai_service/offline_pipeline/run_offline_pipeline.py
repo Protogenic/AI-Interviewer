@@ -219,6 +219,26 @@ if __name__ == "__main__":
         batch_size=512,
     )
 
+    interviewer_id = "sobchak"
+    run_pipeline_for_interviewer(
+        interviewer_id=interviewer_id,
+        dir_clean_text=Path(f"ai_service/data/cleaned/{interviewer_id}"),
+        annotated_csv_path=Path(f"ai_service/data/annotated/dud/auto_annotations.csv"),
+        profile_path=Path(f"ai_service/data/profiles/{interviewer_id}_profile.json"),
+        index_path=Path(f"ai_service/data/index/"),
+        batch_size=512,
+    )
+
+    interviewer_id = "pozner"
+    run_pipeline_for_interviewer(
+        interviewer_id=interviewer_id,
+        dir_clean_text=Path(f"ai_service/data/cleaned/{interviewer_id}"),
+        annotated_csv_path=Path(f"ai_service/data/annotated/dud/auto_annotations.csv"),
+        profile_path=Path(f"ai_service/data/profiles/{interviewer_id}_profile.json"),
+        index_path=Path(f"ai_service/data/index/"),
+        batch_size=512,
+    )
+
 
 
 

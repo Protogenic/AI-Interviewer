@@ -43,3 +43,13 @@ npm-debug.log*
 ai_service_api/ai_service/data/*
 !ai_service_api/ai_service/data/profiles/
 !ai_service_api/ai_service/data/profiles/*.json
+
+# TTS model checkpoints and reference audio
+tts_service/tts_service/data/models/*.pth
+tts_service/tts_service/data/voices/**/*.wav
+
+# Local scripts and scratch files
+tools/
+tts_test.py
+out.wav
+/package-lock.json

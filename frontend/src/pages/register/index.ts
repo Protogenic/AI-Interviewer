@@ -1,0 +1,2 @@
+export { RegisterPage as default } from './ui/RegisterPage';
+

@@ -9,7 +9,7 @@ from ai_service.models.selection import ActionSelection
 class ActionSelector:
     def __init__(self,
                  reactivity_matrix: Dict[str, Dict[str, int]],
-                 max_followups_in_row: int = 3,
+                 max_followups_in_row: int = 2,
                  random_seed: Optional[int] = None
                  ) -> None:
         self.reactivity_matrix = reactivity_matrix

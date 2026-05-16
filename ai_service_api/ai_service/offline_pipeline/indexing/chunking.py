@@ -1,5 +1,3 @@
-import json
-from pathlib import Path
 from typing import Any, Iterable, Optional
 
 from ai_service.models.rag import RagChunk
@@ -9,8 +7,10 @@ class Chunking:
     def build_qa_chunks(self, replicas: list[dict[str, Any]]) -> list[RagChunk]:
         chunks: list[RagChunk] = []
         i = 0
+        seen = set()
+
         while i < len(replicas):
-            r = replicas[i]
+            r: dict[str, Any] = replicas[i]
             if r.get("speaker") == "interviewer":
                 q = (r.get("text") or "").strip()
                 if not q:
@@ -30,6 +30,13 @@ class Chunking:
                 passage = f"Вопрос интервьюера: {q}"
                 if answer_text:
                     passage += f"\nОтвет гостя: {answer_text}"
+
+                key = (r.get("interview_id"), r.get("source_file"), int(r["replica_id"]))
+                if key in seen:
+                    print("DUPLICATE KEY:", key, "record:", r)
+                    i += 1
+                    continue
+                seen.add(key)
 
                 chunks.append(
                     RagChunk(

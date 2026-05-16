@@ -1,23 +1,49 @@
+import crypto from 'crypto';
 import { prisma } from '../database/prisma';
 import { generateQuestion } from './aiServiceClient';
+import { synthesize } from './ttsClient';
 import { InterviewPart } from '../types';
+
+function hashAnonSecret(secret: string): string {
+  return crypto.createHash('sha256').update(secret).digest('hex');
+}
 
 export async function createSession(
   journalistId: string,
   userName: string,
   userInfo: string,
+  interviewTopic: string,
   maxNumberQuestions?: number,
+  userId?: string | null,
 ) {
-  return prisma.interviewSession.create({
-    data: { journalistId, userName, userInfo, maxNumberQuestions: maxNumberQuestions ?? null },
+  const anonSecret = userId ? null : crypto.randomBytes(32).toString('hex');
+  const session = await prisma.interviewSession.create({
+    data: {
+      journalistId,
+      userName,
+      userInfo,
+      interviewTopic,
+      maxNumberQuestions: maxNumberQuestions ?? null,
+      userId: userId ?? null,
+      anonSecretHash: anonSecret ? hashAnonSecret(anonSecret) : null,
+    },
     include: { journalist: true },
   });
+  return { session, anonSecret };
 }
 
 export async function getSession(sessionId: string) {
   return prisma.interviewSession.findUnique({
     where: { id: sessionId },
     include: { journalist: true },
+  });
+}
+
+export async function listSessionsByUser(userId: string) {
+  return prisma.interviewSession.findMany({
+    where: { userId },
+    include: { journalist: true },
+    orderBy: { createdAt: 'desc' },
   });
 }
 
@@ -28,6 +54,22 @@ export async function getHistory(sessionId: string) {
   });
 }
 
+export function canAccessSession(
+  session: { userId: string | null; anonSecretHash: string | null },
+  userId: string | null,
+  anonSecret: string | null,
+): boolean {
+  if (session.userId !== null) {
+    return session.userId === userId;
+  }
+  if (session.anonSecretHash === null) {
+    // legacy-сессии до введения cookie-привязки
+    return true;
+  }
+  if (!anonSecret) return false;
+  return hashAnonSecret(anonSecret) === session.anonSecretHash;
+}
+
 export async function completeSession(sessionId: string) {
   await prisma.interviewSession.update({
     where: { id: sessionId },
@@ -35,8 +77,16 @@ export async function completeSession(sessionId: string) {
   });
 }
 
-export async function processAnswer(sessionId: string, answer: string): Promise<string> {
-  // берём историю до того, как сохранили новый ответ
+export interface QuestionResult {
+  question: string;
+  audio: string | null;
+}
+
+async function synthesizeForJournalist(question: string, journalistId: string): Promise<string | null> {
+  return synthesize(question, journalistId);
+}
+
+export async function processAnswer(sessionId: string, answer: string): Promise<QuestionResult> {
   const session = await prisma.interviewSession.findUniqueOrThrow({
     where: { id: sessionId },
     include: { turns: { orderBy: { createdAt: 'asc' } } },
@@ -51,6 +101,7 @@ export async function processAnswer(sessionId: string, answer: string): Promise<
     character_id: session.journalistId,
     user_name: session.userName,
     user_info: session.userInfo,
+    interview_topic: session.interviewTopic,
     last_answer: answer,
     full_interview_history: session.turns.map((t) => ({ role: t.role, text: t.content })),
     phrase_id: session.questionId,
@@ -72,11 +123,11 @@ export async function processAnswer(sessionId: string, answer: string): Promise<
     },
   });
 
-  return result.question;
+  const audio = await synthesizeForJournalist(result.question, session.journalistId);
+  return { question: result.question, audio };
 }
 
-export async function generateFirstQuestion(sessionId: string): Promise<string> {
-  // история пустая, просто нужны параметры сессии
+export async function generateFirstQuestion(sessionId: string): Promise<QuestionResult> {
   const session = await prisma.interviewSession.findUniqueOrThrow({
     where: { id: sessionId },
   });
@@ -86,6 +137,7 @@ export async function generateFirstQuestion(sessionId: string): Promise<string> 
     character_id: session.journalistId,
     user_name: session.userName,
     user_info: session.userInfo,
+    interview_topic: session.interviewTopic,
     last_answer: '',
     full_interview_history: [],
     phrase_id: session.questionId,
@@ -107,5 +159,6 @@ export async function generateFirstQuestion(sessionId: string): Promise<string> 
     },
   });
 
-  return result.question;
+  const audio = await synthesizeForJournalist(result.question, session.journalistId);
+  return { question: result.question, audio };
 }

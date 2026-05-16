@@ -1,0 +1,3 @@
+provider,n,json_valid_%,structure_ok_%,punct_ok_%,word_mae,latency_mean_s,latency_std_s,style_cosine,judge_style,judge_language,judge_emotion,judge_overall,total_cost_usd
+openai/gpt-4o,20,100%,100%,100%,10.4,1.822,1.889,0.329,3.9,5.0,4.3,4.1,0.0486
+openai/gpt-4o-mini,20,100%,100%,95%,8.55,1.767,1.164,0.367,3.95,5.0,4.35,4.15,0.0029

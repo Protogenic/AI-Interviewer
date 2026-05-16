@@ -4,10 +4,17 @@ from pathlib import Path
 from typing import Any
 import chromadb
 import logging
+from collections import Counter
 
 from ai_service.models.rag import RagIndexConfig
 from ai_service.offline_pipeline.indexing.chunking import Chunking
 from ai_service.offline_pipeline.indexing.embedding import E5SentenceTransformerEmbedder
+from ai_service.exeptions.generation_error import (
+    DataDirectoryNotFoundError,
+    DuplicateChunkError,
+    IndexBuildError,
+    IndexStorageError,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +28,13 @@ def load_replicas_from_file(path: Path) -> list[dict[str, Any]]:
         line = line.strip()
         if not line:
             continue
-        replicas.append(json.loads(line))
+        try:
+            replicas.append(json.loads(line))
+        except json.JSONDecodeError as e:
+            raise IndexBuildError(
+                character_id=str(path),
+                reason=f"invalid JSON on line {line} of '{path}': {e}",
+            ) from e
     return replicas
 
 
@@ -73,18 +86,34 @@ class OfflineRagIndexBuilder:
 
             embeddings = self.embedder.embed_passages(documents)
 
-            collection.upsert(
-                ids=ids,
-                documents=documents,
-                metadatas=metadatas,
-                embeddings=embeddings,
-            )
+            c = Counter(ids)
+            dups = [k for k, v in c.items() if v > 1]
+            if dups:
+                for d in dups[:5]:
+                    idxs = [i for i, x in enumerate(ids) if x == d]
+                    for pos in idxs:
+                        ch = batch[pos]
+                        logger.error("  chunk: %s %s %s", ch.interview_id, ch.source_file, ch.question_replica_id)
+                raise DuplicateChunkError(duplicate_ids=dups)
+
+            try:
+                collection.upsert(
+                    ids=ids,
+                    documents=documents,
+                    metadatas=metadatas,
+                    embeddings=embeddings,
+                )
+            except Exception as e:
+                raise IndexStorageError(
+                    character_id=self.config.character_id,
+                    reason=str(e),
+                ) from e
 
         self._write_manifest(chunks_count=len(chunks))
 
     def _validate_dirs(self) -> None:
         if not self.config.data_dir.exists():
-            raise FileNotFoundError(f"Cleaned data dir not found: {self.config.data_dir}")
+            raise DataDirectoryNotFoundError(path=str(self.config.data_dir))
 
     def _load_all_chunks(self, data_dir: Path):
         chunks = []

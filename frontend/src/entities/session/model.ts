@@ -1,4 +1,4 @@
-import { createStore, createEvent, createEffect, sample } from 'effector';
+import { createStore, createEvent, createEffect } from 'effector';
 import { apiClient } from '~/shared/api/client';
 import { ENDPOINTS } from '~/shared/api/endpoints';
 import { Session, Message, ConversationTurn } from '~/shared/types';
