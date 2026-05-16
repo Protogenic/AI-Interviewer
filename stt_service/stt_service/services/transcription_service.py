@@ -50,14 +50,17 @@ def transcribe_file(tmp_path: str, language: Optional[str]) -> dict[str, Any]:
 
     transcribe_kw: dict[str, Any] = dict(
         language=language or None,
-        beam_size=1,
-        best_of=1,
-        condition_on_previous_text=False,
+        beam_size=max(1, s.whisper_beam_size),
+        best_of=max(1, s.whisper_best_of),
+        condition_on_previous_text=s.whisper_condition_on_previous_text,
+        temperature=s.whisper_temperature,
         initial_prompt=s.whisper_initial_prompt,
     )
     if s.whisper_vad_filter:
         transcribe_kw["vad_filter"] = True
-        transcribe_kw["vad_parameters"] = dict(min_silence_duration_ms=500)
+        transcribe_kw["vad_parameters"] = dict(
+            min_silence_duration_ms=max(100, s.whisper_vad_min_silence_duration_ms)
+        )
     else:
         transcribe_kw["vad_filter"] = False
 

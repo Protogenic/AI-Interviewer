@@ -793,7 +793,7 @@ export const InterviewPage: React.FC = () => {
       } catch (e) {
         if (cancelled) return;
         setSttError(e instanceof Error ? e.message : 'Ошибка распознавания речи');
-        setRecognizedText('');
+        setRecognizedText(transcript.trim().slice(0, ANSWER_MAX_LENGTH));
       } finally {
         if (!cancelled) setIsVoiceRecognizing(false);
       }
@@ -802,7 +802,7 @@ export const InterviewPage: React.FC = () => {
     return () => {
       cancelled = true;
     };
-  }, [voiceState, audioUrl]);
+  }, [voiceState, audioUrl, transcript]);
 
   useEffect(() => {
     if (voiceState !== 'done' || audioUrl) return;
