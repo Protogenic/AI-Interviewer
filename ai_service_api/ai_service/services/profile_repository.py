@@ -1,3 +1,5 @@
+"""Репозиторий профилей интервьюеров: загрузка из JSON и кэширование в памяти."""
+
 import json
 from typing import Dict, List
 from pathlib import Path
@@ -7,11 +9,14 @@ from ai_service.models.build_profile import InterviewerProfile, Template, Lingui
 
 
 class GetProfileInfo:
+    """Загружает профили интервьюеров из JSON-файлов и кэширует их на время жизни объекта."""
+
     def __init__(self, profile_dir: str = "ai_service/data/profiles") -> None:
         self.__profiles_dir = Path(profile_dir)
         self.__profiles: dict[str, InterviewerProfile] = {}
 
     def load_profile(self, character_id:str) -> InterviewerProfile:
+        """Загружает профиль с диска, парсит и кладёт в кэш. Повторный вызов вернёт кэш."""
         if character_id in self.__profiles:
             return self.__profiles[character_id]
 
@@ -40,19 +45,22 @@ class GetProfileInfo:
         self.__profiles[character_id] = profile
         return profile
 
-
     def get_profile(self, character_id: str) -> InterviewerProfile:
+        """Возвращает профиль из кэша или загружает с диска при первом обращении."""
         if character_id not in self.__profiles:
             return self.load_profile(character_id)
         return self.__profiles[character_id]
 
     def get_reactivity_matrix(self, character_id: str) -> Dict[str, Dict[str, int]]:
+        """Возвращает матрицу реактивности для указанного интервьюера."""
         return self.get_profile(character_id).reactivity_matrix
 
     def get_templates(self, character_id: str) -> list[Template]:
+        """Возвращает список шаблонов реплик для указанного интервьюера."""
         return self.get_profile(character_id).templates
 
     def __parse_profile(self, raw_data: dict) -> InterviewerProfile:
+        """Десериализует сырой словарь из JSON в объект InterviewerProfile."""
         linguistic_raw = raw_data.get("linguistic_profile", {})
         templates_raw = raw_data.get("templates", [])
 

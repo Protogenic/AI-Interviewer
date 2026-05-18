@@ -27,7 +27,6 @@ def make_template(
         examples=["Пример?"],
     )
     if template_id is not None:
-        # Template is a Pydantic model; attach extra attr via __dict__
         t.__dict__["template_id"] = template_id
     return t
 

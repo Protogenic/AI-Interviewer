@@ -3,7 +3,7 @@ import asyncio
 import logging
 import sys
 
-from llm_evaluation.config import ALL_PROVIDERS, JUDGE_API_KEY, RESULTS_DIR
+from llm_evaluation.config import ALL_PROVIDERS, JUDGE_API_KEY
 from llm_evaluation.judge import LLMJudge, scores_to_dict
 from llm_evaluation.report import save_reports
 from llm_evaluation.runner import (

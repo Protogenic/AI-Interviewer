@@ -1,3 +1,5 @@
+"""Выбор шаблона реплики интервьюера по действию, позиции и совместимым техникам."""
+
 import random
 from typing import List, Optional
 
@@ -7,7 +9,9 @@ from ai_service.models.selection import TemplateSelection
 from ai_service.models.build_profile import Template
 from ai_service.exeptions.generation_error import TemplateSelectionError
 
+
 class TemplateSelector:
+    """Выбирает шаблон реплики из топ N кандидатов с учётом техник, позиции и частоты."""
     def __init__(self,
                  templates: List[Template],
                  top_n = 3,
@@ -23,6 +27,9 @@ class TemplateSelector:
                         interview_position: float,
                         previous_template_id: Optional[str] = None
                         ) -> TemplateSelection:
+        """Фильтрует, считает баллы и случайно выбирает шаблон среди топ N кандидатов.
+        Сначала фильтрует по совместимым техникам, при отсутствии их только по действию.
+        Вызывает TemplateSelectionError если подходящие шаблоны не найдены."""
         compatible_techniques = (self._get_compatible_techniques(action))
 
         filtered = []
@@ -77,6 +84,7 @@ class TemplateSelector:
 
 
     def _get_compatible_techniques(self, action: Action) -> List[Technique]:
+        """Возвращает список техник, совместимых с указанным действием."""
         profile_compatibility = ACTION_TECHNIQUE_COMPATIBILITY.get(action.value, [])
         compatible_techniques = []
 
@@ -88,14 +96,17 @@ class TemplateSelector:
 
     @staticmethod
     def _position_score(template: Template, interview_position: float) -> float:
+        """Считает баллы близости шаблона к текущей позиции интервью."""
         distance = abs(template.avg_position - interview_position)
         return max(0.0, 1.0-distance)
+
 
     def _score_template(self,
                         template: Template,
                         interview_position: float,
                         previous_template_id: Optional[str]
                         ) -> float:
+        """Считает итоговый балл шаблона: 60% частота + 40% позиция, штраф за повтор."""
         frequency_score = float(getattr(template, "frequency", 1))
         position_score = self._position_score(template, interview_position)
 

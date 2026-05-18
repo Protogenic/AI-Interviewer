@@ -1,3 +1,5 @@
+"""FastAPI-роутер для эндпоинта генерации вопроса интервьюера."""
+
 from fastapi import APIRouter, HTTPException, status
 
 from ai_service.models.generation import GenerationRequest, GenerationResponse
@@ -21,7 +23,6 @@ from ai_service.exeptions.generation_error import (
     GenerationError,
 )
 
-
 router = APIRouter(
     prefix = "/generation",
     tags = ["generation"]
@@ -32,9 +33,37 @@ profile_repository = GetProfileInfo()
 
 INTERVIEW_CHARACTERS = {"dud", "sobchak", "pozner"}
 
+_rag_service_cache: dict[str, OnlineRagSearchService] = {}
+_action_selector_cache: dict[str, ActionSelector] = {}
+_template_selector_cache: dict[str, TemplateSelector] = {}
+
+
+def _get_rag_service(character_id: str) -> OnlineRagSearchService:
+    if character_id not in _rag_service_cache:
+        rag_config = RagIndexConfig.for_character(character_id=character_id)
+        _rag_service_cache[character_id] = OnlineRagSearchService(config=rag_config)
+    return _rag_service_cache[character_id]
+
+
+def _get_action_selector(character_id: str) -> ActionSelector:
+    if character_id not in _action_selector_cache:
+        _action_selector_cache[character_id] = ActionSelector(
+            profile_repository.get_reactivity_matrix(character_id), 2, 42
+        )
+    return _action_selector_cache[character_id]
+
+
+def _get_template_selector(character_id: str) -> TemplateSelector:
+    if character_id not in _template_selector_cache:
+        _template_selector_cache[character_id] = TemplateSelector(
+            profile_repository.get_templates(character_id), 3, 42
+        )
+    return _template_selector_cache[character_id]
+
 
 @router.post("/generate_question", response_model=GenerationResponse, status_code=status.HTTP_200_OK)
 async def get_generate_question(input_data: GenerationRequest) -> GenerationResponse:
+    """Генерирует следующий вопрос интервьюера по истории диалога и профилю персонажа."""
     ch_id = input_data.character_id
     max_number_q = input_data.max_number_questions
 
@@ -42,10 +71,9 @@ async def get_generate_question(input_data: GenerationRequest) -> GenerationResp
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
     try:
-        rag_config = RagIndexConfig.for_character(character_id=input_data.character_id)
-        rag_service = OnlineRagSearchService(config=rag_config)
-        action_selector = ActionSelector(profile_repository.get_reactivity_matrix(ch_id), 2, 42)
-        template_selector = TemplateSelector(profile_repository.get_templates(ch_id), 3, 42)
+        rag_service = _get_rag_service(ch_id)
+        action_selector = _get_action_selector(ch_id)
+        template_selector = _get_template_selector(ch_id)
 
         generation_service = GenerateQuestionService(
             llm_client=llm_client,

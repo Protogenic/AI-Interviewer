@@ -1,10 +1,12 @@
+"""Конфигурация сервиса через переменные окружения. Все значения переопределяются в .env."""
+
 import os
 
-LLM_PROVIDER = os.getenv("LLM_PROVIDER", "dummy")
+LLM_PROVIDER = os.getenv("LLM_PROVIDER", "openrouter")
 
 
 LLM_TEMPERATURE = float(os.getenv("LLM_TEMPERATURE", "0.7"))
-LLM_MAX_TOKENS = int(os.getenv("LLM_MAX_TOKENS", "4000"))
+LLM_MAX_TOKENS = int(os.getenv("LLM_MAX_TOKENS", "10000"))
 
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")

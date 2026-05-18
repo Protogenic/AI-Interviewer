@@ -1,3 +1,5 @@
+"""Выбор следующего действия интервьюера на основе матрицы реактивности и позиции."""
+
 import random
 from collections import Counter
 from typing import Dict, Optional
@@ -7,6 +9,8 @@ from ai_service.models.selection import ActionSelection
 
 
 class ActionSelector:
+    """Выбирает действие интервьюера по типу ответа гостя и позиции в интервью."""
+
     def __init__(self,
                  reactivity_matrix: Dict[str, Dict[str, int]],
                  max_followups_in_row: int = 2,
@@ -16,13 +20,12 @@ class ActionSelector:
         self.max_followups_in_row = max_followups_in_row
         self.random = random.Random(random_seed)
 
-
     def select(self,
                answer_type: AnswerType,
                interview_position: float,
                consecutive_followups: int,
                ) -> ActionSelection:
-
+        """Возвращает выбранное действие с обоснованием и распределением вероятностей."""
         if answer_type == AnswerType.NOT_ANSWER:
             return ActionSelection(
                 action=Action.QUESTION ,
@@ -57,6 +60,7 @@ class ActionSelector:
 
 
     def _get_distribution(self, answer_type: AnswerType) -> Dict[Action, float]:
+        """Строит нормализованное распределение действий по строке матрицы реактивности."""
         row = self.reactivity_matrix.get(answer_type.value, {})
 
         counter = Counter()
@@ -74,7 +78,7 @@ class ActionSelector:
                             distribution: Dict[Action, float],
                             interview_position: float,
                             ) -> Dict[Action, float]:
-
+        """Корректирует распределение с учётом позиции."""
         probability = distribution.copy()
         if interview_position < 0.3:
             #probability[DialogueAct.OPEN_QUESTION] = probability.get(DialogueAct.OPEN_QUESTION, 0) + 0.15
@@ -86,13 +90,13 @@ class ActionSelector:
 
         total = sum(probability.values())
         if total == 0:
-            #return {Action.OPEN_QUESTION: 1.0}
             return {Action.TRANSITION: 1.0}
 
         return {k: v / total for k, v in probability.items()}
 
 
     def _weighted_sample(self, distribution: Dict[Action, float]) -> Action:
+        """Выбирает одно действие случайным образом с весами из distribution."""
         acts = list(distribution.keys())
         weights = list(distribution.values())
         return self.random.choices(acts, weights=weights, k=1)[0]

@@ -116,7 +116,7 @@ class RagSearchError(GenerationError):
 
 
 class PipelineError(Exception):
-    """Base exception for the offline data-processing pipeline."""
+    """Базовое исключение."""
 
 
 class DataDirectoryNotFoundError(PipelineError):

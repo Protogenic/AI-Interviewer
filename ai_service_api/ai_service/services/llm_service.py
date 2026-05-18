@@ -1,23 +1,23 @@
-from openai import AsyncOpenAI, BadRequestError
-from typing import Protocol
+"""LLM-клиенты для трёх провайдеров: OpenAI, Ollama, OpenRouter.
+OpenRouterLLMClient поддерживает retry с exponential backoff при временных сбоях.
+"""
+
 import asyncio
-import httpx
 import json
 import logging
+import re
+from typing import Protocol
+
+import httpx
+from openai import AsyncOpenAI, BadRequestError
 
 from ai_service.exeptions.generation_error import GenerationError, LLMResponseError
 
-logging.basicConfig(
-    level=logging.DEBUG,
-    format="%(asctime)s %(levelname)s [%(name)s] %(message)s",
-)
-
-logger = logging.getLogger("app")
+logger = logging.getLogger(__name__)
 
 
 def _assemble_from_json(raw: str) -> str:
-    import re
-
+    """Извлекает текст вопроса из JSON-ответа модели."""
     text = (raw or "").strip()
 
     if text.startswith("```"):
@@ -50,10 +50,14 @@ def _assemble_from_json(raw: str) -> str:
 
 
 class BaseLLMClient(Protocol):
+    """Протокол для всех LLM-клиентов сервиса."""
     async def generate_question(self, system_prompt: str, user_prompt: str) -> str:
+        """Генерирует вопрос интервьюера по системному и пользовательскому промптам."""
         ...
 
+
 class OpenAILLMClient:
+    """LLM-клиент для OpenAI API."""
     def __init__(
         self,
         api_key: str | None = None,
@@ -61,15 +65,10 @@ class OpenAILLMClient:
         temperature: float = 0.7,
         max_tokens: int = 500,
     ) -> None:
-        if api_key:
-            self._client = AsyncOpenAI(api_key=api_key)
-        else:
-            self._client = AsyncOpenAI()
-
+        self._client = AsyncOpenAI(api_key=api_key) if api_key else AsyncOpenAI()
         self.__model = model
         self.__temperature = temperature
         self.__max_tokens = max_tokens
-
 
     async def generate_question(self, system_prompt: str, user_prompt: str) -> str:
         messages = [
@@ -77,9 +76,7 @@ class OpenAILLMClient:
             {"role": "user", "content": user_prompt},
         ]
 
-        logger.info("PROMPT: %s", messages)
-        logger.info("MODEL: %s", self.__model)
-        logger.info("TEMP: %s", self.__temperature)
+        logger.info("PROVIDER: openai | MODEL: %s | TEMP: %s", self.__model, self.__temperature)
 
         try:
             response = await self._client.chat.completions.create(
@@ -88,11 +85,16 @@ class OpenAILLMClient:
                 temperature=self.__temperature,
                 response_format={"type": "json_object"},
             )
-            raw_question = response.choices[0].message.content or ""
+            choice = response.choices[0]
+            finish_reason = getattr(choice, "finish_reason", None)
+            if finish_reason not in {"stop", "length"}:
+                raise LLMResponseError(
+                    f"OpenAI stream did not finish cleanly: finish_reason={finish_reason!r}"
+                )
+            raw_question = choice.message.content or ""
             if not raw_question.strip():
                 raise LLMResponseError("OpenAI returned empty message content")
-            question = _assemble_from_json(raw_question)
-            return question
+            return _assemble_from_json(raw_question)
         except LLMResponseError:
             raise
         except BadRequestError as e:
@@ -102,12 +104,14 @@ class OpenAILLMClient:
 
 
 class OllamaLLMClient:
-    def __init__(self,
-                 model: str = "qwen2.5:7b-instruct",
-                 base_url: str = "http://localhost:11434/v1",
-                 temperature: float = 0.7,
-                 max_tokens: int = 150,
-                 ) -> None:
+    """LLM-клиент для локального Ollama через нативный /api/chat endpoint."""
+    def __init__(
+        self,
+        model: str = "qwen2.5:7b-instruct",
+        base_url: str = "http://localhost:11434/v1",
+        temperature: float = 0.7,
+        max_tokens: int = 150,
+    ) -> None:
         self.__model = model
         self.__base_url = base_url.rstrip("/")
         self.__temperature = temperature
@@ -115,7 +119,6 @@ class OllamaLLMClient:
 
     async def generate_question(self, system_prompt: str, user_prompt: str) -> str:
         url = f"{self.__base_url}/api/chat"
-
         payload = {
             "model": self.__model,
             "messages": [
@@ -137,7 +140,6 @@ class OllamaLLMClient:
                 data = response.json()
             raw = data["message"]["content"].strip()
             return _assemble_from_json(raw)
-
         except httpx.HTTPStatusError as e:
             raise GenerationError(
                 f"Ollama HTTP error: {e.response.status_code} {e.response.text}"
@@ -147,6 +149,8 @@ class OllamaLLMClient:
 
 
 class OpenRouterLLMClient:
+    """LLM-клиент для OpenRouter с автоматическим retry и exponential backoff."""
+
     def __init__(
         self,
         api_key: str,
@@ -157,10 +161,7 @@ class OpenRouterLLMClient:
         max_retries: int = 3,
         retry_base_delay: float = 1.0,
     ) -> None:
-        self._client = AsyncOpenAI(
-            api_key=api_key,
-            base_url=base_url,
-        )
+        self._client = AsyncOpenAI(api_key=api_key, base_url=base_url)
         self.__model = model
         self.__temperature = temperature
         self.__max_tokens = max_tokens
@@ -173,9 +174,7 @@ class OpenRouterLLMClient:
             {"role": "user", "content": user_prompt},
         ]
 
-        logger.info("PROVIDER: openrouter")
-        logger.info("MODEL: %s", self.__model)
-        logger.info("TEMP: %s", self.__temperature)
+        logger.info("PROVIDER: openrouter | MODEL: %s | TEMP: %s", self.__model, self.__temperature)
 
         request_kwargs: dict = {
             "model": self.__model,
@@ -190,7 +189,13 @@ class OpenRouterLLMClient:
         for attempt in range(self.__max_retries + 1):
             try:
                 response = await self._client.chat.completions.create(**request_kwargs)
-                raw_question = response.choices[0].message.content or ""
+                choice = response.choices[0]
+                finish_reason = getattr(choice, "finish_reason", None)
+                if finish_reason not in {"stop", "length"}:
+                    raise LLMResponseError(
+                        f"OpenRouter stream did not finish cleanly: finish_reason={finish_reason!r}"
+                    )
+                raw_question = choice.message.content or ""
                 if not raw_question.strip():
                     raise LLMResponseError("OpenRouter returned an empty message content")
                 return _assemble_from_json(raw_question)
