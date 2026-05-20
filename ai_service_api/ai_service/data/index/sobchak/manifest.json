@@ -1,0 +1,9 @@
+{
+  "character_id": "sobchak",
+  "collection_name": "sobchak_rag",
+  "model_name": "intfloat/multilingual-e5-small",
+  "data_dir": "ai_service\\data\\cleaned\\sobchak",
+  "persist_dir": "ai_service\\data\\index\\sobchak\\chroma",
+  "chunks_count": 723,
+  "created_at": "2026-05-04T10:53:34.361985+00:00"
+}
