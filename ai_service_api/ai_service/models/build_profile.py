@@ -1,9 +1,14 @@
+"""Pydantic-модели профиля интервьюера: лингвистика, шаблоны, персона."""
+
 from pydantic import BaseModel, Field
 from typing import Any, Dict, List
 
 from ai_service.offline_pipeline.categories import Action, QuestionOpenness, Emotion, AnswerType, Technique, ComponentType
 
+
 class LinguisticProfile(BaseModel):
+    """Числовые характеристики речевого стиля интервьюера."""
+
     empathy_density: float = 0.0
     hedging_density: float = 0.0
     pressure_density: float = 0.0
@@ -18,12 +23,16 @@ class LinguisticProfile(BaseModel):
 
 
 class Phrase(BaseModel):
+    """Реплика диалога с ролью и порядковым номером."""
+
     role: str
     text: str
     replica_id: int
 
 
 class AnnotatedPhrase(Phrase):
+    """Реплика с разметкой действия, эмоции и типа ответа."""
+
     interview_id: str
     action: Action = None
     question_openness: QuestionOpenness = None
@@ -37,11 +46,15 @@ class AnnotatedPhrase(Phrase):
 
 
 class Component(BaseModel):
+    """Компонент составной реплики."""
+
     type: ComponentType
     text: str
 
 
 class Template(BaseModel):
+    """Шаблон реплики интервьюера с параметрами действия, эмоции и позиции."""
+
     structure: str
     frequency: int
     action: str
@@ -54,6 +67,8 @@ class Template(BaseModel):
 
 
 class InterviewerProfile(BaseModel):
+    """Полный профиль интервьюера: лингвистика, матрица реактивности, шаблоны."""
+
     interviewer_id: str
     linguistic_profile: LinguisticProfile
     reactivity_matrix: Dict[str, Dict[str, int]]

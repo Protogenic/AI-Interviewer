@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Request, Response
+from contextlib import asynccontextmanager
 from pathlib import Path
 from dotenv import load_dotenv
 import logging
@@ -14,9 +15,26 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("api")
 
 
+def _warmup_character_caches() -> None:
+    for character_id in generation_router.INTERVIEW_CHARACTERS:
+        try:
+            logger.info("warmup: loading components for character %s", character_id)
+            generation_router._get_rag_service(character_id)
+            generation_router._get_action_selector(character_id)
+            generation_router._get_template_selector(character_id)
+        except Exception as exc:
+            logger.warning("warmup failed for character %s: %s", character_id, exc)
+
+
+@asynccontextmanager
+async def _lifespan(app: FastAPI):
+    _warmup_character_caches()
+    yield
+
+
 def create_app() -> FastAPI:
     settings_proj = config.get_proj_settings()
-    app = FastAPI(title = settings_proj.proj_name)
+    app = FastAPI(title=settings_proj.proj_name, lifespan=_lifespan)
 
     @app.middleware("http")
     async def log_request_response(request: Request, call_next):

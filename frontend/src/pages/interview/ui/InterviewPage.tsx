@@ -559,7 +559,7 @@ const ModalText = styled.p`
 
 type ConnectionStatus = 'idle' | 'connecting' | 'live' | 'error';
 
-const ANSWER_MAX_LENGTH = 300;
+const ANSWER_MAX_LENGTH = 2000;
 const INTERVIEW_TOPIC_MAX_LENGTH = 1000;
 
 type StartPayload = {
@@ -641,7 +641,6 @@ export const InterviewPage: React.FC = () => {
     trimmedCount !== '' &&
     (Number.isNaN(parsedCount) || parsedCount < 1);
   const activeQuestionLimit = !unlimitedQuestions ? parsedCount : undefined;
-  const answerWordsCount = answer.trim() ? answer.trim().split(/\s+/).length : 0;
   const answerCharsCount = answer.length;
   const isAnswerLimitReached = answerCharsCount >= ANSWER_MAX_LENGTH;
 
@@ -794,7 +793,7 @@ export const InterviewPage: React.FC = () => {
       } catch (e) {
         if (cancelled) return;
         setSttError(e instanceof Error ? e.message : 'Ошибка распознавания речи');
-        setRecognizedText('');
+        setRecognizedText(transcript.trim().slice(0, ANSWER_MAX_LENGTH));
       } finally {
         if (!cancelled) setIsVoiceRecognizing(false);
       }
@@ -803,7 +802,7 @@ export const InterviewPage: React.FC = () => {
     return () => {
       cancelled = true;
     };
-  }, [voiceState, audioUrl]);
+  }, [voiceState, audioUrl, transcript]);
 
   useEffect(() => {
     if (voiceState !== 'done' || audioUrl) return;
@@ -1121,7 +1120,7 @@ export const InterviewPage: React.FC = () => {
                     }
                   />
                   <AnswerCounter $isLimitReached={isAnswerLimitReached}>
-                    Слов: {answerWordsCount} · Символов: {answerCharsCount}/{ANSWER_MAX_LENGTH}
+                    Символов: {answerCharsCount}/{ANSWER_MAX_LENGTH}
                   </AnswerCounter>
                 </>
               )}

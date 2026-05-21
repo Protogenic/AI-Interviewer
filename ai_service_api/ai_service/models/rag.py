@@ -1,8 +1,12 @@
+"""Pydantic-модели для RAG-поиска: чанки, примеры и конфигурация индекса."""
+
 from pydantic import BaseModel
 from pathlib import Path
 
 
 class RagChunk(BaseModel):
+    """Единица индексации: пара вопрос-ответ с мета-данными источника."""
+
     interview_id: str
     source_file: str
     question_replica_id: int
@@ -12,6 +16,8 @@ class RagChunk(BaseModel):
 
 
 class RagExample(BaseModel):
+    """Найденный похожий пример из RAG-поиска со скором релевантности."""
+
     score: float
     interview_id: str
     source_file: str
@@ -21,6 +27,8 @@ class RagExample(BaseModel):
 
 
 class RagIndexConfig(BaseModel):
+    """Конфигурация RAG-индекса для конкретного интервьюера."""
+
     character_id: str
     data_dir: Path
     persist_dir: Path

@@ -133,28 +133,28 @@ class TestBuildSystemPromptService:
         self.service = BuildSystemPromptService()
 
     def test_returns_build_prompt_result(self, interviewer_profile, basic_template):
-        result = self.service.build_prompt(interviewer_profile, basic_template, "dud")
+        result = self.service.build_prompt(interviewer_profile, basic_template, "dud", interview_topic="")
         assert isinstance(result, BuildPromptResult)
 
     def test_prompt_is_non_empty_string(self, interviewer_profile, basic_template):
-        result = self.service.build_prompt(interviewer_profile, basic_template, "dud")
+        result = self.service.build_prompt(interviewer_profile, basic_template, "dud", interview_topic="")
         assert len(result.prompt.strip()) > 0
 
     def test_raises_for_unknown_interviewer(self, interviewer_profile, basic_template):
         with pytest.raises(UnknownInterviewerError):
-            self.service.build_prompt(interviewer_profile, basic_template, "unknown_id")
+            self.service.build_prompt(interviewer_profile, basic_template, "unknown_id", interview_topic="")
 
     def test_prompt_contains_output_format_section(self, interviewer_profile, basic_template):
-        result = self.service.build_prompt(interviewer_profile, basic_template, "dud")
+        result = self.service.build_prompt(interviewer_profile, basic_template, "dud", interview_topic="")
         assert "ФОРМАТ ВЫВОДА" in result.prompt
 
     def test_style_instruction_is_list_of_strings(self, interviewer_profile, basic_template):
-        result = self.service.build_prompt(interviewer_profile, basic_template, "dud")
+        result = self.service.build_prompt(interviewer_profile, basic_template, "dud", interview_topic="")
         assert isinstance(result.style_instruction, list)
         assert all(isinstance(s, str) for s in result.style_instruction)
 
     def test_characteristic_phrases_in_prompt(self, interviewer_profile, basic_template):
-        result = self.service.build_prompt(interviewer_profile, basic_template, "dud")
+        result = self.service.build_prompt(interviewer_profile, basic_template, "dud", interview_topic="")
         assert any(phrase in result.prompt for phrase in ["Подождите", "То есть как?"])
 
     def test_build_style_block_empty_list(self):

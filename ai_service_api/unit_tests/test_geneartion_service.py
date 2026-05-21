@@ -7,7 +7,6 @@ from ai_service.services.llm_service import BaseLLMClient
 from ai_service.models.generation import GenerationRequest, GenerationResponse, InterviewPart
 from ai_service.models.build_profile import Template
 from ai_service.models.selection import ActionSelection, TemplateSelection
-from ai_service.exeptions.generation_error import CharacterNotFound
 from ai_service.offline_pipeline.categories import Action, Technique
 
 

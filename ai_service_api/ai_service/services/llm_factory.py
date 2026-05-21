@@ -1,3 +1,5 @@
+"""Фабрика LLM-клиентов: создаёт нужный клиент по значению LLM_PROVIDER из окружения."""
+
 from ai_service.core import settings
 from ai_service.services.llm_service import (
     OpenAILLMClient,
@@ -8,6 +10,9 @@ from ai_service.exeptions.generation_error import LLMConfigurationError
 
 
 def create_llm_client():
+    """Создаёт и возвращает LLM-клиент согласно настройкам окружения.
+    Поддерживаемые провайдеры: openai, ollama, openrouter.
+    Выбрасывает LLMConfigurationError при неизвестном провайдере или отсутствии ключа."""
     if settings.LLM_PROVIDER == "openai":
         if not settings.OPENAI_API_KEY:
             raise LLMConfigurationError(

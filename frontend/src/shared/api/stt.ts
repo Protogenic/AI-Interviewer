@@ -4,7 +4,8 @@ export async function transcribeAudio(
 ): Promise<string> {
   const url = import.meta.env.VITE_STT_URL || 'http://localhost:8010';
   const controller = new AbortController();
-  const timeoutId = window.setTimeout(() => controller.abort(), 20000);
+  const timeoutMs = Number(import.meta.env.VITE_STT_TIMEOUT_MS || 60000);
+  const timeoutId = window.setTimeout(() => controller.abort(), timeoutMs);
 
   const form = new FormData();
   form.append('audio', blob, opts?.filename ?? 'audio.webm');
@@ -25,7 +26,9 @@ export async function transcribeAudio(
     return (data.text ?? '').trim();
   } catch (error) {
     if (error instanceof DOMException && error.name === 'AbortError') {
-      throw new Error('STT сервис отвечает слишком долго. Попробуйте более короткую запись.');
+      throw new Error(
+        `STT сервис отвечает слишком долго (>${Math.round(timeoutMs / 1000)} c). Попробуйте более короткую запись или отправьте текст из браузерного распознавания.`
+      );
     }
     throw error;
   } finally {

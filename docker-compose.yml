@@ -59,7 +59,12 @@ services:
       - PYTHONUNBUFFERED=1
       - WHISPER_MODEL=base
       - WHISPER_COMPUTE_TYPE=int8
-      - WHISPER_VAD_FILTER=false
+      - WHISPER_VAD_FILTER=true
+      - WHISPER_VAD_MIN_SILENCE_DURATION_MS=350
+      - WHISPER_BEAM_SIZE=2
+      - WHISPER_BEST_OF=2
+      - WHISPER_CONDITION_ON_PREVIOUS_TEXT=false
+      - WHISPER_TEMPERATURE=0.0
       - HF_TOKEN=${HF_TOKEN:-}
       - HF_HOME=/cache/huggingface
     volumes:

@@ -25,7 +25,12 @@ class SttSettings(BaseSettings):
     whisper_model: str = "small"
     whisper_compute_type: str = "int8"
     whisper_initial_prompt: str = Field(default=_DEFAULT_WHISPER_PROMPT)
-    whisper_vad_filter: bool = False
+    whisper_vad_filter: bool = True
+    whisper_vad_min_silence_duration_ms: int = 350
+    whisper_beam_size: int = 2
+    whisper_best_of: int = 2
+    whisper_condition_on_previous_text: bool = False
+    whisper_temperature: float = 0.0
 
 
 @lru_cache

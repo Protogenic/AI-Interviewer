@@ -1,3 +1,5 @@
+"""Онлайн-поиск по RAG-индексу ChromaDB для подбора похожих примеров диалога."""
+
 import json
 import chromadb
 
@@ -12,6 +14,8 @@ from ai_service.exeptions.generation_error import (
 
 
 class OnlineRagSearchService:
+    """Загружает ChromaDB-индекс интервьюера и выполняет семантический поиск похожих пар."""
+
     def __init__(self, config: RagIndexConfig) -> None:
         self.config = config
         self.embedder = E5SentenceTransformerEmbedder(model_name=config.model_name)
@@ -50,6 +54,8 @@ class OnlineRagSearchService:
             ) from e
 
     def search(self, last_question: str | None, last_answer: str | None, k: int = 2) -> list[RagExample]:
+        """Возвращает k наиболее похожих примеров по последнему вопросу и ответу.
+        Если оба аргумента пусты, то возвращает пустой список без обращения к индексу."""
         q = (last_question or "").strip()
         a = (last_answer or "").strip()
         if not q and not a:

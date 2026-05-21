@@ -1,0 +1,4 @@
+provider,n_cases,repeats_per_case,json_valid_mean,parts_count_correct_mean,roles_correct_mean,no_forbidden_punct_mean,fully_compliant_mean,word_count_mae_mean,latency_s_mean,cost_usd_mean,style_cosine_mean,judge_style_mean,judge_language_mean,judge_emotion_mean,judge_overall_mean
+or/deepseek-chat,20,5.0,1.0000,1.0000,1.0000,1.0000,1.0000,11.1200,3.8858,0.0003,0.4110,4.0900,5.0000,4.2800,4.1300
+or/mistral-small-3.1,20,5.0,1.0000,1.0000,1.0000,1.0000,1.0000,11.3300,1.7575,0.0001,0.3869,4.1208,5.0000,4.3625,4.1000
+or/qwen2.5-72b,20,5.0,0.9100,0.9100,0.8900,0.8400,0.8200,8.9642,9.7951,0.0003,0.3688,3.9139,4.9398,4.3009,3.9648
